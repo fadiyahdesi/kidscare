@@ -1,0 +1,64 @@
+{% extends 'layout/app.html' %}
+
+{% block title %}Daftar | KidsCare{% endblock %}
+
+{% block content %}
+<section class="register-section">
+
+    <div class="register-header">
+        <h2>Daftar Akun Baru</h2>
+        <p>Harap isi data dengan benar</p>
+    </div>
+
+    <form method="POST" action="{{ url_for('main.register') }}" class="register-form">
+
+        <div class="form-grid">
+
+            <!-- LEFT -->
+            <div class="form-group">
+                <label>Nama Orang Tua / Wali</label>
+                <input type="text" name="parent_name" required>
+            </div>
+
+            <!-- RIGHT -->
+            <div class="form-group">
+                <label>Nama Lengkap Anak</label>
+                <input type="text" name="child_name" required>
+            </div>
+
+            <div class="form-group">
+                <label>Email / Nomor WhatsApp</label>
+                <input type="text" name="contact" required>
+            </div>
+
+            <div class="form-group">
+                <label>Tanggal Lahir Anak</label>
+                <input type="date" name="child_birth" required>
+            </div>
+
+            <div class="form-group">
+                <label>Alamat Orang Tua / Wali</label>
+                <input type="text" name="address" required>
+            </div>
+
+            <div class="form-group">
+                <label>Jenis Kelamin Anak</label>
+                <select name="gender" required>
+                    <option value="">-- Pilih --</option>
+                    <option value="L">Laki-laki</option>
+                    <option value="P">Perempuan</option>
+                </select>
+            </div>
+
+        </div>
+
+        <button type="submit" class="btn-register">Daftar</button>
+
+        <p class="login-link">
+            Sudah punya Akun? <a href="{{ url_for('main.login') }}">Masuk</a>
+        </p>
+
+    </form>
+
+</section>
+{% endblock %}

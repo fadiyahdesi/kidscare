@@ -1,0 +1,166 @@
+{% extends 'layout/dashboard.html' %}
+{% block title %}Tes Skrining | KidsCare{% endblock %}
+
+{% block content %}
+<div class="flex flex-col h-full px-8 py-6">
+
+    <!-- HEADER -->
+    <div>
+        <h1 class="text-3xl font-extrabold text-slate-800">
+            Skrining ADHD Anak Usia Dini
+        </h1>
+        <p class="text-slate-500 mt-1">
+            Isi sesuai perilaku anak selama 6 bulan terakhir
+        </p>
+
+        <!-- Progress -->
+        <div class="mt-6">
+            <p class="text-sm font-semibold text-slate-600" id="progress-text">
+                Pertanyaan 1 dari 20
+            </p>
+            <div class="w-full h-2 bg-slate-200 rounded-full mt-2">
+                <div id="progress-bar"
+                     class="h-full bg-teal-400 rounded-full transition-all duration-500"
+                     style="width:5%">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- QUESTION AREA (CENTER) -->
+    <form id="screeningForm"
+          action="{{ url_for('user.predict') }}"
+          method="POST"
+          class="flex-1 flex items-center justify-center">
+
+        {% for q in questions %}
+        {% set i = loop.index0 %}
+        <div class="question-step hidden w-full max-w-4xl text-center"
+             data-step="{{ i }}">
+
+            <!-- Question Box -->
+            <div class="bg-cyan-100 rounded-3xl px-10 py-14 mb-10">
+                <h2 class="text-2xl font-bold text-slate-800">
+                    {{ q }}
+                </h2>
+            </div>
+
+            <!-- Answers -->
+            <div class="flex justify-center gap-6 flex-wrap">
+                {% for val,label in [
+                    ('0','Tidak ada'),
+                    ('1','Sesekali'),
+                    ('2','Sering'),
+                    ('3','Selalu')
+                ] %}
+                <label class="pill-option">
+                    <input type="radio"
+                        name="q{{ i }}"
+                        value="{{ val }}"
+                        class="hidden peer"
+                        required>
+
+                    <span class="pill-outer">
+                        <span class="pill-inner">{{ label }}</span>
+                    </span>
+                </label>
+                {% endfor %}
+            </div>
+
+        </div>
+        {% endfor %}
+    </form>
+
+    <!-- NAVIGATION -->
+    <div class="flex justify-between items-center text-lg font-semibold text-teal-700">
+        <button type="button" id="prevBtn">Sebelumnya</button>
+
+        <img src="{{ url_for('static', filename='images/user.png') }}"
+             class="w-24 opacity-80">
+
+        <button type="button" id="nextBtn">Selanjutnya</button>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const steps = document.querySelectorAll('.question-step');
+    const progressBar = document.getElementById('progress-bar');
+    const progressText = document.getElementById('progress-text');
+    const nextBtn = document.getElementById('nextBtn');
+    const prevBtn = document.getElementById('prevBtn');
+    const submitBtn = document.getElementById('submitBtn');
+    
+    let currentStep = 0;
+    const totalSteps = steps.length;
+
+    function updateStep(index) {
+        steps.forEach((step, i) => {
+            step.classList.add('hidden');
+            step.classList.remove('opacity-100', 'translate-x-0');
+            step.classList.add('opacity-0', 'translate-x-4');
+            if (i === index) {
+                step.classList.remove('hidden');
+                setTimeout(() => {
+                    step.classList.remove('opacity-0', 'translate-x-4');
+                    step.classList.add('opacity-100', 'translate-x-0');
+                }, 50);
+            }
+        });
+        
+        const progressPercent = ((index + 1) / totalSteps) * 100;
+        progressBar.style.width = `${progressPercent}%`;
+        progressText.innerText = `Pertanyaan ${index + 1} dari ${totalSteps}`;
+        
+        prevBtn.disabled = (index === 0);
+        
+        if (index === totalSteps - 1) {
+            nextBtn.classList.add('hidden');
+            submitBtn.classList.remove('hidden');
+        } else {
+            nextBtn.classList.remove('hidden');
+            submitBtn.classList.add('hidden');
+        }
+    }
+
+    function checkAnswered() {
+        const inputs = steps[currentStep].querySelectorAll('input[type="radio"]');
+        let answered = false;
+        inputs.forEach(input => { if (input.checked) answered = true; });
+        return answered;
+    }
+
+    nextBtn.addEventListener('click', () => {
+        if (checkAnswered()) {
+            if (currentStep < totalSteps - 1) {
+                currentStep++;
+                updateStep(currentStep);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        } else {
+            steps[currentStep].classList.add('animate-shake');
+            setTimeout(() => steps[currentStep].classList.remove('animate-shake'), 500);
+        }
+    });
+
+    prevBtn.addEventListener('click', () => {
+        if (currentStep > 0) {
+            currentStep--;
+            updateStep(currentStep);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    });
+
+    updateStep(currentStep);
+});
+</script>
+
+<style>
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-4px); }
+    40%, 80% { transform: translateX(4px); }
+}
+.animate-shake { animation: shake 0.3s ease-in-out; }
+</style>
+{% endblock %}

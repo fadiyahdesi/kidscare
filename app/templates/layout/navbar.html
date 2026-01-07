@@ -1,0 +1,21 @@
+<!-- templates/layout/navbar.html -->
+<header class="navbar">
+    <div class="logo">
+        <a href="{{ url_for('main.landing') }}">
+            <i class="fas fa-child"></i> Kids<span>Care</span>
+        </a>
+    </div>
+
+    <nav class="nav-links">
+        <a href="{{ url_for('main.landing') }}#beranda">Beranda</a>
+        <a href="{{ url_for('main.landing') }}#tentang">Tentang</a>
+        <a href="{{ url_for('main.landing') }}#preview">Kontak</a>
+        <a href="{{ url_for('main.landing') }}#faq">FAQ</a>
+    </nav>
+
+    <div class="auth-buttons">
+        <a href="{{ url_for('main.login') }}" class="btn btn-outline">Masuk</a>
+        <a href="{{ url_for('main.register') }}" class="btn btn-primary">Daftar</a>
+    </div>
+</header>
+

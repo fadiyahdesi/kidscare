@@ -1,0 +1,39 @@
+{% extends "layout/app.html" %}
+
+{% block title %}Masuk - KidsCare{% endblock %}
+
+{% block content %}
+<section class="login-wrapper">
+    <div class="login-card">
+
+        <!-- LEFT FORM -->
+        <div class="login-form">
+            <h2>Selamat Datang Kembali,</h2>
+            <p class="subtitle">Harap isi data dengan benar</p>
+
+            <form method="POST" action="{{ url_for('main.login') }}">
+                <label>Email / Nomor WhatsApp</label>
+                <input type="text" name="email" placeholder="Masukkan email atau nomor" required>
+
+                <label>Kata Sandi</label>
+                <input type="password" name="password" placeholder="Masukkan kata sandi" required>
+
+                <a href="#" class="forgot">Lupa Kata Sandi?</a>
+
+                <button type="submit" class="btn-login">Masuk</button>
+            </form>
+
+            <p class="register-text">
+                Belum punya Akun?
+                <a href="{{ url_for('main.register') }}">Daftar</a>
+            </p>
+        </div>
+
+        <!-- RIGHT IMAGE -->
+        <div class="login-image">
+            <img src="{{ url_for('static', filename='images/login.png') }}" alt="KidsCare">
+        </div>
+
+    </div>
+</section>
+{% endblock %}

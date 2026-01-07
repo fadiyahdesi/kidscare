@@ -1,0 +1,35 @@
+<!-- templates/layout/sidebar.html -->
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+        <span class="logo-main">Kids</span><span class="logo-sub">Care</span>
+        <i class="fas fa-bars menu-toggle" onclick="toggleSidebar()"></i>
+    </div>
+
+    <nav class="sidebar-menu">
+        <a href="{{ url_for('user.index') }}" class="{% if request.endpoint == 'user.index' %}active{% endif %}">
+            <i class="fas fa-house"></i>
+            <span>Beranda</span>
+        </a>
+
+        <a href="{{ url_for('user.test_skrining') }}"
+            class="{% if request.endpoint == 'user.test_skrining' %}active{% endif %}">
+            <i class="fas fa-clipboard-list"></i>
+            <span>Test Skrining</span>
+        </a>
+
+        <a href="#">
+            <i class="fas fa-clock"></i>
+            <span>Riwayat</span>
+        </a>
+
+        <a href="#">
+            <i class="fas fa-book"></i>
+            <span>Edukasi</span>
+        </a>
+
+        <a href="#">
+            <i class="fas fa-user"></i>
+            <span>Profil</span>
+        </a>
+    </nav>
+</aside>

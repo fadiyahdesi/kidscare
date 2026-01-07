@@ -1,0 +1,42 @@
+{% extends 'layout/dashboard.html' %}
+
+{% block content %}
+<section class="dashboard-header">
+    <h2>Selamat Datang, <br><span>{{ user.name }}</span></h2>
+</section>
+
+<section class="profile-card">
+    <div class="profile-left">
+        <img src="{{ url_for('static', filename='images/faq.png') }}">
+    </div>
+
+    <div class="profile-center">
+        <h3>Profil Anak:</h3>
+        <p>Nama: {{ child.name }}</p>
+        <p>Usia: {{ child.age }} Tahun</p>
+    </div>
+
+    <div class="profile-right">
+        <p>Status Terakhir:</p>
+        <span class="status-danger">Belum Tes Skrining</span>
+    </div>
+</section>
+
+<button class="btn-primary dashboard-btn">Mulai Test Skrining</button>
+
+<section class="education-section">
+    <h3>Mengenal ADHD:</h3>
+
+    <div class="education-grid">
+        <div class="edu-card">Lorem ipsum</div>
+        <div class="edu-card">Lorem ipsum</div>
+        <div class="edu-card">Lorem ipsum</div>
+    </div>
+</section>
+{% endblock %}
+
+<script>
+function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('active');
+}
+</script>

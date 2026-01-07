@@ -1,0 +1,106 @@
+{% extends 'layout/app.html' %}
+
+{% block content %}
+
+<!-- BERANDA -->
+<section class="hero" id="beranda">
+    <div class="hero-text">
+        <h1>Deteksi Dini ADHD<br>untuk Anak Usia Dini<br>di Kota Tegal</h1>
+        <p>Sistem analisis otomatis berbasis <b>Machine Learning (SVM)</b> untuk membantu skrining ADHD secara cepat dan akurat untuk buah hati Anda.</p>
+        <a href="#preview" class="btn btn-primary">Mulai Test Skrining</a>
+    </div>
+    <div class="hero-image">
+        <img src="{{ url_for('static', filename='images/foto_landing_page.png') }}" alt="Ilustrasi Anak Bahagia">
+    </div>
+</section>
+
+<!-- TENTANG -->
+<section class="tentang" id="tentang">
+    <h2 class="section-title">Tentang KidsCare</h2>
+    <p class="section-subtitle">
+        KidsCare adalah sistem pendukung keputusan untuk deteksi dini ADHD pada anak usia dini
+        yang dirancang khusus untuk membantu orang tua dan tenaga pendidik.
+    </p>
+
+    <div class="fitur-grid">
+        <div class="fitur-card">
+            <div class="fitur-icon">
+                <i class="fas fa-clipboard-list"></i>
+            </div>
+            <h4>Test Skrining</h4>
+            <p style="font-size: 0.9rem; margin-top: 10px;">Metode deteksi dini yang mudah digunakan.</p>
+        </div>
+        <div class="fitur-card">
+            <div class="fitur-icon">
+                <i class="fas fa-book-open"></i>
+            </div>
+            <h4>Edukasi ADHD</h4>
+            <p style="font-size: 0.9rem; margin-top: 10px;">Informasi lengkap seputar tumbuh kembang anak.</p>
+        </div>
+        <div class="fitur-card">
+            <div class="fitur-icon">
+                <i class="fas fa-chart-column"></i>
+            </div>
+            <h4>Riwayat Skrining</h4>
+            <p style="font-size: 0.9rem; margin-top: 10px;">Pantau perkembangan hasil tes dari waktu ke waktu.</p>
+        </div>
+    </div>
+</section>
+
+<!-- PREVIEW TEST -->
+<section class="preview" id="preview">
+    <div class="preview-box">
+        <p class="question-header">Pertanyaan 1 dari 20</p>
+        <h2>Mudah menjadi gembira dan impulsif?</h2>
+        <div class="opsi">
+            <button onclick="selectOption(this)">Tidak ada</button>
+            <button onclick="selectOption(this)">Sesekali</button>
+            <button class="active" onclick="selectOption(this)">Sering</button>
+            <button onclick="selectOption(this)">Selalu</button>
+        </div>
+    </div>
+
+    <div class="preview-cta">
+        <h3>Ingin hasil lengkap?</h3>
+        <p>Untuk mendapatkan analisis lengkap dan saran penanganan, silakan buat akun terlebih dahulu.</p>
+        <a href="#" class="btn" style="background: white; color: var(--primary-color);">Daftar Sekarang!</a>
+    </div>
+</section>
+
+<!-- FAQ (Updated Layout) -->
+<section class="faq" id="faq">
+    <div class="faq-container">
+        <!-- Kolom Kiri: Gambar -->
+        <div class="faq-image-side">
+            <img src="{{ url_for('static', filename='images/faq.png') }}" alt="Ilustrasi FAQ">
+        </div>
+        
+        <!-- Kolom Kanan: Daftar Pertanyaan -->
+        <div class="faq-content-side">
+            <h2>Pertanyaan Umum</h2>
+            <p style="margin-bottom: 30px; color: #666;">Temukan jawaban atas pertanyaan yang sering diajukan seputar KidsCare.</p>
+
+            <details open>
+                <summary>Apa itu KidsCare?</summary>
+                <p>KidsCare adalah sistem skrining awal ADHD berbasis AI yang membantu orang tua mendeteksi gejala ADHD pada anak sejak dini menggunakan metode Machine Learning.</p>
+            </details>
+
+            <details>
+                <summary>Apakah hasil ini diagnosis medis?</summary>
+                <p>Tidak. Hasil dari KidsCare bersifat prediksi awal atau skrining. Untuk diagnosis pasti, silakan konsultasikan hasil ini dengan dokter anak atau psikolog klinis.</p>
+            </details>
+
+            <details>
+                <summary>Siapa yang dapat menggunakan KidsCare?</summary>
+                <p>Aplikasi ini dirancang untuk Orang tua, Guru PAUD/TK, dan Tenaga Pendidik lainnya yang ingin memantau perkembangan perilaku anak.</p>
+            </details>
+            
+            <details>
+                <summary>Apakah data anak saya aman?</summary>
+                <p>Ya, kami menjaga privasi data pengguna dengan enkripsi standar dan tidak membagikan data pribadi kepada pihak ketiga tanpa izin.</p>
+            </details>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
