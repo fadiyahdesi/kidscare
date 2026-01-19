@@ -63,7 +63,7 @@
     <div class="preview-cta">
         <h3>Ingin hasil lengkap?</h3>
         <p>Untuk mendapatkan analisis lengkap dan saran penanganan, silakan buat akun terlebih dahulu.</p>
-        <a href="#" class="btn" style="background: white; color: var(--primary-color);">Daftar Sekarang!</a>
+        <a href="/register" class="btn" style="background: white; color: var(--primary-color);">Daftar Sekarang!</a>
     </div>
 </section>
 
@@ -72,7 +72,7 @@
     <div class="faq-container">
         <!-- Kolom Kiri: Gambar -->
         <div class="faq-image-side">
-            <img src="{{ url_for('static', filename='images/faq.png') }}" alt="Ilustrasi FAQ">
+            <img src="{{ url_for('static', filename='images/user.png') }}" alt="Ilustrasi FAQ">
         </div>
         
         <!-- Kolom Kanan: Daftar Pertanyaan -->
@@ -80,7 +80,7 @@
             <h2>Pertanyaan Umum</h2>
             <p style="margin-bottom: 30px; color: #666;">Temukan jawaban atas pertanyaan yang sering diajukan seputar KidsCare.</p>
 
-            <details open>
+            <details>
                 <summary>Apa itu KidsCare?</summary>
                 <p>KidsCare adalah sistem skrining awal ADHD berbasis AI yang membantu orang tua mendeteksi gejala ADHD pada anak sejak dini menggunakan metode Machine Learning.</p>
             </details>
@@ -102,5 +102,53 @@
         </div>
     </div>
 </section>
+
+<section class="kontak" id="kontak">
+    <h2 class="section-title">Kontak Kami</h2>
+    <p class="section-subtitle">
+        Jangan ragu untuk bertanya atau menyampaikan saran
+    </p>
+
+    <div class="kontak-wrapper">
+
+        <!-- FORM -->
+        <div class="kontak-form">
+            <label>Nama:</label>
+            <input type="text" placeholder="Masukkan nama Anda">
+
+            <label>Email / Nomor WhatsApp:</label>
+            <input type="text" placeholder="Masukkan email atau nomor WhatsApp">
+
+            <label>Saran atau Pesan:</label>
+            <textarea rows="4" placeholder="Tuliskan pesan Anda"></textarea>
+
+            <button type="submit" class="btn-kontak">
+                Kirim
+            </button>
+        </div>
+
+        <!-- INFO -->
+        <div class="kontak-info">
+            <h3>Hubungi Kami:</h3>
+
+            <div class="info-item">
+                <i class="fas fa-phone"></i>
+                <span>+62 812 3456 789</span>
+            </div>
+
+            <div class="info-item">
+                <i class="fas fa-envelope"></i>
+                <span>kidscare@gmail.com</span>
+            </div>
+
+            <div class="info-item">
+                <i class="fas fa-location-dot"></i>
+                <span>Kota Tegal, Jawa Tengah</span>
+            </div>
+        </div>
+
+    </div>
+</section>
+
 
 {% endblock %}

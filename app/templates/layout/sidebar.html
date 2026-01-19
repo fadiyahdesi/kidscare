@@ -6,28 +6,32 @@
     </div>
 
     <nav class="sidebar-menu">
-        <a href="{{ url_for('user.index') }}" class="{% if request.endpoint == 'user.index' %}active{% endif %}">
+        <a href="{{ url_for('user.index') }}"
+           class="{% if request.endpoint == 'user.index' %}active{% endif %}">
             <i class="fas fa-house"></i>
             <span>Beranda</span>
         </a>
 
         <a href="{{ url_for('user.test_skrining') }}"
-            class="{% if request.endpoint == 'user.test_skrining' %}active{% endif %}">
-            <i class="fas fa-clipboard-list"></i>
+           class="{% if request.endpoint == 'user.test_skrining' %}active{% endif %}">
+            <i class="fas fa-notes-medical"></i>
             <span>Test Skrining</span>
         </a>
 
-        <a href="#">
-            <i class="fas fa-clock"></i>
+        <a href="{{ url_for('user.riwayat_skrining') }}"
+           class="{% if request.endpoint == 'user.riwayat_skrining' %}active{% endif %}">
+            <i class="fas fa-clock-rotate-left"></i>
             <span>Riwayat</span>
         </a>
 
-        <a href="#">
-            <i class="fas fa-book"></i>
+        <a href="{{ url_for('user.edukasi_user') }}"
+           class="{% if request.endpoint == 'user.edukasi_user' %}active{% endif %}">
+            <i class="fas fa-book-open-reader"></i>
             <span>Edukasi</span>
         </a>
 
-        <a href="#">
+        <a href="{{ url_for('user.profil_user') }}"
+           class="{% if request.endpoint == 'user.profil_user' %}active{% endif %}">
             <i class="fas fa-user"></i>
             <span>Profil</span>
         </a>

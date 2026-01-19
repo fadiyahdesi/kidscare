@@ -1,42 +1,65 @@
 {% extends 'layout/dashboard.html' %}
 
 {% block content %}
+
 <section class="dashboard-header">
-    <h2>Selamat Datang, <br><span>{{ user.name }}</span></h2>
+    <h1>Selamat Datang,</h1>
+    <h2 class="dashboard-username">{{ user.name }}</h2>
 </section>
 
-<section class="profile-card">
-    <div class="profile-left">
-        <img src="{{ url_for('static', filename='images/faq.png') }}">
+<section class="child-card">
+    <div class="child-left">
+        <img src="{{ url_for('static', filename='images/faq.png') }}" alt="Profil Anak">
     </div>
 
-    <div class="profile-center">
-        <h3>Profil Anak:</h3>
+    <div class="child-center">
+        <h3>Profil Anak</h3>
         <p>Nama: {{ child.name }}</p>
         <p>Usia: {{ child.age }} Tahun</p>
     </div>
 
-    <div class="profile-right">
-        <p>Status Terakhir:</p>
-        <span class="status-danger">Belum Tes Skrining</span>
+    <div class="child-right">
+        <span>Status Terakhir</span>
+        <strong class="status-danger">Belum Tes Skrining</strong>
     </div>
 </section>
 
-<button class="btn-primary dashboard-btn">Mulai Test Skrining</button>
+<div class="screening-action">
+    <a href="{{ url_for('user.test_skrining') }}" class="btn-primary">
+        Mulai Tes Skrining
+    </a>
+</div>
 
 <section class="education-section">
-    <h3>Mengenal ADHD:</h3>
+    <div class="education-header">
+        <h3>Mengenal ADHD</h3>
+    </div>
 
     <div class="education-grid">
-        <div class="edu-card">Lorem ipsum</div>
-        <div class="edu-card">Lorem ipsum</div>
-        <div class="edu-card">Lorem ipsum</div>
+        <article class="edu-card">
+            <h4>Apa itu ADHD?</h4>
+            <p>Pengertian ADHD dan dampaknya pada anak.</p>
+            <a href="{{ url_for('user.edukasi_detail', slug='apa-itu-adhd') }}" class="edu-link">
+                Baca Selengkapnya →
+            </a>
+        </article>
+
+        <article class="edu-card">
+            <h4>Gejala ADHD</h4>
+            <p>Ciri-ciri umum ADHD yang perlu diperhatikan.</p>
+            <a href="{{ url_for('user.edukasi_detail', slug='gejala-adhd') }}" class="edu-link">
+                Baca Selengkapnya →
+            </a>
+        </article>
+
+        <article class="edu-card">
+            <h4>Cara Penanganan</h4>
+            <p>Langkah-langkah penanganan ADHD.</p>
+            <a href="{{ url_for('user.edukasi_detail', slug='penanganan-adhd') }}" class="edu-link">
+                Baca Selengkapnya →
+            </a>
+        </article>
     </div>
 </section>
-{% endblock %}
 
-<script>
-function toggleSidebar() {
-    document.getElementById('sidebar').classList.toggle('active');
-}
-</script>
+{% endblock %}

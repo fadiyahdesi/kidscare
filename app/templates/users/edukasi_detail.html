@@ -1,0 +1,27 @@
+{% extends 'layout/dashboard.html' %}
+
+{% block content %}
+
+<section class="edukasi-detail-wrapper">
+
+    <article class="edukasi-detail-card">
+        <div class="edukasi-header">
+            <span class="edukasi-tag">Edukasi ADHD</span>
+            <h1>{{ edukasi.title }}</h1>
+        </div>
+
+        <div class="edukasi-content">
+            {{ edukasi.content }}
+        </div>
+
+        <div class="edukasi-footer">
+            <a href="{{ url_for('user.index') }}" class="btn-back">
+                <i class="fas fa-arrow-left"></i>
+                Kembali
+            </a>
+        </div>
+    </article>
+
+</section>
+
+{% endblock %}

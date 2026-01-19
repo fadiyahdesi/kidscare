@@ -34,6 +34,44 @@ def index():
     child = {'name': 'Anak Fadiyah', 'age': 5}
     return render_template('users/index.html', user=user, child=child)
 
+#EDUKASI USER
+@user_bp.route('/edukasi')
+def edukasi_user():
+    return render_template('users/edukasi_user.html')
+
+@user_bp.route('/edukasi/<slug>')
+def edukasi_detail(slug):
+    edukasi_data = {
+        'apa-itu-adhd': {
+            'title': 'Apa itu ADHD?',
+            'content': 'ADHD adalah gangguan perkembangan saraf pada anak yang ditandai dengan...'
+        },
+        'gejala-adhd': {
+            'title': 'Gejala ADHD',
+            'content': 'Gejala ADHD meliputi sulit fokus, hiperaktif, dan impulsif...'
+        },
+        'penanganan-adhd': {
+            'title': 'Cara Penanganan ADHD',
+            'content': 'Penanganan ADHD dapat dilakukan melalui terapi perilaku, pendampingan orang tua...'
+        }
+    }
+
+    edukasi = edukasi_data.get(slug)
+
+    if not edukasi:
+        abort(404)
+
+    return render_template('users/edukasi_detail.html', edukasi=edukasi)
+
+@user_bp.route('/profil')
+def profil_user():
+    user = {
+        'name': 'Fadiyah Desi Asmawati',
+        'email': 'fadiyahdesiasmawati@gmail.com',
+        'phone': '081234567890',
+    }
+    return render_template('users/profil_user.html', user=user)
+
 @user_bp.route('/skrining')
 def test_skrining():
     return render_template('users/test_skrining.html')
@@ -64,6 +102,10 @@ def skrining_form():
         "Apakah perilaku muncul di 2 tempat atau lebih?"
     ]
     return render_template('users/skrining_form.html', questions=questions)
+
+@user_bp.route('/skrining/riwayat')
+def riwayat_skrining():
+    return render_template('users/riwayat_skrining.html')
 
 @user_bp.route('/predict', methods=['POST'])
 def predict():

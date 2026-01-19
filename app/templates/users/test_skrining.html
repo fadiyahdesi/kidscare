@@ -3,23 +3,35 @@
 {% block title %}Test Skrining | KidsCare{% endblock %}
 
 {% block content %}
-<h1 class="page-title">Test Skrining ADHD</h1>
 
-<div class="screening-card">
-    <h3>Petunjuk Pengisian</h3>
-    <p>
-        Jawablah setiap pertanyaan sesuai dengan kondisi anak dalam 6 bulan terakhir.
+<section class="screening-intro">
+    <h1 class="page-title">Test Skrining ADHD</h1>
+    <p class="page-subtitle">
+        Deteksi dini untuk membantu memahami kondisi anak sejak awal
+    </p>
+</section>
+
+<div class="screening-card enhanced">
+    <div class="education-header">
+        <h3>Petunjuk Pengisian</h3>
+    </div>
+
+    <p class="screening-desc">
+        Jawablah setiap pertanyaan sesuai dengan kondisi anak dalam <strong>6 bulan terakhir</strong>.
         Tidak ada jawaban benar atau salah.
     </p>
 
-    <ul>
-        <li>Usia anak 4–6 tahun</li>
-        <li>Dijawab oleh orang tua / wali</li>
-        <li>Waktu pengisian ±5 menit</li>
+    <ul class="screening-rules">
+        <li><i class="fas fa-child"></i> Usia anak 4–6 tahun</li>
+        <li><i class="fas fa-user-check"></i> Dijawab oleh orang tua / wali</li>
+        <li><i class="fas fa-clock"></i> Waktu pengisian ±5 menit</li>
     </ul>
 
-    <a href="{{ url_for('user.skrining_form') }}" class="btn-primary">
-        Mulai Tes Skrining
-    </a>
+    <div class="screening-action">
+        <a href="{{ url_for('user.skrining_form') }}" class="btn-primary">
+            Mulai Tes Skrining
+        </a>
+    </div>
 </div>
+
 {% endblock %}

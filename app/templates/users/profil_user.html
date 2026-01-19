@@ -1,0 +1,82 @@
+{% extends "layout/dashboard.html" %}
+{% block title %}Profil Pengguna | KidsCare{% endblock %}
+
+{% block content %}
+
+<div class="profile-scope">
+
+    <div class="profile-header">
+        <div>
+            <h1>Profil Pengguna</h1>
+            <p>Lakukan perubahan akun Anda</p>
+        </div>
+        <div class="profile-avatar">
+            <img src="{{ url_for('static', filename='images/user.png') }}" alt="Avatar">
+        </div>
+    </div>
+
+    <form class="profile-form">
+
+        <div class="profile-grid">
+
+            <div class="profile-card">
+                <h3>Informasi akun Anda</h3>
+
+                <label>Nama:</label>
+                <div class="input-group">
+                    <input type="text" value="{{ user.name }}">
+                    <i class="fas fa-pen"></i>
+                </div>
+
+                <label>Email / Nomor WhatsApp:</label>
+                <div class="input-group">
+                    <input type="text" value="{{ user.email }}">
+                    <i class="fas fa-pen"></i>
+                </div>
+
+                <label>Kata Sandi:</label>
+                <div class="input-group">
+                    <input type="password" value="********">
+                    <i class="fas fa-pen"></i>
+                </div>
+
+                <label>Konfirmasi Kata Sandi:</label>
+                <div class="input-group">
+                    <input type="password" value="********">
+                    <i class="fas fa-pen"></i>
+                </div>
+            </div>
+
+            <div class="profile-card">
+                <h3>Profil Anak:</h3>
+
+                <label>Nama:</label>
+                <div class="input-group">
+                    <input type="text" value="Anak Fadiyah">
+                    <i class="fas fa-pen"></i>
+                </div>
+
+                <label>Tanggal Lahir:</label>
+                <div class="input-group">
+                    <input type="date">
+                    <i class="fas fa-pen"></i>
+                </div>
+
+                <label>Status Test Skrining:</label>
+                <div class="input-group">
+                    <input type="text" value="Potensi ADHD Rendah" readonly>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="profile-actions">
+            <button type="reset" class="btn-cancel">Batal</button>
+            <button type="submit" class="btn-save">Simpan Perubahan</button>
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}

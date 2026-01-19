@@ -1,0 +1,57 @@
+{% extends "layout/dashboard.html" %}
+
+{% block title %}Riwayat Skrining | KidsCare{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <h1>Riwayat Skrining</h1>
+    <p>Pantau perkembangan dan hasil skrining anak Anda.</p>
+</div>
+
+<div class="table-card">
+    <table class="riwayat-table">
+        <thead>
+            <tr>
+                <th>Tanggal Tes</th>
+                <th>Hasil Skrining</th>
+                <th>Detail</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            <tr>
+                <td>20 Nov 2025</td>
+                <td><span class="badge danger">Potensi ADHD Tinggi</span></td>
+                <td><a href="#" class="btn-detail">Lihat Detail</a></td>
+            </tr>
+
+            <tr>
+                <td>15 Nov 2023</td>
+                <td><span class="badge danger">Potensi ADHD Tinggi</span></td>
+                <td><a href="#" class="btn-detail">Lihat Detail</a></td>
+            </tr>
+
+            <tr>
+                <td>15 Nov 2023</td>
+                <td><span class="badge success">Potensi ADHD Rendah</span></td>
+                <td><a href="#" class="btn-detail">Lihat Detail</a></td>
+            </tr>
+
+            <tr>
+                <td>10 Jun 2023</td>
+                <td><span class="badge success">Potensi ADHD Rendah</span></td>
+                <td><a href="#" class="btn-detail">Lihat Detail</a></td>
+            </tr>
+
+            <tr>
+                <td>03 Mar 2025</td>
+                <td><span class="badge success">Potensi ADHD Rendah</span></td>
+                <td><a href="#" class="btn-detail">Lihat Detail</a></td>
+            </tr>
+
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}
