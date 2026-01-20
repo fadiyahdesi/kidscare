@@ -2,6 +2,8 @@
 :root {
     --primary-color: #00897b; /* Teal Gelap */
     --primary-dark: #004d40;
+    --tosca-bright: #2de6d6;   /* Tosca cerah */
+    --tosca-dark: #0f766e; 
     --accent-color: #4ef3e5; /* Cyan Terang */
     --bg-color: #f6fdfd;
     --text-color: #333;
@@ -100,14 +102,14 @@ ul {
 .logo {
     font-size: 28px;
     font-weight: 800;
-    color: var(--primary-color);
+    color: var(--tosca-bright);
     display: flex;
     align-items: center;
     gap: 5px;
 }
 
 .logo span {
-    color: var(--primary-dark);
+    color: var(--tosca-dark);
 }
 
 .nav-links {
@@ -710,6 +712,18 @@ details p {
     margin-top: 20px;
 }
 
+.required {
+    color: #e53935;
+    margin-left: 4px;
+    font-weight: 600;
+}
+
+.register-text a {
+    color: #2ec4c4;
+    text-decoration: none;
+    font-weight: 600;
+}
+
 /* REGISTER */
 .register-section {
     padding: 70px 0;
@@ -904,9 +918,14 @@ details p {
     letter-spacing: -0.5px;
 }
 
-.logo-main,
 .logo-sub {
-    line-height: 1;
+    color: #ffffff;        /* Kids */
+    font-weight: 800;
+}
+
+.logo-main {
+    color: #8ffaea;        /* Care */
+    font-weight: 800;
 }
 
 .menu-toggle {
@@ -975,14 +994,89 @@ details p {
     background: #ffffff;
 }
 
-.dashboard-header h2 {
-    font-size: 32px;
-    font-weight: bold;
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 30px;
 }
 
-.dashboard-header span {
+.dashboard-header-left h1 {
+    font-size: 26px;
+    margin-bottom: 6px;
+}
+
+.dashboard-username {
+    font-size: 32px;
+    font-weight: 700;
     color: #1b7f79;
+}
+
+/* === DROPDOWN === */
+.user-dropdown {
+    position: relative;
+}
+
+.user-dropdown-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border-radius: 12px;
+    background: #ecfffd;
+    border: 1px solid #2dd4bf;
+    font-weight: 600;
+    cursor: pointer;
+    color: #0f766e;
+}
+
+.user-dropdown-btn i {
+    font-size: 16px;
+}
+
+.user-dropdown-menu {
+    position: absolute;
+    right: 0;
+    top: 110%;
+    min-width: 200px;
+    background: #ffffff;
+    border-radius: 14px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+    overflow: hidden;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(8px);
+    transition: all 0.2s ease;
+    z-index: 100;
+}
+
+.user-dropdown-menu a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 18px;
+    text-decoration: none;
+    color: #0f172a;
+    font-size: 14px;
+}
+
+.user-dropdown-menu a:hover {
+    background: #ecfffd;
+}
+
+.user-dropdown-menu a.danger {
+    color: #dc2626;
+}
+
+.user-dropdown-menu a.danger:hover {
+    background: #fee2e2;
+}
+
+/* SHOW DROPDOWN */
+.user-dropdown:hover .user-dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
 }
 
 /* =======================
@@ -1379,24 +1473,16 @@ button[disabled] {
     padding: 6px;
     border-radius: 9999px;
     border: 2px solid #0f766e;
-    transition: all 0.25s ease;
+    transition: 0.2s;
 }
 
-/* Inner pill (text) */
 .pill-inner {
-    padding: 10px 28px;
+    padding: 12px 28px;
     border-radius: 9999px;
     font-weight: 600;
     color: #0f766e;
-    transition: all 0.25s ease;
 }
 
-/* Hover */
-.pill-option:hover .pill-inner {
-    background: #ccfbf1;
-}
-
-/* Checked state */
 .pill-option input:checked + .pill-outer {
     background: #e6fffa;
 }
@@ -1407,18 +1493,14 @@ button[disabled] {
     box-shadow: 0 8px 20px rgba(45,212,191,.45);
 }
 
-/* ===============================
-   SHAKE ERROR (ALREADY USED)
-================================ */
 @keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    20%, 60% { transform: translateX(-5px); }
-    40%, 80% { transform: translateX(5px); }
+    0%,100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
 }
 
 .animate-shake {
-    animation: shake 0.35s ease-in-out;
-    border-radius: 2rem;
+    animation: shake 0.3s ease-in-out;
 }
 
 /* ===============================
@@ -1466,69 +1548,130 @@ button[disabled] {
     margin-bottom: 30px;
 }
 
-/* Card */
+/* =======================
+   RIWAYAT TABLE    
+/* ======================= */
+
 .table-card {
-    background: white;
-    border-radius: 16px;
+    background: #ffffff;
     padding: 25px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.05);
+    border-radius: 16px;
+    margin-top: 25px;
 }
 
-/* Table */
 .riwayat-table {
     width: 100%;
     border-collapse: collapse;
 }
 
-.riwayat-table thead {
-    background: #f1f3f5;
-}
-
-.riwayat-table th {
-    text-align: left;
-    padding: 14px;
-    font-weight: 600;
-    color: #333;
-}
-
+.riwayat-table th,
 .riwayat-table td {
     padding: 14px;
-    border-bottom: 1px solid #eee;
+    text-align: left;
 }
 
-/* Badge */
+.riwayat-table thead {
+    background: #e6fffa;
+}
+
 .badge {
-    padding: 8px 18px;
-    border-radius: 20px;
-    font-size: 14px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 13px;
     font-weight: 600;
-    display: inline-block;
 }
 
 .badge.danger {
-    background: #ff4d4f;
-    color: white;
+    background: #fee2e2;
+    color: #b91c1c;
 }
 
 .badge.success {
-    background: #16a34a;
-    color: white;
+    background: #dcfce7;
+    color: #166534;
 }
 
-/* Button Detail */
 .btn-detail {
-    background: #00bcd4;
+    padding: 6px 16px;
+    border-radius: 10px;
+    background: #2dd4bf;
     color: white;
-    padding: 8px 16px;
-    border-radius: 20px;
-    text-decoration: none;
-    font-size: 14px;
-    font-weight: 600;
-    transition: 0.2s;
+    font-size: 13px;
+    border: none;
+    cursor: pointer;
 }
 
 .btn-detail:hover {
-    background: #0097a7;
+    background: #14b8a6;
+}
+
+/* MODAL */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+}
+
+.modal-box {
+    background: #ffffff;
+    padding: 35px;
+    border-radius: 18px;
+    width: 100%;
+    max-width: 480px;
+    animation: scaleIn .25s ease;
+}
+
+.modal-box h2 {
+    font-size: 22px;
+    margin-bottom: 18px;
+}
+
+.modal-content p {
+    margin-bottom: 10px;
+    font-size: 15px;
+}
+
+.modal-content .note {
+    margin-top: 12px;
+    font-size: 14px;
+    color: #475569;
+}
+
+.modal-actions {
+    text-align: right;
+    margin-top: 25px;
+}
+
+.btn-close {
+    padding: 10px 26px;
+    border-radius: 12px;
+    background: #0f766e;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-close:hover {
+    background: #115e59;
+}
+
+.hidden {
+    display: none;
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(.9);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
 }
 
 /* =======================
@@ -1691,72 +1834,72 @@ button[disabled] {
 /* ============================= */
 /* EDUKASI PAGE */
 /* ============================= */
-
 .edukasi-filter {
     display: flex;
-    gap: 15px;
-    margin-bottom: 30px;
+    gap: 14px;
+    margin: 25px 0;
+    flex-wrap: wrap;
 }
 
 .filter-btn {
-    padding: 10px 22px;
+    padding: 8px 18px;
     border-radius: 999px;
-    border: 2px solid #00e5e5;
+    border: 1px solid #14b8a6;
     background: white;
-    color: #222;
-    font-weight: 600;
+    color: #0f766e;
+    font-size: 14px;
     cursor: pointer;
-    transition: 0.2s;
 }
 
-.filter-btn.active,
-.filter-btn:hover {
-    background: #00e5e5;
-    color: black;
+.filter-btn.active {
+    background: #14b8a6;
+    color: white;
 }
 
-/* Cards */
 .edukasi-list {
-    display: flex;
-    flex-direction: column;
-    gap: 25px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 24px;
 }
 
 .edukasi-card {
-    background: #167c74;
-    border-radius: 16px;
-    padding: 28px;
-    color: white;
+    background: #ecfffd;
+    padding: 26px;
+    border-radius: 18px;
     display: flex;
+    flex-direction: column;
     justify-content: space-between;
-    align-items: flex-end;
-    gap: 40px;
+    transition: transform .2s ease;
+}
+
+.edukasi-card:hover {
+    transform: translateY(-4px);
 }
 
 .edukasi-content h3 {
-    font-size: 22px;
-    margin-bottom: 10px;
+    font-size: 18px;
+    margin-bottom: 8px;
+    color: #0f766e;
 }
 
 .edukasi-content p {
-    color: #d6f5f2;
-    line-height: 1.6;
+    font-size: 14px;
+    color: #475569;
 }
 
-/* Button */
 .btn-read {
-    background: #00e5e5;
-    color: black;
-    padding: 12px 22px;
+    align-self: flex-start;
+    margin-top: 18px;
+    padding: 8px 18px;
     border-radius: 999px;
+    background: #2dd4bf;
+    color: white;
+    font-size: 14px;
     text-decoration: none;
-    font-weight: 700;
-    white-space: nowrap;
-    transition: 0.2s;
 }
 
 .btn-read:hover {
-    background: #00caca;
+    background: #14b8a6;
 }
 
 /* =======================
@@ -1970,6 +2113,7 @@ button[disabled] {
     color: #475569;
     cursor: pointer;
 }
+
 
 /* ============================= */
 /* ACTION BUTTON */

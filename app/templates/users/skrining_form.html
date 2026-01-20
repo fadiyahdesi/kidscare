@@ -16,7 +16,7 @@
         <!-- Progress -->
         <div class="mt-6">
             <p class="text-sm font-semibold text-slate-600" id="progress-text">
-                Pertanyaan 1 dari 20
+                Pertanyaan 1 dari {{ questions|length }}
             </p>
             <div class="w-full h-2 bg-slate-200 rounded-full mt-2">
                 <div id="progress-bar"
@@ -27,25 +27,20 @@
         </div>
     </div>
 
-    <!-- QUESTION AREA (CENTER) -->
-    <form id="screeningForm"
-          action="{{ url_for('user.predict') }}"
-          method="POST"
-          class="flex-1 flex items-center justify-center">
+    <!-- FORM -->
+    <form id="screeningForm" class="flex-1 flex items-center justify-center">
 
         {% for q in questions %}
         {% set i = loop.index0 %}
-        <div class="question-step hidden w-full max-w-4xl text-center"
+        <div class="question-step hidden w-full max-w-4xl text-center transition-all duration-300"
              data-step="{{ i }}">
 
-            <!-- Question Box -->
             <div class="bg-cyan-100 rounded-3xl px-10 py-14 mb-10">
                 <h2 class="text-2xl font-bold text-slate-800">
                     {{ q }}
                 </h2>
             </div>
 
-            <!-- Answers -->
             <div class="flex justify-center gap-6 flex-wrap">
                 {% for val,label in [
                     ('0','Tidak ada'),
@@ -53,12 +48,12 @@
                     ('2','Sering'),
                     ('3','Selalu')
                 ] %}
-                <label class="pill-option">
+                <label class="pill-option cursor-pointer">
                     <input type="radio"
-                        name="q{{ i }}"
-                        value="{{ val }}"
-                        class="hidden peer"
-                        required>
+                           name="q{{ i }}"
+                           value="{{ val }}"
+                           class="hidden peer"
+                           required>
 
                     <span class="pill-outer">
                         <span class="pill-inner">{{ label }}</span>
@@ -66,10 +61,34 @@
                 </label>
                 {% endfor %}
             </div>
-
         </div>
         {% endfor %}
+
     </form>
+
+    <!-- RESULT -->
+    <div id="resultBox" class="hidden flex-1 flex items-center justify-center">
+        <div class="bg-emerald-100 px-12 py-14 rounded-3xl max-w-xl text-center">
+            <h2 class="text-3xl font-extrabold text-emerald-700 mb-4">
+                Hasil Skrining
+            </h2>
+
+            <p class="text-lg text-slate-700 mb-4">
+                Berdasarkan jawaban yang diberikan,
+                anak Anda memiliki
+                <strong>potensi ADHD tingkat ringan</strong>.
+            </p>
+
+            <p class="text-sm text-slate-500 mb-8">
+                *Hasil ini merupakan skrining awal dan bukan diagnosis medis.
+            </p>
+
+            <a href="{{ url_for('user.index') }}"
+               class="inline-block px-8 py-3 rounded-xl bg-teal-500 text-white font-semibold hover:bg-teal-600 transition">
+                Kembali ke Dashboard
+            </a>
+        </div>
+    </div>
 
     <!-- NAVIGATION -->
     <div class="flex justify-between items-center text-lg font-semibold text-teal-700">
@@ -79,9 +98,16 @@
              class="w-24 opacity-80">
 
         <button type="button" id="nextBtn">Selanjutnya</button>
+        <button type="button"
+                id="submitBtn"
+                class="hidden px-6 py-2 rounded-xl bg-teal-500 text-white font-bold">
+            Selesai
+        </button>
     </div>
+
 </div>
 
+<!-- SCRIPT -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const steps = document.querySelectorAll('.question-step');
@@ -90,30 +116,24 @@ document.addEventListener('DOMContentLoaded', function() {
     const nextBtn = document.getElementById('nextBtn');
     const prevBtn = document.getElementById('prevBtn');
     const submitBtn = document.getElementById('submitBtn');
-    
+    const form = document.getElementById('screeningForm');
+    const resultBox = document.getElementById('resultBox');
+
     let currentStep = 0;
     const totalSteps = steps.length;
 
     function updateStep(index) {
         steps.forEach((step, i) => {
             step.classList.add('hidden');
-            step.classList.remove('opacity-100', 'translate-x-0');
-            step.classList.add('opacity-0', 'translate-x-4');
-            if (i === index) {
-                step.classList.remove('hidden');
-                setTimeout(() => {
-                    step.classList.remove('opacity-0', 'translate-x-4');
-                    step.classList.add('opacity-100', 'translate-x-0');
-                }, 50);
-            }
+            if (i === index) step.classList.remove('hidden');
         });
-        
-        const progressPercent = ((index + 1) / totalSteps) * 100;
-        progressBar.style.width = `${progressPercent}%`;
+
+        const percent = ((index + 1) / totalSteps) * 100;
+        progressBar.style.width = percent + '%';
         progressText.innerText = `Pertanyaan ${index + 1} dari ${totalSteps}`;
-        
-        prevBtn.disabled = (index === 0);
-        
+
+        prevBtn.disabled = index === 0;
+
         if (index === totalSteps - 1) {
             nextBtn.classList.add('hidden');
             submitBtn.classList.remove('hidden');
@@ -123,44 +143,39 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    function checkAnswered() {
-        const inputs = steps[currentStep].querySelectorAll('input[type="radio"]');
-        let answered = false;
-        inputs.forEach(input => { if (input.checked) answered = true; });
-        return answered;
+    function isAnswered() {
+        return steps[currentStep].querySelector('input:checked');
     }
 
     nextBtn.addEventListener('click', () => {
-        if (checkAnswered()) {
-            if (currentStep < totalSteps - 1) {
-                currentStep++;
-                updateStep(currentStep);
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
-        } else {
+        if (!isAnswered()) {
             steps[currentStep].classList.add('animate-shake');
-            setTimeout(() => steps[currentStep].classList.remove('animate-shake'), 500);
+            setTimeout(() => steps[currentStep].classList.remove('animate-shake'), 300);
+            return;
         }
+        currentStep++;
+        updateStep(currentStep);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 
     prevBtn.addEventListener('click', () => {
-        if (currentStep > 0) {
-            currentStep--;
-            updateStep(currentStep);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+        currentStep--;
+        updateStep(currentStep);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    submitBtn.addEventListener('click', () => {
+        form.classList.add('hidden');
+        document.querySelector('.question-step:not(.hidden)')?.classList.add('hidden');
+
+        progressBar.style.width = '100%';
+        progressText.innerText = 'Skrining Selesai';
+
+        resultBox.classList.remove('hidden');
     });
 
     updateStep(currentStep);
 });
 </script>
 
-<style>
-@keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    20%, 60% { transform: translateX(-4px); }
-    40%, 80% { transform: translateX(4px); }
-}
-.animate-shake { animation: shake 0.3s ease-in-out; }
-</style>
 {% endblock %}

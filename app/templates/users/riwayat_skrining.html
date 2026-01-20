@@ -1,5 +1,4 @@
 {% extends "layout/dashboard.html" %}
-
 {% block title %}Riwayat Skrining | KidsCare{% endblock %}
 
 {% block content %}
@@ -23,35 +22,73 @@
             <tr>
                 <td>20 Nov 2025</td>
                 <td><span class="badge danger">Potensi ADHD Tinggi</span></td>
-                <td><a href="#" class="btn-detail">Lihat Detail</a></td>
+                <td>
+                    <button class="btn-detail"
+                        onclick="openDetail(
+                            '20 Nov 2025',
+                            'Potensi ADHD Tinggi',
+                            'Skor: 45 dari 60',
+                            'Disarankan konsultasi dengan psikolog anak.'
+                        )">
+                        Lihat Detail
+                    </button>
+                </td>
             </tr>
 
             <tr>
                 <td>15 Nov 2023</td>
-                <td><span class="badge danger">Potensi ADHD Tinggi</span></td>
-                <td><a href="#" class="btn-detail">Lihat Detail</a></td>
-            </tr>
-
-            <tr>
-                <td>15 Nov 2023</td>
                 <td><span class="badge success">Potensi ADHD Rendah</span></td>
-                <td><a href="#" class="btn-detail">Lihat Detail</a></td>
-            </tr>
-
-            <tr>
-                <td>10 Jun 2023</td>
-                <td><span class="badge success">Potensi ADHD Rendah</span></td>
-                <td><a href="#" class="btn-detail">Lihat Detail</a></td>
-            </tr>
-
-            <tr>
-                <td>03 Mar 2025</td>
-                <td><span class="badge success">Potensi ADHD Rendah</span></td>
-                <td><a href="#" class="btn-detail">Lihat Detail</a></td>
+                <td>
+                    <button class="btn-detail"
+                        onclick="openDetail(
+                            '15 Nov 2023',
+                            'Potensi ADHD Rendah',
+                            'Skor: 18 dari 60',
+                            'Tetap lakukan pemantauan berkala.'
+                        )">
+                        Lihat Detail
+                    </button>
+                </td>
             </tr>
 
         </tbody>
     </table>
 </div>
+
+<!-- MODAL -->
+<div id="detailModal" class="modal-overlay hidden">
+    <div class="modal-box">
+        <h2>Detail Hasil Skrining</h2>
+
+        <div class="modal-content">
+            <p><strong>Tanggal Tes:</strong> <span id="modalDate"></span></p>
+            <p><strong>Hasil:</strong> <span id="modalResult"></span></p>
+            <p><strong>Nilai:</strong> <span id="modalScore"></span></p>
+            <p class="note" id="modalNote"></p>
+        </div>
+
+        <div class="modal-actions">
+            <button onclick="closeDetail()" class="btn-close">
+                Tutup
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- SCRIPT -->
+<script>
+function openDetail(date, result, score, note) {
+    document.getElementById('modalDate').innerText = date;
+    document.getElementById('modalResult').innerText = result;
+    document.getElementById('modalScore').innerText = score;
+    document.getElementById('modalNote').innerText = note;
+
+    document.getElementById('detailModal').classList.remove('hidden');
+}
+
+function closeDetail() {
+    document.getElementById('detailModal').classList.add('hidden');
+}
+</script>
 
 {% endblock %}

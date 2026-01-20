@@ -9,22 +9,43 @@
         <!-- LEFT FORM -->
         <div class="login-form">
             <h2>Selamat Datang Kembali,</h2>
-            <p class="subtitle">Harap isi data dengan benar</p>
+            <p class="subtitle">Silakan masuk menggunakan akun Anda</p>
 
             <form method="POST" action="{{ url_for('main.login') }}">
-                <label>Email / Nomor WhatsApp</label>
-                <input type="text" name="email" placeholder="Masukkan email atau nomor" required>
 
-                <label>Kata Sandi</label>
-                <input type="password" name="password" placeholder="Masukkan kata sandi" required>
+                <div class="form-group">
+                    <label>
+                        Email / No. WhatsApp <span class="required">*</span>
+                    </label>
+                    <input
+                        type="text"
+                        name="username"
+                        placeholder="Masukkan email atau nomor WhatsApp"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        Kata Sandi <span class="required">*</span>
+                    </label>
+                    <input
+                        type="password"
+                        name="password"
+                        placeholder="Masukkan kata sandi"
+                        required
+                    >
+                </div>
 
                 <a href="#" class="forgot">Lupa Kata Sandi?</a>
 
-                <button type="submit" class="btn-login">Masuk</button>
+                <button type="submit" class="btn-login">
+                    Masuk
+                </button>
             </form>
 
             <p class="register-text">
-                Belum punya Akun?
+                Belum punya akun?
                 <a href="{{ url_for('main.register') }}">Daftar</a>
             </p>
         </div>

@@ -9,41 +9,76 @@
     <p>Temukan berbagai informasi dan panduan mengenai ADHD.</p>
 </div>
 
-<!-- Kategori -->
+<!-- FILTER -->
 <div class="edukasi-filter">
-    <button class="filter-btn active">Semua</button>
-    <button class="filter-btn">Gejala ADHD</button>
-    <button class="filter-btn">Pola Asuh</button>
-    <button class="filter-btn">Gaya Hidup</button>
+    <button class="filter-btn active" data-filter="all">Semua</button>
+    <button class="filter-btn" data-filter="gejala">Gejala ADHD</button>
+    <button class="filter-btn" data-filter="pola-asuh">Pola Asuh</button>
+    <button class="filter-btn" data-filter="gaya-hidup">Gaya Hidup</button>
 </div>
 
-<!-- Artikel List -->
+<!-- LIST ARTIKEL -->
 <div class="edukasi-list">
 
-    <div class="edukasi-card">
+    <div class="edukasi-card" data-category="gejala">
         <div class="edukasi-content">
-            <h3>Lorem Ipsum</h3>
-            <p>Lorem ipsum dolor sit amet. Ut molestiae facere non quae esse eum nobis dicta eum nisi vero non neque quasi aut illum voluptatem. Sit reiciendis architecto ex rerum animi et tenetur dolor ad facilis laudantium.</p>
+            <h3>Gejala ADHD pada Anak</h3>
+            <p>Ciri-ciri umum ADHD yang sering muncul pada anak usia dini.</p>
         </div>
         <a href="#" class="btn-read">Baca Selengkapnya</a>
     </div>
 
-    <div class="edukasi-card">
+    <div class="edukasi-card" data-category="pola-asuh">
         <div class="edukasi-content">
-            <h3>Lorem Ipsum</h3>
-            <p>Lorem ipsum dolor sit amet. Ut molestiae facere non quae esse eum nobis dicta eum nisi vero non neque quasi aut illum voluptatem. Sit reiciendis architecto ex rerum animi et tenetur dolor ad facilis laudantium.</p>
+            <h3>Pola Asuh Anak ADHD</h3>
+            <p>Strategi pengasuhan yang tepat untuk anak dengan ADHD.</p>
         </div>
         <a href="#" class="btn-read">Baca Selengkapnya</a>
     </div>
 
-    <div class="edukasi-card">
+    <div class="edukasi-card" data-category="gaya-hidup">
         <div class="edukasi-content">
-            <h3>Lorem Ipsum</h3>
-            <p>Lorem ipsum dolor sit amet. Ut molestiae facere non quae esse eum nobis dicta eum nisi vero non neque quasi aut illum voluptatem. Sit reiciendis architecto ex rerum animi et tenetur dolor ad facilis laudantium.</p>
+            <h3>Gaya Hidup Sehat untuk Anak</h3>
+            <p>Pola tidur, makan, dan aktivitas yang mendukung fokus anak.</p>
+        </div>
+        <a href="#" class="btn-read">Baca Selengkapnya</a>
+    </div>
+
+    <div class="edukasi-card" data-category="gejala">
+        <div class="edukasi-content">
+            <h3>Perbedaan Anak Aktif & ADHD</h3>
+            <p>Memahami batas antara anak aktif normal dan ADHD.</p>
         </div>
         <a href="#" class="btn-read">Baca Selengkapnya</a>
     </div>
 
 </div>
+
+<!-- SCRIPT FILTER -->
+<script>
+const filterButtons = document.querySelectorAll('.filter-btn');
+const edukasiCards = document.querySelectorAll('.edukasi-card');
+
+filterButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+
+        // Active button
+        filterButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        const filter = btn.dataset.filter;
+
+        edukasiCards.forEach(card => {
+            const category = card.dataset.category;
+
+            if (filter === 'all' || filter === category) {
+                card.style.display = 'flex';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    });
+});
+</script>
 
 {% endblock %}

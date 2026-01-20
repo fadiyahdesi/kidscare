@@ -3,8 +3,31 @@
 {% block content %}
 
 <section class="dashboard-header">
-    <h1>Selamat Datang,</h1>
-    <h2 class="dashboard-username">{{ user.name }}</h2>
+    <div class="dashboard-header-left">
+        <h1>Selamat Datang,</h1>
+        <h2 class="dashboard-username">{{ user.name }}</h2>
+    </div>
+
+    <div class="dashboard-header-right">
+        <div class="user-dropdown">
+            <button class="user-dropdown-btn">
+                <i class="fas fa-user-circle"></i>
+                Fadiyah Desi
+                <i class="fas fa-chevron-down"></i>
+            </button>
+
+            <div class="user-dropdown-menu">
+                <a href="{{ url_for('main.landing') }}">
+                    <i class="fas fa-house"></i>
+                    Dashboard
+                </a>
+                <a href="{{ url_for('main.logout') }}" class="danger">
+                    <i class="fas fa-right-from-bracket"></i>
+                    Keluar
+                </a>
+            </div>
+        </div>
+    </div>
 </section>
 
 <section class="child-card">

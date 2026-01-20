@@ -1,10 +1,11 @@
-from flask import Flask, render_template, request, redirect, url_for, Blueprint
+from flask import Flask, render_template, request, redirect, session, url_for, Blueprint
 import numpy as np
 import joblib
 
 app = Flask(__name__,
             template_folder='app/templates',
             static_folder='app/static')
+app.secret_key = 'kidscare-secret-key-dev'
 
 # Definisi Blueprint
 main_bp = Blueprint('main', __name__)
@@ -27,6 +28,12 @@ def register():
         return redirect(url_for('user.index'))
     return render_template('authentications/register/register.html')
 
+# LOGOUT
+@main_bp.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('main.landing'))
+
 # --- User Routes ---
 @user_bp.route('/')
 def index():
@@ -44,7 +51,7 @@ def edukasi_detail(slug):
     edukasi_data = {
         'apa-itu-adhd': {
             'title': 'Apa itu ADHD?',
-            'content': 'ADHD adalah gangguan perkembangan saraf pada anak yang ditandai dengan...'
+            'content': 'Lorem ipsum dolor sit amet. Qui reiciendis quaerat et dicta enim eum dolorum numquam et earum ullam. Id voluptates earum ex consequatur illo ut sapiente voluptatem et doloribus delectus aut illo reprehenderit! Et quod deleniti aut ipsum officia aut aliquid galisum ea dolor iure ex dolorem quia et aspernatur fugit. 33 fuga voluptatem aut officia aperiam et optio nesciunt ut explicabo laboriosam sed vero quae. Sit mollitia molestiae aut esse fugit ut omnis accusamus et pariatur ullam eum suscipit Quis. Sit libero dolores aut tempora quidem aut eius doloremque vel deleniti error ut nesciunt praesentium et consequatur eveniet? Est animi quasi et aliquid illo et necessitatibus totam! Aut nihil galisum cum perferendis quam hic corporis molestiae et consequatur nesciunt aut unde voluptas ad inventore deserunt? Eos molestiae neque et laudantium itaque qui labore expedita!'
         },
         'gejala-adhd': {
             'title': 'Gejala ADHD',
