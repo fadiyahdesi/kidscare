@@ -6,30 +6,42 @@
     </div>
 
     <nav class="sidebar-menu">
+        <!-- Beranda -->
         <a href="{{ url_for('user.index') }}"
            class="{% if request.endpoint == 'user.index' %}active{% endif %}">
             <i class="fas fa-house"></i>
             <span>Beranda</span>
         </a>
 
+        <!-- Test Skrining - Diperbaiki sesuai saran error -->
         <a href="{{ url_for('user.test_skrining') }}"
            class="{% if request.endpoint == 'user.test_skrining' %}active{% endif %}">
             <i class="fas fa-notes-medical"></i>
             <span>Test Skrining</span>
         </a>
 
+        <!-- Riwayat - Menggunakan pola flat (user.fungsi) -->
         <a href="{{ url_for('user.riwayat_skrining') }}"
            class="{% if request.endpoint == 'user.riwayat_skrining' %}active{% endif %}">
             <i class="fas fa-clock-rotate-left"></i>
             <span>Riwayat</span>
         </a>
 
+        <!-- Konsultasi -->
+        <a href="{{ url_for('user.konsultasi_psikolog') }}"
+           class="{% if request.endpoint == 'user.konsultasi_psikolog' %}active{% endif %}">
+            <i class="fas fa-comments"></i>
+            <span>Konsultasi</span>
+        </a>
+
+        <!-- Edukasi -->
         <a href="{{ url_for('user.edukasi_user') }}"
            class="{% if request.endpoint == 'user.edukasi_user' %}active{% endif %}">
             <i class="fas fa-book-open-reader"></i>
             <span>Edukasi</span>
         </a>
 
+        <!-- Profil -->
         <a href="{{ url_for('user.profil_user') }}"
            class="{% if request.endpoint == 'user.profil_user' %}active{% endif %}">
             <i class="fas fa-user"></i>

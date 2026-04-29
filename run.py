@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, session, url_for, Blueprint
-import numpy as np
-import joblib
+# import numpy as np
+# import joblib
 
 app = Flask(__name__,
             template_folder='app/templates',
@@ -44,7 +44,7 @@ def index():
 #EDUKASI USER
 @user_bp.route('/edukasi')
 def edukasi_user():
-    return render_template('users/edukasi_user.html')
+    return render_template('users/edukasi/edukasi_user.html')
 
 @user_bp.route('/edukasi/<slug>')
 def edukasi_detail(slug):
@@ -68,7 +68,7 @@ def edukasi_detail(slug):
     if not edukasi:
         abort(404)
 
-    return render_template('users/edukasi_detail.html', edukasi=edukasi)
+    return render_template('users/edukasi/edukasi_detail.html', edukasi=edukasi)
 
 @user_bp.route('/profil')
 def profil_user():
@@ -77,11 +77,11 @@ def profil_user():
         'email': 'fadiyahdesiasmawati@gmail.com',
         'phone': '081234567890',
     }
-    return render_template('users/profil_user.html', user=user)
+    return render_template('users/profil/profil_user.html', user=user)
 
 @user_bp.route('/skrining')
 def test_skrining():
-    return render_template('users/test_skrining.html')
+    return render_template('users/testskrining/test_skrining.html')
 
 @user_bp.route('/skrining/form')
 def skrining_form():
@@ -112,7 +112,30 @@ def skrining_form():
 
 @user_bp.route('/skrining/riwayat')
 def riwayat_skrining():
-    return render_template('users/riwayat_skrining.html')
+    return render_template('users/riwayatskrining/riwayat_skrining.html')
+
+# KONSULTASI PSIKOLOG
+@user_bp.route('/konsultasi')
+def konsultasi_psikolog():
+    # Data psikolog area Tegal (Contoh/Mock)
+    psychologists = [
+        {
+            'name': 'Psikolog A, M.Psi',
+            'specialization': 'Psikolog Anak & Remaja',
+            'location': 'Slawi, Kab. Tegal',
+            'whatsapp': '628123456789',
+            'image': 'psychologist1.jpg'
+        },
+        {
+            'name': 'Psikolog B, M.Psi',
+            'specialization': 'Gangguan Tumbuh Kembang',
+            'location': 'Kota Tegal',
+            'whatsapp': '628987654321',
+            'image': 'psychologist2.jpg'
+        }
+    ]
+    return render_template('users/konsultasi/konsultasi_psikolog.html', psychologists=psychologists)
+
 
 @user_bp.route('/predict', methods=['POST'])
 def predict():
