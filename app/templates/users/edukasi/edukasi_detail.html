@@ -1,27 +1,63 @@
 {% extends 'layout/dashboard.html' %}
 
+{% block title %}{{ video.title }} | KidsCare{% endblock %}
+
 {% block content %}
 
-<section class="edukasi-detail-wrapper">
+<!-- TOMBOL KEMBALI -->
+<div class="mb-8">
+    <a href="{{ url_for('user.edukasi_user') }}"
+        class="inline-flex items-center text-teal-600 font-bold hover:gap-2 transition-all">
+        <i class="fas fa-arrow-left mr-2"></i> Kembali ke Daftar Edukasi
+    </a>
+</div>
 
-    <article class="edukasi-detail-card">
-        <div class="edukasi-header">
-            <span class="edukasi-tag">Edukasi ADHD</span>
-            <h1>{{ edukasi.title }}</h1>
+<article class="bg-white rounded-[40px] shadow-sm border border-slate-100 overflow-hidden">
+    <!-- VIDEO PLAYER (YOUTUBE EMBED) -->
+    <div class="aspect-video bg-slate-900 w-full">
+        {% set video_id = video.video_url.split('v=')[-1].split('&')[0] if 'v=' in video.video_url else
+        video.video_url.split('/')[-1] %}
+        <iframe class="w-full h-full" src="https://www.youtube.com/embed/{{ video_id }}?rel=0&showinfo=0"
+            title="{{ video.title }}" frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen>
+        </iframe>
+    </div>
+
+    <!-- KONTEN TEKS -->
+    <div class="p-10">
+        <div class="flex items-center gap-3 mb-6">
+            <span class="px-4 py-1.5 rounded-full bg-teal-100 text-teal-700 text-xs font-black uppercase">
+                {{ video.category }}
+            </span>
         </div>
 
-        <div class="edukasi-content">
-            {{ edukasi.content }}
+        <h1 class="text-4xl font-black text-slate-800 mb-6 leading-tight">{{ video.title }}</h1>
+
+        <div class="prose prose-slate max-w-none text-slate-600 leading-relaxed text-lg">
+            <p>{{ video.description }}</p>
+            <!-- Anda bisa menambahkan konten artikel tambahan di sini jika ada di koleksi videos di MongoDB -->
         </div>
 
-        <div class="edukasi-footer">
-            <a href="{{ url_for('user.index') }}" class="btn-back">
-                <i class="fas fa-arrow-left"></i>
-                Kembali
-            </a>
-        </div>
-    </article>
+        <!-- FOOTER ARTIKEL -->
+        <div class="mt-12 pt-8 border-t border-slate-100 flex justify-between items-center">
+            <div class="flex items-center gap-4">
+                <img src="{{ url_for('static', filename='images/user.png') }}"
+                    class="w-12 h-12 rounded-full bg-slate-100" alt="Admin KidsCare">
+                <div>
+                    <p class="text-sm font-bold text-slate-800">Tim Ahli KidsCare</p>
+                    <p class="text-xs text-slate-400">Ditinjau oleh Psikolog Profesional</p>
+                </div>
+            </div>
 
-</section>
+            <div class="flex gap-2">
+                <button
+                    class="w-10 h-10 rounded-full bg-slate-50 text-slate-400 hover:text-teal-500 hover:bg-teal-50 transition">
+                    <i class="fas fa-share-alt"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</article>
 
 {% endblock %}

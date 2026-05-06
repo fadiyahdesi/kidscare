@@ -1,0 +1,99 @@
+{% extends 'layout/dashboard.html' %}
+{% block title %}Hasil Skrining | KidsCare{% endblock %}
+
+{% block content %}
+<div class="px-8 py-10 max-w-4xl mx-auto">
+    <!-- HEADER -->
+    <div class="text-center mb-10">
+        <h1 class="text-3xl font-extrabold text-slate-800">Hasil Skrining Mandiri</h1>
+        <p class="text-slate-500 mt-2 text-lg">Berdasarkan Kriteria DSM-5 (Deteksi Dini ADHD)</p>
+    </div>
+
+    <!-- MAIN RESULT CARD -->
+    <div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100">
+        <div class="p-10 text-center {% if 'Normal' in result %}bg-emerald-50{% else %}bg-orange-50{% endif %}">
+            <span class="px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider {% if 'Normal' in result %}bg-emerald-200 text-emerald-800{% else %}bg-orange-200 text-orange-800{% endif %}">
+                Kesimpulan Akhir
+            </span>
+            <h2 class="text-4xl font-black mt-4 {% if 'Normal' in result %}text-emerald-700{% else %}text-orange-700{% endif %}">
+                {{ result }}
+            </h2>
+        </div>
+
+        <div class="p-10">
+            <!-- SCORE BREAKDOWN -->
+            <h3 class="text-lg font-bold text-slate-800 mb-6 flex items-center">
+                <i class="fas fa-chart-pie mr-2 text-teal-500"></i> Rincian Gejala Terdeteksi
+            </h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+                <!-- Inattention Box -->
+                <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200">
+                    <p class="text-sm font-medium text-slate-500 uppercase tracking-tight">Kategori Inatensi</p>
+                    <div class="flex items-end gap-2 mt-2">
+                        <span class="text-4xl font-bold text-slate-800">{{ in_score }}</span>
+                        <span class="text-slate-400 mb-1">/ 9 gejala</span>
+                    </div>
+                    <div class="w-full h-2 bg-slate-200 rounded-full mt-4">
+                        <div class="h-full bg-blue-400 rounded-full" style="width: {{ (in_score / 9 * 100)|int }}%"></div>
+                    </div>
+                </div>
+
+                <!-- Hyperactivity Box -->
+                <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200">
+                    <p class="text-sm font-medium text-slate-500 uppercase tracking-tight">Kategori Hiperaktif</p>
+                    <div class="flex items-end gap-2 mt-2">
+                        <span class="text-4xl font-bold text-slate-800">{{ hy_score }}</span>
+                        <span class="text-slate-400 mb-1">/ 9 gejala</span>
+                    </div>
+                    <div class="w-full h-2 bg-slate-200 rounded-full mt-4">
+                        <div class="h-full bg-purple-400 rounded-full" style="width: {{ (hy_score / 9 * 100)|int }}%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RECOMMENDATIONS -->
+            <div class="border-t border-slate-100 pt-8">
+                <h3 class="text-lg font-bold text-slate-800 mb-4">Rekomendasi Tindakan:</h3>
+                
+                <div class="space-y-4">
+                    {% if 'Normal' in result %}
+                    <div class="flex gap-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+                        <div class="text-emerald-500 text-xl"><i class="fas fa-check-circle"></i></div>
+                        <p class="text-slate-700 text-sm">Kondisi anak tampak normal. Tetap pantau perkembangan perilaku anak di rumah dan sekolah secara berkala.</p>
+                    </div>
+                    {% else %}
+                    <div class="flex gap-4 p-4 bg-amber-50 rounded-xl border border-amber-100">
+                        <div class="text-amber-500 text-xl"><i class="fas fa-exclamation-triangle"></i></div>
+                        <p class="text-slate-700 text-sm">Hasil skrining menunjukkan adanya risiko ADHD. Kami menyarankan Anda untuk berkonsultasi dengan psikolog profesional untuk observasi lebih mendalam.</p>
+                    </div>
+                    {% endif %}
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+                        <a href="{{ url_for('user.edukasi_user') }}" class="flex items-center justify-center gap-2 p-4 bg-white border-2 border-teal-500 text-teal-600 rounded-2xl font-bold hover:bg-teal-50 transition">
+                            <i class="fas fa-video"></i> Tonton Video Edukasi
+                        </a>
+                        <a href="{{ url_for('user.konsultasi_psikolog') }}" class="flex items-center justify-center gap-2 p-4 bg-teal-500 text-white rounded-2xl font-bold hover:bg-teal-600 shadow-lg shadow-teal-200 transition">
+                            <i class="fas fa-comments"></i> Konsultasi Psikolog
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DISCLAIMER FOOTER -->
+        <div class="bg-slate-50 p-6 text-center border-t border-slate-100">
+            <p class="text-xs text-slate-400 leading-relaxed italic">
+                *PENTING: Hasil skrining ini didasarkan pada jawaban mandiri orang tua/wali menggunakan kriteria DSM-5. Ini bukan merupakan diagnosis klinis resmi. Diagnosis medis hanya dapat diberikan oleh dokter spesialis anak, psikiater, atau psikolog klinis melalui pemeriksaan komprehensif.
+            </p>
+        </div>
+    </div>
+
+    <!-- ACTION BUTTONS -->
+    <div class="mt-10 text-center">
+        <a href="{{ url_for('user.index') }}" class="text-slate-500 font-semibold hover:text-teal-600 transition">
+            <i class="fas fa-arrow-left mr-1"></i> Kembali ke Dashboard Utama
+        </a>
+    </div>
+</div>
+{% endblock %}

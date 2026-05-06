@@ -4,81 +4,54 @@
 
 {% block content %}
 
-<div class="page-header">
-    <h1>Edukasi ADHD</h1>
-    <p>Temukan berbagai informasi dan panduan mengenai ADHD.</p>
+<section class="consultation-header mb-8">
+    <h1 class="text-2xl font-bold text-gray-800">Edukasi ADHD</h1>
+    <p class="text-gray-600">Temukan berbagai informasi dan panduan mengenai ADHD.</p>
+</section>
+
+<div class="flex gap-4 mb-10 overflow-x-auto pb-2">
+    <button class="filter-btn px-6 py-2 rounded-full font-bold bg-teal-500 text-white shadow-lg shadow-teal-100 transition" data-filter="all">Semua</button>
+    <button class="filter-btn px-6 py-2 rounded-full font-bold bg-white text-slate-600 border border-slate-200 hover:border-teal-500 transition" data-filter="pengertian-adhd">Pengertian</button>
+    <button class="filter-btn px-6 py-2 rounded-full font-bold bg-white text-slate-600 border border-slate-200 hover:border-teal-500 transition" data-filter="gejala-adhd">Gejala</button>
+    <button class="filter-btn px-6 py-2 rounded-full font-bold bg-white text-slate-600 border border-slate-200 hover:border-teal-500 transition" data-filter="cara-penanganan">Penanganan</button>
+    <button class="filter-btn px-6 py-2 rounded-full font-bold bg-white text-slate-600 border border-slate-200 hover:border-teal-500 transition" data-filter="tips-parenting">Pola Asuh</button>
 </div>
 
-<!-- FILTER -->
-<div class="edukasi-filter">
-    <button class="filter-btn active" data-filter="all">Semua</button>
-    <button class="filter-btn" data-filter="gejala">Gejala ADHD</button>
-    <button class="filter-btn" data-filter="pola-asuh">Pola Asuh</button>
-    <button class="filter-btn" data-filter="gaya-hidup">Gaya Hidup</button>
+<!-- LIST VIDEO DARI DATABASE -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="edukasi-list">
+    {% if videos %}
+        {% for video in videos %}
+        <div class="edukasi-card bg-white rounded-[32px] overflow-hidden border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-300 group" 
+             data-category="{{ video.category | lower | replace(' ', '-') }}">
+            
+            <!-- Thumbnail Placeholder (Karena kita pakai link YouTube) -->
+            <div class="relative h-48 bg-slate-900 flex items-center justify-center overflow-hidden">
+                <img src="https://img.youtube.com/vi/{{ video.video_url.split('v=')[-1].split('&')[0] if 'v=' in video.video_url else video.video_url.split('/')[-1] }}/mqdefault.jpg" 
+                     class="w-full h-full object-cover opacity-60 group-hover:scale-110 transition duration-500" alt="{{ video.title }}">
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <div class="w-16 h-16 rounded-full bg-teal-500/90 text-white flex items-center justify-center text-2xl shadow-xl group-hover:scale-125 transition">
+                        <i class="fas fa-play ml-1"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-6">
+                <span class="inline-block px-3 py-1 rounded-full bg-teal-50 text-teal-600 text-[10px] font-black uppercase mb-3">{{ video.category }}</span>
+                <h3 class="text-xl font-bold text-slate-800 mb-2 line-clamp-2">{{ video.title }}</h3>
+                <p class="text-slate-500 text-sm mb-6 line-clamp-2">{{ video.description }}</p>
+                <a href="{{ url_for('user.edukasi_detail', id=video._id) }}">Tonton Sekarang</a>
+                   class="inline-block w-full text-center py-3 rounded-2xl bg-slate-50 text-slate-700 font-bold hover:bg-teal-500 hover:text-white transition duration-300">
+                    Tonton Sekarang
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="col-span-full py-20 text-center text-slate-400">
+            <i class="fas fa-video-slash text-5xl mb-4"></i>
+            <p class="font-bold">Belum ada video edukasi yang tersedia.</p>
+        </div>
+    {% endif %}
 </div>
-
-<!-- LIST ARTIKEL -->
-<div class="edukasi-list">
-
-    <div class="edukasi-card" data-category="gejala">
-        <div class="edukasi-content">
-            <h3>Gejala ADHD pada Anak</h3>
-            <p>Ciri-ciri umum ADHD yang sering muncul pada anak usia dini.</p>
-        </div>
-        <a href="#" class="btn-read">Baca Selengkapnya</a>
-    </div>
-
-    <div class="edukasi-card" data-category="pola-asuh">
-        <div class="edukasi-content">
-            <h3>Pola Asuh Anak ADHD</h3>
-            <p>Strategi pengasuhan yang tepat untuk anak dengan ADHD.</p>
-        </div>
-        <a href="#" class="btn-read">Baca Selengkapnya</a>
-    </div>
-
-    <div class="edukasi-card" data-category="gaya-hidup">
-        <div class="edukasi-content">
-            <h3>Gaya Hidup Sehat untuk Anak</h3>
-            <p>Pola tidur, makan, dan aktivitas yang mendukung fokus anak.</p>
-        </div>
-        <a href="#" class="btn-read">Baca Selengkapnya</a>
-    </div>
-
-    <div class="edukasi-card" data-category="gejala">
-        <div class="edukasi-content">
-            <h3>Perbedaan Anak Aktif & ADHD</h3>
-            <p>Memahami batas antara anak aktif normal dan ADHD.</p>
-        </div>
-        <a href="#" class="btn-read">Baca Selengkapnya</a>
-    </div>
-
-</div>
-
-<!-- SCRIPT FILTER -->
-<script>
-const filterButtons = document.querySelectorAll('.filter-btn');
-const edukasiCards = document.querySelectorAll('.edukasi-card');
-
-filterButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-
-        // Active button
-        filterButtons.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-
-        const filter = btn.dataset.filter;
-
-        edukasiCards.forEach(card => {
-            const category = card.dataset.category;
-
-            if (filter === 'all' || filter === category) {
-                card.style.display = 'flex';
-            } else {
-                card.style.display = 'none';
-            }
-        });
-    });
-});
-</script>
 
 {% endblock %}

@@ -4,110 +4,82 @@
 
 {% block content %}
 <section class="register-section">
-
     <div class="register-header">
         <h2>Daftar Akun Baru</h2>
-        <p>Harap isi data dengan benar</p>
+        <p>Harap isi data dengan benar untuk memulai skrining</p>
     </div>
 
+    <!-- Menampilkan Flash Message jika ada error -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div style="padding: 10px; margin-bottom: 20px; border-radius: 5px; background-color: {% if category == 'success' %}#d4edda{% else %}#f8d7da{% endif %}; color: {% if category == 'success' %}#155724{% else %}#721c24{% endif %};">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
     <form method="POST" action="{{ url_for('main.register') }}" class="register-form">
+        <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            
+            <!-- Kolom Kiri: Data Orang Tua -->
+            <div class="parent-info">
+                <h3 style="margin-bottom: 15px; color: #2ec4c4;">Data Orang Tua</h3>
+                <div class="form-group">
+                    <label>Nama Orang Tua / Wali <span class="required">*</span></label>
+                    <input type="text" name="parent_name" placeholder="Masukkan nama" required>
+                </div>
 
-        <div class="form-grid">
+                <div class="form-group">
+                    <label>Email <span class="required">*</span></label>
+                    <input type="email" name="contact" placeholder="email@contoh.com" required>
+                </div>
 
-            <!-- Nama Orang Tua -->
-            <div class="form-group">
-                <label>
-                    Nama Orang Tua / Wali
-                    <span class="required">*</span>
-                </label>
-                <input
-                    type="text"
-                    name="parent_name"
-                    placeholder="Masukkan nama orang tua / wali"
-                    required
-                >
+                <div class="form-group">
+                    <label>Password <span class="required">*</span></label>
+                    <input type="password" name="password" placeholder="Minimal 6 karakter" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Alamat <span class="required">*</span></label>
+                    <input type="text" name="address" placeholder="Alamat Lengkap" required>
+                </div>
             </div>
 
-            <!-- Nama Anak -->
-            <div class="form-group">
-                <label>
-                    Nama Lengkap Anak
-                    <span class="required">*</span>
-                </label>
-                <input
-                    type="text"
-                    name="child_name"
-                    placeholder="Masukkan nama lengkap anak"
-                    required
-                >
-            </div>
+            <!-- Kolom Kanan: Data Anak -->
+            <div class="child-info">
+                <h3 style="margin-bottom: 15px; color: #2ec4c4;">Data Anak</h3>
+                <div class="form-group">
+                    <label>Nama Lengkap Anak <span class="required">*</span></label>
+                    <input type="text" name="child_name" placeholder="Nama lengkap anak" required>
+                </div>
 
-            <!-- Kontak -->
-            <div class="form-group">
-                <label>
-                    Email / Nomor WhatsApp
-                    <span class="required">*</span>
-                </label>
-                <input
-                    type="text"
-                    name="contact"
-                    placeholder="Email atau nomor WhatsApp aktif"
-                    required
-                >
-            </div>
+                <div class="form-group">
+                    <label>Tanggal Lahir Anak <span class="required">*</span></label>
+                    <input type="date" name="child_birth" required>
+                </div>
 
-            <!-- Tanggal Lahir -->
-            <div class="form-group">
-                <label>
-                    Tanggal Lahir Anak
-                    <span class="required">*</span>
-                </label>
-                <input
-                    type="date"
-                    name="child_birth"
-                    required
-                >
-            </div>
-
-            <!-- Alamat -->
-            <div class="form-group">
-                <label>
-                    Alamat Orang Tua / Wali
-                    <span class="required">*</span>
-                </label>
-                <input
-                    type="text"
-                    name="address"
-                    placeholder="Masukkan alamat lengkap"
-                    required
-                >
-            </div>
-
-            <!-- Gender -->
-            <div class="form-group">
-                <label>
-                    Jenis Kelamin Anak
-                    <span class="required">*</span>
-                </label>
-                <select name="gender" required>
-                    <option value="">-- Pilih Jenis Kelamin --</option>
-                    <option value="L">Laki-laki</option>
-                    <option value="P">Perempuan</option>
-                </select>
+                <div class="form-group">
+                    <label>Jenis Kelamin Anak <span class="required">*</span></label>
+                    <select name="gender" required>
+                        <option value="">-- Pilih --</option>
+                        <option value="L">Laki-laki</option>
+                        <option value="P">Perempuan</option>
+                    </select>
+                </div>
             </div>
 
         </div>
 
-        <button type="submit" class="btn-register">
-            Daftar
+        <button type="submit" class="btn-register" style="width: 100%; margin-top: 20px; padding: 12px; background: #2ec4c4; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
+            Daftar Sekarang
         </button>
 
-        <p class="login-link">
+        <p class="login-link" style="text-align: center; margin-top: 15px;">
             Sudah punya akun?
             <a href="{{ url_for('main.login') }}" style="color: #2ec4c4; text-decoration: none; font-weight: 600;">Masuk</a>
         </p>
-
     </form>
-
 </section>
 {% endblock %}
