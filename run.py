@@ -81,6 +81,14 @@ def index():
     user_data = db.users.find_one({"_id": ObjectId(session['user_id'])})
     children = list(db.children.find({"parent_id": ObjectId(session['user_id'])}).sort("created_at", 1))
     default_child = children[0] if children else None
+
+    if default_child:
+        latest_test = db.screening_tests.find_one(
+            {"child_id": default_child['_id']}, 
+            sort=[("created_at", -1)]
+        )
+        default_child['status'] = latest_test['category'] if latest_test else "Belum Pernah Tes"
+
     return render_template('users/index.html', user=user_data, child=default_child, children=children)
 
 @user_bp.route('/profil')
@@ -122,6 +130,31 @@ def add_child():
     flash("Data anak berhasil ditambahkan!", "success")
     return redirect(url_for('user.profil_user'))
 
+@user_bp.route('/profil/edit_child', methods=['POST'])
+def edit_child():
+    if 'user_id' not in session: return redirect(url_for('main.login'))
+    
+    child_id = request.form.get('child_id')
+    name = request.form.get('child_name')
+    birth_date = request.form.get('child_birth')
+    gender = request.form.get('gender')
+    
+    try:
+        # Update data berdasarkan ID anak dan ID parent (keamanan)
+        db.children.update_one(
+            {"_id": ObjectId(child_id), "parent_id": ObjectId(session['user_id'])},
+            {"$set": {
+                "name": name,
+                "birth_date": datetime.strptime(birth_date, '%Y-%m-%d'),
+                "gender": gender
+            }}
+        )
+        flash(f"Profil {name} berhasil diperbarui!", "success")
+    except Exception as e:
+        flash("Terjadi kesalahan saat memperbarui data anak.", "danger")
+        
+    return redirect(url_for('user.profil_user'))
+
 @user_bp.route('/profil/delete_child/<id>')
 def delete_child(id):
     if 'user_id' not in session: return redirect(url_for('main.login'))
@@ -156,7 +189,7 @@ def set_default_child(id):
 def test_skrining():
     if 'user_id' not in session: return redirect(url_for('main.login'))
     # Menampilkan daftar anak agar orang tua bisa memilih siapa yang akan dites
-    children = list(db.children.find({"parent_id": ObjectId(session['user_id'])}))
+    children = list(db.children.find({"parent_id": ObjectId(session['user_id'])}).sort("created_at", 1))
     return render_template('users/testskrining/test_skrining.html', children=children)
 
 @user_bp.route('/skrining/form')
@@ -178,7 +211,11 @@ def skrining_form():
 def predict():
     if 'user_id' not in session: return redirect(url_for('main.login'))
     try:
-        child_id = request.form.get('child_id')
+        # BAGIAN YANG DIUPDATE: Ambil child_id dari hidden input di form
+        child_id_str = request.form.get('child_id')
+        if not child_id_str:
+            return "ID Anak tidak ditemukan."
+
         questions = list(db.questions.find().sort("order", 1))
         in_score = hy_score = 0
         additional_met = True
@@ -197,11 +234,15 @@ def predict():
             elif in_score >= 6: category = "ADHD Tipe Inatensi"
             elif hy_score >= 6: category = "ADHD Tipe Hiperaktif-Impulsivitas"
 
-        # Simpan hasil untuk anak spesifik
+        # BAGIAN YANG DIUPDATE: Simpan child_id sebagai ObjectId agar sinkron dengan tabel children
         db.screening_tests.insert_one({
-            "child_id": ObjectId(child_id), "inattentive_score": in_score,
-            "hyperactive_score": hy_score, "category": category, "created_at": datetime.utcnow()
+            "child_id": ObjectId(child_id_str),
+            "inattentive_score": in_score,
+            "hyperactive_score": hy_score,
+            "category": category,
+            "created_at": datetime.utcnow()
         })
+        
         return render_template('users/testskrining/result.html', result=category, in_score=in_score, hy_score=hy_score)
     except Exception as e:
         return f"Error: {str(e)}"
@@ -209,9 +250,14 @@ def predict():
 @user_bp.route('/skrining/riwayat')
 def riwayat_skrining():
     if 'user_id' not in session: return redirect(url_for('main.login'))
+    
+    # Ambil semua profil anak milik user
     children = list(db.children.find({"parent_id": ObjectId(session['user_id'])}).sort("created_at", 1))
     
+    # Ambil ID anak dari parameter URL (?child_id=...)
     selected_child_id = request.args.get('child_id')
+    
+    # Jika tidak ada child_id di URL, pilih Profil Utama (anak pertama)
     if not selected_child_id and children:
         selected_child_id = str(children[0]['_id'])
     
@@ -219,9 +265,19 @@ def riwayat_skrining():
     selected_child = None
     
     if selected_child_id:
+        # Cari objek anak yang dipilih
         selected_child = db.children.find_one({"_id": ObjectId(selected_child_id)})
-        # Ambil riwayat hanya untuk anak yang dipilih
-        history = list(db.screening_tests.find({"child_id": ObjectId(selected_child_id)}).sort("created_at", -1))
+        
+        if selected_child:
+            # PERBAIKAN KRUSIAL: Cari riwayat dengan pengecekan ganda (ObjectId DAN String)
+            # Ini untuk memastikan data lama yang tersimpan dalam format berbeda tetap muncul
+            query = {
+                "$or": [
+                    {"child_id": ObjectId(selected_child_id)},
+                    {"child_id": str(selected_child_id)}
+                ]
+            }
+            history = list(db.screening_tests.find(query).sort("created_at", -1))
         
     return render_template('users/riwayatskrining/riwayat_skrining.html', 
                            history=history, 

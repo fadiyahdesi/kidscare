@@ -6,7 +6,7 @@
 
     <!-- HEADER -->
     <div>
-        <h1 class="text-3xl font-extrabold text-slate-800">Skrining ADHD Anak Usia Dini</h1>
+        <h1 class="text-3xl font-extrabold text-slate-800">Skrining ADHD: <span class="text-teal-600">{{ child.name }}</span></h1>
         <p class="text-slate-500 mt-1">Isi sesuai perilaku anak selama 6 bulan terakhir</p>
 
         <div class="mt-6">
@@ -14,121 +14,131 @@
                 Pertanyaan 1 dari {{ questions|length }}
             </p>
             <div class="w-full h-2 bg-slate-200 rounded-full mt-2">
-                <div id="progress-bar" class="h-full bg-teal-400 rounded-full transition-all duration-500" style="width:5%"></div>
+                <div id="progress-bar" class="h-full bg-teal-400 rounded-full transition-all duration-500"
+                    style="width:5%"></div>
             </div>
         </div>
     </div>
 
     <!-- FORM: Sekarang diarahkan ke /predict -->
-    <form id="screeningForm" method="POST" action="{{ url_for('user.predict') }}" class="flex-1 flex items-center justify-center">
+    <form id="screeningForm" method="POST" action="{{ url_for('user.predict') }}"
+        class="flex-1 flex flex-col items-center justify-center mt-10">
+
+        <!-- INPUT HIDDEN: INI KUNCI SINKRONISASI -->
+        <input type="hidden" name="child_id" value="{{ child._id }}">
 
         {% for q in questions %}
         {% set i = loop.index0 %}
-        <div class="question-step hidden w-full max-w-4xl text-center transition-all duration-300" data-step="{{ i }}">
+        <div class="question-step {% if not loop.first %}hidden{% endif %} w-full max-w-4xl text-center transition-all duration-300"
+            data-step="{{ i }}">
 
-            <div class="bg-cyan-100 rounded-3xl px-10 py-14 mb-10">
-                <h2 class="text-2xl font-bold text-slate-800">{{ q.text }}</h2>
-                <p class="text-xs text-slate-400 mt-2">Kategori: {{ q.category }}</p>
+            <div class="bg-cyan-50 border-2 border-cyan-100 rounded-[40px] px-10 py-16 mb-10 shadow-sm">
+                <h2 class="text-2xl md:text-3xl font-bold text-slate-800 leading-snug">{{ q.text }}</h2>
+                <span
+                    class="inline-block mt-4 px-3 py-1 bg-white rounded-full text-[10px] font-black text-cyan-600 uppercase tracking-widest border border-cyan-100">
+                    Kategori: {{ q.category }}
+                </span>
             </div>
 
-            <div class="flex justify-center gap-6 flex-wrap">
+            <div class="flex justify-center gap-4 md:gap-6 flex-wrap">
                 {% if q.type == 'likert' %}
-                    {% for val,label in [('0','Tidak pernah'),('1','Jarang'),('2','Sering'),('3','Sangat Sering')] %}
-                    <label class="pill-option cursor-pointer">
-                        <input type="radio" name="q{{ i }}" value="{{ val }}" class="hidden peer" required>
-                        <span class="pill-outer peer-checked:bg-teal-500 peer-checked:text-black transition-all border-2 border-teal-500 px-6 py-3 rounded-full inline-block font-semibold text-teal-700">
-                            {{ label }}
-                        </span>
-                    </label>
-                    {% endfor %}
+                {% for val,label in [('0','Tidak pernah'),('1','Jarang'),('2','Sering'),('3','Sangat Sering')] %}
+                <label class="cursor-pointer group">
+                    <input type="radio" name="q{{ i }}" value="{{ val }}" class="hidden peer" required>
+                    <div
+                        class="px-8 py-4 rounded-2xl border-2 border-slate-100 bg-white text-slate-600 font-bold group-hover:border-teal-200 peer-checked:border-teal-500 peer-checked:bg-teal-500 peer-checked:text-white transition-all shadow-sm">
+                        {{ label }}
+                    </div>
+                </label>
+                {% endfor %}
                 {% else %}
-                    <!-- Untuk Kriteria Tambahan (Ya/Tidak) -->
-                    {% for val,label in [('1','Ya'),('0','Tidak')] %}
-                    <label class="pill-option cursor-pointer">
-                        <input type="radio" name="q{{ i }}" value="{{ val }}" class="hidden peer" required>
-                        <span class="pill-outer peer-checked:bg-teal-500 peer-checked:text-black transition-all border-2 border-teal-500 px-10 py-3 rounded-full inline-block font-semibold text-teal-700">
-                            {{ label }}
-                        </span>
-                    </label>
-                    {% endfor %}
+                {% for val,label in [('1','Ya'),('0','Tidak')] %}
+                <label class="cursor-pointer group">
+                    <input type="radio" name="q{{ i }}" value="{{ val }}" class="hidden peer" required>
+                    <div
+                        class="px-12 py-4 rounded-2xl border-2 border-slate-100 bg-white text-slate-600 font-bold group-hover:border-teal-200 peer-checked:border-teal-500 peer-checked:bg-teal-500 peer-checked:text-white transition-all shadow-sm">
+                        {{ label }}
+                    </div>
+                </label>
+                {% endfor %}
                 {% endif %}
             </div>
         </div>
         {% endfor %}
-
     </form>
 
     <!-- NAVIGATION -->
     <div class="flex justify-between items-center text-lg font-semibold text-teal-700 mt-10">
         <button type="button" id="prevBtn" class="disabled:opacity-30">Sebelumnya</button>
         <button type="button" id="nextBtn" class="px-8 py-3 bg-teal-500 text-white rounded-xl">Selanjutnya</button>
-        <button type="button" id="submitBtn" class="hidden px-10 py-3 rounded-xl bg-teal-600 text-white font-bold">Kirim Jawaban</button>
+        <button type="button" id="submitBtn" class="hidden px-10 py-3 rounded-xl bg-teal-600 text-white font-bold">Kirim
+            Jawaban</button>
     </div>
 
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const steps = document.querySelectorAll('.question-step');
-    const progressBar = document.getElementById('progress-bar');
-    const progressText = document.getElementById('progress-text');
-    const nextBtn = document.getElementById('nextBtn');
-    const prevBtn = document.getElementById('prevBtn');
-    const submitBtn = document.getElementById('submitBtn');
-    const form = document.getElementById('screeningForm');
+    document.addEventListener('DOMContentLoaded', function () {
+        const steps = document.querySelectorAll('.question-step');
+        const progressBar = document.getElementById('progress-bar');
+        const progressText = document.getElementById('progress-text');
+        const nextBtn = document.getElementById('nextBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        const submitBtn = document.getElementById('submitBtn');
+        const form = document.getElementById('screeningForm');
 
-    let currentStep = 0;
-    const totalSteps = steps.length;
+        let currentStep = 0;
+        const totalSteps = steps.length;
 
-    function updateStep(index) {
-        steps.forEach((step, i) => {
-            step.classList.add('hidden');
-            if (i === index) step.classList.remove('hidden');
+        function updateStep(index) {
+            steps.forEach((step, i) => {
+                step.classList.add('hidden');
+                if (i === index) step.classList.remove('hidden');
+            });
+
+            const percent = ((index + 1) / totalSteps) * 100;
+            progressBar.style.width = percent + '%';
+            progressText.innerText = `Pertanyaan ${index + 1} dari ${totalSteps}`;
+
+            prevBtn.disabled = index === 0;
+
+            if (index === totalSteps - 1) {
+                nextBtn.classList.add('hidden');
+                submitBtn.classList.remove('hidden');
+            } else {
+                nextBtn.classList.remove('hidden');
+                submitBtn.classList.add('hidden');
+            }
+        }
+
+        function isAnswered() {
+            return steps[currentStep].querySelector('input:checked');
+        }
+
+        nextBtn.addEventListener('click', () => {
+            if (!isAnswered()) {
+                alert("Harap pilih jawaban terlebih dahulu.");
+                return;
+            }
+            currentStep++;
+            updateStep(currentStep);
         });
 
-        const percent = ((index + 1) / totalSteps) * 100;
-        progressBar.style.width = percent + '%';
-        progressText.innerText = `Pertanyaan ${index + 1} dari ${totalSteps}`;
+        prevBtn.addEventListener('click', () => {
+            currentStep--;
+            updateStep(currentStep);
+        });
 
-        prevBtn.disabled = index === 0;
+        // Submit form secara nyata ke Flask
+        submitBtn.addEventListener('click', () => {
+            if (!isAnswered()) {
+                alert("Harap pilih jawaban terakhir.");
+                return;
+            }
+            form.submit();
+        });
 
-        if (index === totalSteps - 1) {
-            nextBtn.classList.add('hidden');
-            submitBtn.classList.remove('hidden');
-        } else {
-            nextBtn.classList.remove('hidden');
-            submitBtn.classList.add('hidden');
-        }
-    }
-
-    function isAnswered() {
-        return steps[currentStep].querySelector('input:checked');
-    }
-
-    nextBtn.addEventListener('click', () => {
-        if (!isAnswered()) {
-            alert("Harap pilih jawaban terlebih dahulu.");
-            return;
-        }
-        currentStep++;
         updateStep(currentStep);
     });
-
-    prevBtn.addEventListener('click', () => {
-        currentStep--;
-        updateStep(currentStep);
-    });
-
-    // Submit form secara nyata ke Flask
-    submitBtn.addEventListener('click', () => {
-        if (!isAnswered()) {
-            alert("Harap pilih jawaban terakhir.");
-            return;
-        }
-        form.submit();
-    });
-
-    updateStep(currentStep);
-});
 </script>
 {% endblock %}

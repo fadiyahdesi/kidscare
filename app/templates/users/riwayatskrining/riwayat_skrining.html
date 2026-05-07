@@ -2,198 +2,158 @@
 {% block title %}Riwayat Skrining | KidsCare{% endblock %}
 
 {% block content %}
-<!-- HEADER (Identik dengan profil_user.html & test_skrining.html) -->
-<div class="flex items-center justify-between mb-10">
-    <div>
-        <h1 class="text-3xl font-black text-slate-800">Riwayat Skrining</h1>
-        <p class="text-slate-500">Pantau perkembangan dan hasil pemeriksaan anak Anda secara berkala.</p>
+<div class="px-8 py-8">
+    <!-- HEADER (Sinkron dengan Beranda & Profil) -->
+    <div class="flex items-center justify-between mb-10">
+        <div>
+            <h1 class="text-3xl font-black text-slate-800">Riwayat Skrining</h1>
+            <p class="text-slate-500">Pantau perkembangan dan hasil pemeriksaan anak Anda secara berkala.</p>
+        </div>
+        <div class="w-20 h-20 rounded-3xl bg-teal-100 flex items-center justify-center text-teal-600 text-3xl shadow-sm">
+            <i class="fas fa-clock-rotate-left"></i>
+        </div>
     </div>
-    <div class="w-20 h-20 rounded-3xl bg-teal-100 flex items-center justify-center text-teal-600 text-3xl">
-        <i class="fas fa-clock-rotate-left"></i>
-    </div>
-</div>
 
-<!-- FLASH MESSAGES -->
-{% with messages = get_flashed_messages(with_categories=true) %}
-{% if messages %}
-{% for category, message in messages %}
-<div class="mb-6 p-4 rounded-2xl bg-teal-50 text-teal-700 border border-teal-100 font-bold flex items-center gap-3 animate-fade-in">
-    <i class="fas fa-check-circle"></i>
-    {{ message }}
-</div>
-{% endfor %}
-{% endif %}
-{% endwith %}
+    <!-- FLASH MESSAGES -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="mb-8 p-4 rounded-2xl bg-teal-50 text-teal-700 border border-teal-100 font-bold flex items-center gap-3 animate-fade-in shadow-sm">
+            <i class="fas fa-check-circle"></i>
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
 
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-    
-    <!-- KOLOM KIRI: SIDEBAR PILIH ANAK -->
-    <div class="lg:col-span-1">
-        <div class="bg-white rounded-[32px] p-8 shadow-sm border border-slate-100 sticky top-10">
-            <div class="flex items-center justify-between mb-6">
-                <h3 class="text-lg font-bold text-slate-800 flex items-center">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <!-- KOLOM KIRI: SIDEBAR PILIH ANAK -->
+        <div class="lg:col-span-1">
+            <div class="bg-white rounded-[32px] p-8 shadow-sm border border-slate-100 sticky top-10">
+                <h3 class="text-lg font-bold text-slate-800 mb-6 flex items-center">
                     <i class="fas fa-children mr-2 text-teal-500"></i> Pilih Profil
                 </h3>
-                {% if children|length > 5 %}
-                <span class="text-[10px] font-bold text-slate-400 bg-slate-50 px-2 py-1 rounded-lg border border-slate-100 uppercase tracking-tighter">Total: {{ children|length }}</span>
-                {% endif %}
-            </div>
-            
-            <div class="space-y-3">
-                {% for child in children %}
-                    {# Tentukan apakah profil ini harus disembunyikan (index > 5 dan bukan yang terpilih) #}
-                    {% set is_hidden = loop.index > 5 and (not selected_child or selected_child._id != child._id) %}
-                    
-                    <div class="child-item-wrapper {% if is_hidden %}hidden-child hidden{% endif %}">
+                
+                <div class="space-y-3">
+                    {% for child in children %}
+                        {# KRUSIAL: Gunakan |string agar perbandingan ObjectID MongoDB akurat #}
+                        {% set is_active = (selected_child and selected_child._id|string == child._id|string) %}
+                        
                         <a href="{{ url_for('user.riwayat_skrining', child_id=child._id) }}" 
-                           class="flex items-center gap-4 p-4 rounded-2xl border transition-all {% if selected_child and selected_child._id == child._id %}bg-teal-50 border-teal-200 ring-2 ring-teal-500/10{% else %}bg-slate-50 border-transparent hover:border-teal-300{% endif %}">
-                            <div class="w-10 h-10 rounded-full {% if selected_child and selected_child._id == child._id %}bg-teal-500 text-white shadow-teal-200{% else %}bg-white text-teal-500 shadow-sm{% endif %} flex items-center justify-center">
+                           class="flex items-center gap-4 p-4 rounded-2xl border transition-all {% if is_active %}bg-teal-50 border-teal-200 ring-2 ring-teal-500/10{% else %}bg-slate-50 border-transparent hover:border-teal-300{% endif %}">
+                            <div class="w-10 h-10 rounded-full {% if is_active %}bg-teal-500 text-white shadow-teal-200{% else %}bg-white text-teal-500 shadow-sm{% endif %} flex items-center justify-center">
                                 <i class="fas fa-child"></i>
                             </div>
                             <div class="overflow-hidden">
                                 <p class="font-bold text-slate-800 truncate text-sm">{{ child.name }}</p>
-                                {% if loop.first %}
-                                <p class="text-[9px] font-black text-teal-600 uppercase tracking-tighter">Profil Utama</p>
-                                {% else %}
-                                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">Anak ke-{{ loop.index }}</p>
-                                {% endif %}
+                                <p class="text-[9px] {% if is_active %}text-teal-600{% else %}text-slate-400{% endif %} font-black uppercase tracking-widest">
+                                    {{ 'Profil Utama' if loop.first else 'Pilihan' }}
+                                </p>
                             </div>
                         </a>
-                    </div>
-                {% endfor %}
-                
-                {% if children|length > 5 %}
-                <button id="btnShowAll" onclick="toggleChildList()" 
-                        class="w-full py-3 mt-2 text-xs font-bold text-slate-500 bg-slate-50 rounded-xl border border-dashed border-slate-200 hover:bg-slate-100 hover:text-teal-600 transition-all flex items-center justify-center gap-2">
-                    <span id="btnText">Lihat Semua Profil</span>
-                    <i id="btnIcon" class="fas fa-chevron-down"></i>
-                </button>
-                {% endif %}
-                
-                {% if not children %}
-                <p class="text-center py-4 text-xs text-slate-400 italic">Belum ada data anak.</p>
-                {% endif %}
+                    {% endfor %}
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- KOLOM KANAN: TABEL RIWAYAT -->
-    <div class="lg:col-span-2">
-        <div class="bg-white rounded-[32px] p-8 shadow-sm border border-slate-100 min-h-[500px]">
-            <div class="flex items-center justify-between mb-8">
-                <h3 class="text-lg font-bold text-slate-800 flex items-center">
-                    <i class="fas fa-file-medical mr-2 text-teal-500"></i> 
-                    Riwayat: <span class="ml-1 text-teal-600">{{ selected_child.name if selected_child else '-' }}</span>
-                </h3>
-                {% if history %}
-                <span class="text-[10px] font-black text-teal-600 bg-teal-50 px-3 py-1 rounded-full border border-teal-100 uppercase tracking-widest shadow-sm">{{ history|length }} Sesi</span>
-                {% endif %}
-            </div>
+        <!-- KOLOM KANAN: TABEL RIWAYAT -->
+        <div class="lg:col-span-2">
+            <div class="bg-white rounded-[32px] p-8 shadow-sm border border-slate-100 min-h-[500px]">
+                <div class="flex items-center justify-between mb-8">
+                    <h3 class="text-lg font-bold text-slate-800 flex items-center">
+                        <i class="fas fa-file-medical mr-2 text-teal-500"></i> 
+                        Riwayat: <span class="ml-1 text-teal-600">{{ selected_child.name if selected_child else '-' }}</span>
+                    </h3>
+                    {% if history %}
+                    <span class="text-[10px] font-black text-teal-600 bg-teal-50 px-3 py-1 rounded-full border border-teal-100 uppercase tracking-widest shadow-sm">{{ history|length }} Sesi</span>
+                    {% endif %}
+                </div>
 
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-separate border-spacing-y-3">
-                    <thead class="bg-slate-50">
-                        <tr>
-                            <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest rounded-l-2xl">Tanggal</th>
-                            <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Klasifikasi</th>
-                            <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Skor</th>
-                            <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right rounded-r-2xl">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% if history %}
-                        {% for item in history %}
-                        <tr class="group transition-all">
-                            <td class="px-6 py-5 bg-slate-50 border-y border-l border-slate-100 rounded-l-2xl">
-                                <p class="font-bold text-slate-700 text-sm">{{ item.created_at.strftime('%d %b %Y') }}</p>
-                                <p class="text-[10px] text-slate-400">{{ item.created_at.strftime('%H:%M WIB') }}</p>
-                            </td>
-                            <td class="px-6 py-5 bg-slate-50 border-y border-slate-100 text-center">
-                                <span class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black {% if 'Normal' in item.category %}bg-emerald-100 text-emerald-700{% else %}bg-orange-100 text-orange-700{% endif %}">
-                                    {{ item.category }}
-                                </span>
-                            </td>
-                            <td class="px-6 py-5 bg-slate-50 border-y border-slate-100">
-                                <div class="flex justify-center gap-4">
-                                    <div class="text-center">
-                                        <p class="text-[9px] uppercase font-bold text-slate-400">IN</p>
-                                        <p class="font-bold text-slate-700 text-xs">{{ item.inattentive_score }}</p>
-                                    </div>
-                                    <div class="w-px h-6 bg-slate-200"></div>
-                                    <div class="text-center">
-                                        <p class="text-[9px] uppercase font-bold text-slate-400">HY</p>
-                                        <p class="font-bold text-slate-700 text-xs">{{ item.hyperactive_score }}</p>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="px-6 py-5 bg-slate-50 border-y border-r border-slate-100 rounded-r-2xl text-right">
-                                <button onclick="openDetail('{{ item.created_at.strftime('%d %b %Y, %H:%M') }}', '{{ item.category }}', 'Inatensi: {{ item.inattentive_score }}, Hiperaktif: {{ item.hyperactive_score }}', '{% if 'Normal' in item.category %}Kondisi anak tampak normal. Tetap pantau perkembangan perilaku anak secara berkala.{% else %}Hasil skrining menunjukkan adanya indikasi ADHD. Disarankan untuk melakukan observasi lebih lanjut dengan psikolog profesional.{% endif %}')" 
-                                        class="px-4 py-2 bg-white border border-slate-200 text-teal-600 font-bold text-[10px] rounded-xl hover:bg-teal-500 hover:text-white hover:border-teal-500 transition-all shadow-sm">
-                                    Lihat Detail
-                                </button>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                        {% else %}
-                        <tr>
-                            <td colspan="4" class="px-6 py-20 text-center text-slate-400 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
-                                <i class="fas fa-folder-open text-3xl mb-3 opacity-20 block"></i>
-                                <p class="text-sm font-medium">Belum ada riwayat untuk profil ini.</p>
-                                <a href="{{ url_for('user.test_skrining') }}" class="text-teal-500 font-bold text-xs hover:underline mt-2 inline-block">Mulai Skrining Sekarang →</a>
-                            </td>
-                        </tr>
-                        {% endif %}
-                    </tbody>
-                </table>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-separate border-spacing-y-3">
+                        <thead class="bg-slate-50">
+                            <tr>
+                                <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest rounded-l-2xl">Tanggal</th>
+                                <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Hasil Klasifikasi</th>
+                                <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Skor</th>
+                                <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right rounded-r-2xl">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if history %}
+                                {% for item in history %}
+                                <tr class="group transition-all">
+                                    <td class="px-6 py-5 bg-slate-50 border-y border-l border-slate-100 rounded-l-2xl">
+                                        <p class="font-bold text-slate-700 text-sm">{{ item.created_at.strftime('%d %b %Y') }}</p>
+                                        <p class="text-[10px] text-slate-400">{{ item.created_at.strftime('%H:%M WIB') }}</p>
+                                    </td>
+                                    <td class="px-6 py-5 bg-slate-50 border-y border-slate-100 text-center">
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black {% if 'Normal' in item.category %}bg-emerald-100 text-emerald-700{% else %}bg-orange-100 text-orange-700{% endif %}">
+                                            {{ item.category }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-5 bg-slate-50 border-y border-slate-100 text-center">
+                                        <div class="flex justify-center gap-4">
+                                            <div class="text-center">
+                                                <p class="text-[9px] font-bold">IN</p>
+                                                <p class="font-bold text-slate-700 text-xs">{{ item.inattentive_score }}</p>
+                                            </div>
+                                            <div class="w-px h-6 bg-slate-200"></div>
+                                            <div class="text-center">
+                                                <p class="text-[9px] font-bold">HY</p>
+                                                <p class="font-bold text-slate-700 text-xs">{{ item.hyperactive_score }}</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-5 bg-slate-50 border-y border-r border-slate-100 rounded-r-2xl text-right">
+                                        <button onclick="openDetail('{{ item.created_at.strftime('%d %b %Y, %H:%M') }}', '{{ item.category }}', 'Inatensi: {{ item.inattentive_score }}, Hiperaktif: {{ item.hyperactive_score }}')" 
+                                                class="px-4 py-2 bg-white border border-slate-200 text-teal-600 font-bold text-[10px] rounded-xl hover:bg-teal-500 hover:text-white transition-all shadow-sm">
+                                            Lihat Detail
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="4" class="px-6 py-20 text-center text-slate-400 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+                                        <i class="fas fa-folder-open text-3xl mb-3 opacity-20 block"></i>
+                                        <p class="text-sm font-medium">Belum ada riwayat pemeriksaan untuk profil {{ selected_child.name if selected_child else 'ini' }}.</p>
+                                        <a href="{{ url_for('user.test_skrining') }}" class="text-teal-500 font-bold text-xs hover:underline mt-2 inline-block">Mulai Skrining Sekarang →</a>
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            
-            {% if children %}
-            <p class="mt-8 text-[10px] text-slate-400 italic bg-slate-50 p-4 rounded-2xl border border-dashed border-slate-200 leading-relaxed">
-                <i class="fas fa-info-circle mr-1 text-teal-500"></i>
-                Pilih nama anak di sidebar kiri untuk memuat data.
-            </p>
-            {% endif %}
         </div>
     </div>
 </div>
 
-<!-- MODAL OVERLAY DETAIL -->
+<!-- MODAL DETAIL -->
 <div id="detailModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[999] flex items-center justify-center hidden opacity-0 transition-all duration-300">
     <div id="modalBox" class="bg-white w-full max-w-lg mx-4 rounded-[32px] shadow-2xl overflow-hidden transform scale-95 transition-all duration-300">
         <div class="px-8 pt-8 pb-4 flex justify-between items-center border-b border-slate-50">
             <h2 class="text-2xl font-black text-slate-800">Detail Hasil</h2>
-            <button onclick="closeDetail()" class="text-slate-400 hover:text-slate-600 transition">
-                <i class="fas fa-times text-lg"></i>
-            </button>
+            <button onclick="closeDetail()" class="text-slate-400 hover:text-slate-600 transition"><i class="fas fa-times text-lg"></i></button>
         </div>
         <div class="px-8 py-6 space-y-5">
-            <div class="flex items-start gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100">
+            <div class="flex items-start gap-4 p-4 bg-slate-50 rounded-2xl">
                 <div class="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center text-teal-500"><i class="fas fa-calendar-check"></i></div>
-                <div>
-                    <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Waktu Pemeriksaan</p>
-                    <p class="font-bold text-slate-700" id="modalDate"></p>
-                </div>
+                <div><p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Waktu</p><p class="font-bold text-slate-700" id="modalDate"></p></div>
             </div>
-            <div class="flex items-start gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100">
+            <div class="flex items-start gap-4 p-4 bg-slate-50 rounded-2xl">
                 <div class="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center text-orange-500"><i class="fas fa-stethoscope"></i></div>
-                <div>
-                    <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Kategori Temuan</p>
-                    <p class="font-black text-teal-600 text-lg" id="modalResult"></p>
-                </div>
+                <div><p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Kategori</p><p class="font-black text-teal-600 text-lg" id="modalResult"></p></div>
             </div>
-            <div class="flex items-start gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100">
+            <div class="flex items-start gap-4 p-4 bg-slate-50 rounded-2xl">
                 <div class="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center text-blue-500"><i class="fas fa-list-ol"></i></div>
-                <div>
-                    <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Skor DSM-5</p>
-                    <p class="font-bold text-slate-700" id="modalScore"></p>
-                </div>
-            </div>
-            <div class="p-5 border-l-4 border-teal-500 bg-teal-50/50 rounded-r-2xl">
-                <p class="text-teal-900 leading-relaxed italic text-xs font-medium" id="modalNote"></p>
+                <div><p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Skor</p><p class="font-bold text-slate-700" id="modalScore"></p></div>
             </div>
         </div>
         <div class="p-8 border-t border-slate-50">
-            <button onclick="closeDetail()" class="w-full py-4 bg-slate-800 text-white rounded-2xl font-bold hover:bg-slate-700 transition shadow-lg shadow-slate-200">Tutup Detail</button>
+            <button onclick="closeDetail()" class="w-full py-4 bg-slate-800 text-white rounded-2xl font-bold hover:bg-slate-700 transition">Tutup Detail</button>
         </div>
     </div>
 </div>
@@ -202,11 +162,10 @@
     const modal = document.getElementById('detailModal');
     const modalBox = document.getElementById('modalBox');
 
-    function openDetail(date, result, score, note) {
+    function openDetail(date, result, score) {
         document.getElementById('modalDate').innerText = date;
         document.getElementById('modalResult').innerText = result;
         document.getElementById('modalScore').innerText = score;
-        document.getElementById('modalNote').innerText = note;
         modal.classList.remove('hidden');
         setTimeout(() => {
             modal.classList.replace('opacity-0', 'opacity-100');
@@ -219,32 +178,6 @@
         modalBox.classList.replace('scale-100', 'scale-95');
         setTimeout(() => { modal.classList.add('hidden'); }, 300);
     }
-
-    // Fungsi Toggle Daftar Anak
-    function toggleChildList() {
-        const extraChildren = document.querySelectorAll('.hidden-child');
-        const btnText = document.getElementById('btnText');
-        const btnIcon = document.getElementById('btnIcon');
-        
-        let isOpening = extraChildren[0].classList.contains('hidden');
-        
-        extraChildren.forEach(child => {
-            child.classList.toggle('hidden');
-            if (isOpening) {
-                child.classList.add('animate-fade-in');
-            }
-        });
-        
-        if (isOpening) {
-            btnText.innerText = "Sembunyikan Profil";
-            btnIcon.classList.replace('fa-chevron-down', 'fa-chevron-up');
-        } else {
-            btnText.innerText = "Lihat Semua Profil";
-            btnIcon.classList.replace('fa-chevron-up', 'fa-chevron-down');
-        }
-    }
-
-    modal.addEventListener('click', (e) => { if (e.target === modal) closeDetail(); });
 </script>
 
 <style>
@@ -252,8 +185,6 @@
     from { opacity: 0; transform: translateY(-10px); }
     to { opacity: 1; transform: translateY(0); }
 }
-.animate-fade-in {
-    animation: fadeIn 0.3s ease-out forwards;
-}
+.animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
 </style>
 {% endblock %}

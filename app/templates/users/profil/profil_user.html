@@ -2,179 +2,236 @@
 {% block title %}Profil Pengguna | KidsCare{% endblock %}
 
 {% block content %}
-<!-- HEADER -->
-<div class="flex items-center justify-between mb-10">
-    <div>
-        <h1 class="text-3xl font-black text-slate-800">Profil Pengguna</h1>
-        <p class="text-slate-500">Kelola informasi akun dan data profil anak Anda.</p>
-    </div>
-    <div class="w-20 h-20 rounded-3xl bg-teal-100 flex items-center justify-center text-teal-600 text-3xl">
-        <i class="fas fa-user-gear"></i>
-    </div>
-</div>
-
-<!-- FLASH MESSAGES -->
-{% with messages = get_flashed_messages(with_categories=true) %}
-{% if messages %}
-{% for category, message in messages %}
-<div
-    class="mb-6 p-4 rounded-2xl bg-teal-50 text-teal-700 border border-teal-100 font-bold flex items-center gap-3 animate-fade-in">
-    <i class="fas fa-check-circle"></i>
-    {{ message }}
-</div>
-{% endfor %}
-{% endif %}
-{% endwith %}
-
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-    <!-- KOLOM KIRI: INFO AKUN -->
-    <div class="lg:col-span-1">
-        <div class="bg-white rounded-[32px] p-8 shadow-sm border border-slate-100">
-            <h3 class="text-lg font-bold text-slate-800 mb-6 flex items-center">
-                <i class="fas fa-id-card mr-2 text-teal-500"></i> Akun Anda
-            </h3>
-
-            <form action="{{ url_for('user.update_account') }}" method="POST" class="space-y-5">
-                <div>
-                    <label class="text-xs font-bold text-slate-400 uppercase tracking-widest block mb-2">Nama
-                        Lengkap</label>
-                    <input type="text" name="name" value="{{ user.username }}" required
-                        class="w-full px-4 py-3 rounded-xl bg-slate-50 border-2 border-transparent focus:bg-white focus:border-teal-500 transition outline-none font-semibold text-slate-700">
-                </div>
-                <div>
-                    <label class="text-xs font-bold text-slate-400 uppercase tracking-widest block mb-2">Email</label>
-                    <input type="email" name="email" value="{{ user.email }}" required
-                        class="w-full px-4 py-3 rounded-xl bg-slate-50 border-2 border-transparent focus:bg-white focus:border-teal-500 transition outline-none font-semibold text-slate-700">
-                </div>
-                <div>
-                    <label class="text-xs font-bold text-slate-400 uppercase tracking-widest block mb-2">Kata Sandi
-                        Baru</label>
-                    <input type="password" name="password" placeholder="********"
-                        class="w-full px-4 py-3 rounded-xl bg-slate-50 border-2 border-transparent focus:bg-white focus:border-teal-500 transition outline-none font-semibold text-slate-700">
-                    <p class="text-[10px] text-slate-400 mt-1 italic">*Kosongkan jika tidak ingin mengubah</p>
-                </div>
-                <button type="submit"
-                    class="w-full py-4 bg-teal-500 text-white rounded-2xl font-bold hover:bg-teal-600 transition shadow-lg shadow-teal-100">
-                    Simpan Akun
-                </button>
-            </form>
+<div class="px-8 py-8">
+    <!-- HEADER (Identik dengan Beranda & Skrining) -->
+    <div class="flex items-center justify-between mb-10">
+        <div>
+            <h1 class="text-3xl font-black text-slate-800">Profil Pengguna</h1>
+            <p class="text-slate-500">Kelola informasi akun dan data profil anak Anda secara mandiri.</p>
+        </div>
+        <div class="w-20 h-20 rounded-3xl bg-teal-100 flex items-center justify-center text-teal-600 text-3xl shadow-sm">
+            <i class="fas fa-user-gear"></i>
         </div>
     </div>
 
-    <!-- KOLOM KANAN: DAFTAR ANAK -->
-    <div class="lg:col-span-2">
-        <div class="bg-white rounded-[32px] p-8 shadow-sm border border-slate-100">
-            <div class="flex items-center justify-between mb-8">
-                <h3 class="text-lg font-bold text-slate-800 flex items-center">
-                    <i class="fas fa-children mr-2 text-teal-500"></i> Daftar Profil Anak
+    <!-- FLASH MESSAGES -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="mb-6 p-4 rounded-2xl bg-teal-50 text-teal-700 border border-teal-100 font-bold flex items-center gap-3 animate-fade-in shadow-sm">
+            <i class="fas fa-check-circle"></i>
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+        <!-- KOLOM KIRI: INFO AKUN -->
+        <div class="lg:col-span-1">
+            <div class="bg-white rounded-[32px] p-8 shadow-sm border border-slate-100 h-full">
+                <h3 class="text-lg font-bold text-slate-800 mb-6 flex items-center">
+                    <i class="fas fa-id-card mr-2 text-teal-500"></i> Akun Anda
                 </h3>
-                <button onclick="toggleModal('addChildModal')"
-                    class="px-4 py-2 bg-slate-100 text-slate-700 rounded-xl font-bold text-sm hover:bg-teal-500 hover:text-white transition">
-                    + Tambah Anak
-                </button>
-            </div>
 
-            <div class="space-y-4">
-                {% for child in children %}
-                <div
-                    class="flex items-center justify-between p-5 rounded-2xl border {% if loop.first %}bg-teal-50/30 border-teal-200 shadow-sm{% else %}bg-slate-50 border-slate-100{% endif %} group transition-all">
-                    <div class="flex items-center gap-4">
-                        <div
-                            class="w-12 h-12 rounded-full {% if loop.first %}bg-teal-500 text-white shadow-teal-200{% else %}bg-white text-teal-500 shadow-sm{% endif %} flex items-center justify-center text-lg">
-                            <i class="fas fa-child"></i>
-                        </div>
-                        <div>
-                            <div class="flex items-center gap-2">
-                                <h4 class="font-bold text-slate-800">{{ child.name }}</h4>
-                                {% if loop.first %}
-                                <span
-                                    class="px-2 py-0.5 rounded-full bg-teal-500 text-[9px] font-black text-white uppercase tracking-tighter">Utama</span>
-                                {% endif %}
+                <form action="{{ url_for('user.update_account') }}" method="POST" class="space-y-5">
+                    
+                    <!-- INPUT NAMA LENGKAP -->
+                    <div>
+                        <label class="text-xs font-bold text-slate-400 uppercase tracking-widest block mb-2">Nama Lengkap</label>
+                        <div class="relative group">
+                            <input type="text" name="name" value="{{ user.username }}" required
+                                class="w-full px-4 py-3 pr-10 rounded-xl bg-slate-50 border-2 border-transparent focus:bg-white focus:border-teal-500 transition outline-none font-semibold text-slate-700">
+                            <div class="absolute right-4 top-3.5 text-slate-300 group-focus-within:text-teal-500 transition-colors">
+                                <i class="fas fa-pencil-alt text-xs"></i>
                             </div>
-                            <p class="text-xs text-slate-500">
-                                Lahir: {{ child.birth_date.strftime('%d %b %Y') }} •
-                                <span>{{ 'Laki-laki' if child.gender == 'L' else 'Perempuan' }}</span> •
-                                <span
-                                    class="{% if 'ADHD' in child.status %}text-orange-600 font-medium{% else %}text-emerald-600{% endif %}">{{
-                                    child.status }}</span>
-                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- INPUT EMAIL -->
+                    <div>
+                        <label class="text-xs font-bold text-slate-400 uppercase tracking-widest block mb-2">Email</label>
+                        <div class="relative group">
+                            <input type="email" name="email" value="{{ user.email }}" required
+                                class="w-full px-4 py-3 pr-10 rounded-xl bg-slate-50 border-2 border-transparent focus:bg-white focus:border-teal-500 transition outline-none font-semibold text-slate-700">
+                            <div class="absolute right-4 top-3.5 text-slate-300 group-focus-within:text-teal-500 transition-colors">
+                                <i class="fas fa-pencil-alt text-xs"></i>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="flex items-center gap-2">
-                        <!-- TOMBOL SET DEFAULT (Hanya muncul jika bukan anak pertama/default) -->
-                        {% if not loop.first %}
-                        <a href="{{ url_for('user.set_default_child', id=child._id) }}"
-                            class="px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-500 text-xs font-bold hover:bg-teal-500 hover:text-white hover:border-teal-500 transition shadow-sm flex items-center gap-1.5">
-                            <i class="fas fa-star-of-life"></i> Jadikan Utama
-                        </a>
-                        {% endif %}
-
-                        <!-- TOMBOL HAPUS -->
-                        <a href="{{ url_for('user.delete_child', id=child._id) }}"
-                            onclick="return confirm('Hapus data anak ini?')"
-                            class="w-10 h-10 rounded-xl bg-white text-rose-400 border border-slate-100 flex items-center justify-center hover:bg-rose-500 hover:text-white transition shadow-sm">
-                            <i class="fas fa-trash-can"></i>
-                        </a>
+                    <!-- INPUT PASSWORD -->
+                    <div>
+                        <label class="text-xs font-bold text-slate-400 uppercase tracking-widest block mb-2">Kata Sandi Baru</label>
+                        <div class="relative group">
+                            <input type="password" name="password" id="accPassword" placeholder="********"
+                                class="w-full px-4 py-3 pr-12 rounded-xl bg-slate-50 border-2 border-transparent focus:bg-white focus:border-teal-500 transition outline-none font-semibold text-slate-700">
+                            <!-- <div class="absolute right-10 top-3.5 text-slate-300 group-focus-within:text-teal-500 transition-colors">
+                                <i class="fas fa-pencil-alt text-xs"></i>
+                            </div> -->
+                            <button type="button" onclick="togglePassword('accPassword', 'accEye')" 
+                                class="absolute right-4 top-3.5 text-slate-400 hover:text-teal-600 transition-colors">
+                                <i class="fas fa-eye" id="accEye"></i>
+                            </button>
+                        </div>
+                        <p class="text-[10px] text-slate-400 mt-1 italic">*Kosongkan jika tidak ingin mengubah</p>
                     </div>
-                </div>
-                {% endfor %}
+                    
+                    <button type="submit"
+                        class="w-full py-4 bg-teal-500 text-white rounded-2xl font-bold hover:bg-teal-600 transition shadow-lg shadow-teal-100 active:scale-95">
+                        Simpan Perubahan
+                    </button>
+                </form>
+            </div>
+        </div>
 
-                {% if not children %}
-                <div class="py-16 text-center text-slate-400">
-                    <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i class="fas fa-users-slash text-2xl"></i>
-                    </div>
-                    <p class="font-medium">Belum ada data anak.</p>
-                    <p class="text-sm">Silakan tambahkan data anak untuk memulai skrining.</p>
+        <!-- KOLOM KANAN: DAFTAR ANAK -->
+        <div class="lg:col-span-2">
+            <div class="bg-white rounded-[32px] p-8 shadow-sm border border-slate-100">
+                <div class="flex items-center justify-between mb-8">
+                    <h3 class="text-lg font-bold text-slate-800 flex items-center">
+                        <i class="fas fa-children mr-2 text-teal-500"></i> Daftar Profil Anak
+                    </h3>
+                    <button onclick="toggleModal('addChildModal')"
+                        class="px-4 py-2 bg-slate-100 text-slate-700 rounded-xl font-bold text-sm hover:bg-teal-500 hover:text-white transition">
+                        + Tambah Profil Anak
+                    </button>
                 </div>
+
+                <div class="space-y-4">
+                    {% for child in children %}
+                    <div class="flex items-center justify-between p-5 rounded-2xl border {% if loop.first %}bg-teal-50/30 border-teal-200 shadow-sm{% else %}bg-slate-50 border-slate-100{% endif %} group transition-all">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-full {% if loop.first %}bg-teal-500 text-white shadow-teal-200{% else %}bg-white text-teal-500 shadow-sm{% endif %} flex items-center justify-center text-lg">
+                                <i class="fas fa-child"></i>
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <h4 class="font-bold text-slate-800">{{ child.name }}</h4>
+                                    {% if loop.first %}
+                                    <span class="px-2 py-0.5 rounded-full bg-teal-500 text-[9px] font-black text-white uppercase tracking-tighter">Utama</span>
+                                    {% endif %}
+                                </div>
+                                <p class="text-xs text-slate-500">
+                                    Lahir: {{ child.birth_date.strftime('%d %b %Y') }} •
+                                    <span>{{ 'Laki-laki' if child.gender == 'L' else 'Perempuan' }}</span> •
+                                    <span class="{% if 'Normal' in child.status %}text-emerald-600{% else %}text-orange-600 font-medium{% endif %}">{{ child.status }}</span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-2">
+                             <!-- TOMBOL SET DEFAULT -->
+                            {% if not loop.first %}
+                            <a href="{{ url_for('user.set_default_child', id=child._id) }}"
+                                class="px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-500 text-xs font-bold hover:bg-amber-400 hover:text-white hover:border-amber-400 transition shadow-sm flex items-center gap-1.5">
+                                <i class="fas fa-star text-[10px]"></i> Utama
+                            </a>
+                            {% endif %}
+
+                            <!-- TOMBOL EDIT (PENSIL) -->
+                            <button onclick="openEditChildModal('{{ child._id }}', '{{ child.name }}', '{{ child.birth_date.strftime('%Y-%m-%d') }}', '{{ child.gender }}')" 
+                                class="w-10 h-10 rounded-xl bg-white text-teal-500 border border-slate-100 flex items-center justify-center hover:bg-teal-500 hover:text-white transition shadow-sm">
+                                <i class="fas fa-pencil-alt text-xs"></i>
+                            </button>
+
+                            <!-- TOMBOL HAPUS -->
+                            <a href="{{ url_for('user.delete_child', id=child._id) }}"
+                                onclick="return confirm('Hapus data anak ini?')"
+                                class="w-10 h-10 rounded-xl bg-white text-rose-400 border border-slate-100 flex items-center justify-center hover:bg-rose-500 hover:text-white transition shadow-sm">
+                                <i class="fas fa-trash-can text-xs"></i>
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+
+                    {% if not children %}
+                    <div class="py-16 text-center text-slate-400">
+                        <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-200">
+                            <i class="fas fa-users-slash text-2xl"></i>
+                        </div>
+                        <p class="font-medium">Belum ada data anak.</p>
+                        <p class="text-sm">Tambahkan profil anak untuk mulai skrining.</p>
+                    </div>
+                    {% endif %}
+                </div>
+
+                {% if children %}
+                <p class="mt-8 text-[10px] text-slate-400 italic bg-slate-50 p-4 rounded-2xl border border-dashed border-slate-200 leading-relaxed">
+                    <i class="fas fa-info-circle mr-1 text-teal-500"></i>
+                    Gunakan ikon <strong>Utama</strong> untuk menetapkan profil default skrining. Profil anak yang berada paling atas adalah profil aktif saat ini.
+                </p>
                 {% endif %}
             </div>
-
-            {% if children %}
-            <p
-                class="mt-6 text-[10px] text-slate-400 italic bg-slate-50 p-3 rounded-xl border border-dashed border-slate-200">
-                <i class="fas fa-info-circle mr-1"></i>
-                Profil yang berada di urutan paling atas (Profil Utama) adalah satu-satunya yang diizinkan untuk
-                melakukan skrining. Gunakan tombol <strong>"Jadikan Utama"</strong> untuk beralih profil.
-            </p>
-            {% endif %}
         </div>
     </div>
 </div>
 
-
-
 <!-- MODAL TAMBAH ANAK -->
-<div id="addChildModal"
-    class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden">
-    <div class="bg-white w-full max-w-md p-8 rounded-[32px] shadow-2xl mx-4">
+<div id="addChildModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+    <div class="bg-white w-full max-w-md p-8 rounded-[32px] shadow-2xl mx-4 transform scale-95 transition-all" id="addModalBox">
         <h2 class="text-2xl font-black text-slate-800 mb-6">Tambah Profil Anak</h2>
         <form action="{{ url_for('user.add_child') }}" method="POST" class="space-y-4">
             <div>
-                <label class="text-xs font-bold text-slate-400 uppercase block mb-2">Nama Lengkap</label>
-                <input type="text" name="child_name" required
-                    class="w-full px-4 py-3 rounded-xl bg-slate-50 border-none outline-none focus:ring-2 focus:ring-teal-500">
+                <label class="text-xs font-bold text-slate-400 uppercase block mb-2 tracking-widest">Nama Lengkap</label>
+                <input type="text" name="child_name" required class="w-full px-4 py-3 rounded-xl bg-slate-50 border-none outline-none focus:ring-2 focus:ring-teal-500 font-semibold text-slate-700">
             </div>
             <div>
-                <label class="text-xs font-bold text-slate-400 uppercase block mb-2">Tanggal Lahir</label>
-                <input type="date" name="child_birth" required
-                    class="w-full px-4 py-3 rounded-xl bg-slate-50 border-none outline-none focus:ring-2 focus:ring-teal-500">
+                <label class="text-xs font-bold text-slate-400 uppercase block mb-2 tracking-widest">Tanggal Lahir</label>
+                <input type="date" name="child_birth" required class="w-full px-4 py-3 rounded-xl bg-slate-50 border-none outline-none focus:ring-2 focus:ring-teal-500 font-semibold text-slate-700">
             </div>
             <div>
-                <label class="text-xs font-bold text-slate-400 uppercase block mb-2">Jenis Kelamin</label>
-                <select name="gender"
-                    class="w-full px-4 py-3 rounded-xl bg-slate-50 border-none outline-none focus:ring-2 focus:ring-teal-500">
-                    <option value="L">Laki-laki</option>
-                    <option value="P">Perempuan</option>
-                </select>
+                <label class="text-xs font-bold text-slate-400 uppercase block mb-2 tracking-widest">Jenis Kelamin</label>
+                <div class="grid grid-cols-2 gap-3">
+                    <label class="cursor-pointer">
+                        <input type="radio" name="gender" value="L" checked class="hidden peer">
+                        <div class="text-center py-3 rounded-xl bg-slate-50 font-bold text-slate-600 peer-checked:bg-teal-500 peer-checked:text-white transition shadow-sm border border-transparent peer-checked:border-teal-600">Laki-laki</div>
+                    </label>
+                    <label class="cursor-pointer">
+                        <input type="radio" name="gender" value="P" class="hidden peer">
+                        <div class="text-center py-3 rounded-xl bg-slate-50 font-bold text-slate-600 peer-checked:bg-teal-500 peer-checked:text-white transition shadow-sm border border-transparent peer-checked:border-teal-600">Perempuan</div>
+                    </label>
+                </div>
             </div>
             <div class="flex gap-3 pt-4">
-                <button type="button" onclick="toggleModal('addChildModal')"
-                    class="flex-1 py-4 bg-slate-100 text-slate-600 rounded-2xl font-bold">Batal</button>
-                <button type="submit"
-                    class="flex-1 py-4 bg-teal-500 text-white rounded-2xl font-bold shadow-lg shadow-teal-100">Simpan</button>
+                <button type="button" onclick="toggleModal('addChildModal')" class="flex-1 py-4 bg-slate-100 text-slate-600 rounded-2xl font-bold">Batal</button>
+                <button type="submit" class="flex-1 py-4 bg-teal-500 text-white rounded-2xl font-bold shadow-lg shadow-teal-100">Simpan</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL EDIT ANAK (BARU) -->
+<div id="editChildModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+    <div class="bg-white w-full max-w-md p-8 rounded-[32px] shadow-2xl mx-4 transform scale-95 transition-all" id="editModalBox">
+        <h2 class="text-2xl font-black text-slate-800 mb-6">Edit Profil Anak</h2>
+        <form action="{{ url_for('user.edit_child') }}" method="POST" class="space-y-4">
+            <input type="hidden" name="child_id" id="edit_id">
+            <div>
+                <label class="text-xs font-bold text-slate-400 uppercase block mb-2 tracking-widest">Nama Lengkap</label>
+                <input type="text" name="child_name" id="edit_name" required class="w-full px-4 py-3 rounded-xl bg-slate-50 border-none outline-none focus:ring-2 focus:ring-teal-500 font-semibold text-slate-700">
+            </div>
+            <div>
+                <label class="text-xs font-bold text-slate-400 uppercase block mb-2 tracking-widest">Tanggal Lahir</label>
+                <input type="date" name="child_birth" id="edit_birth" required class="w-full px-4 py-3 rounded-xl bg-slate-50 border-none outline-none focus:ring-2 focus:ring-teal-500 font-semibold text-slate-700">
+            </div>
+            <div>
+                <label class="text-xs font-bold text-slate-400 uppercase block mb-2 tracking-widest">Jenis Kelamin</label>
+                <div class="grid grid-cols-2 gap-3">
+                    <label class="cursor-pointer">
+                        <input type="radio" name="gender" value="L" id="edit_gender_L" class="hidden peer">
+                        <div class="text-center py-3 rounded-xl bg-slate-50 font-bold text-slate-600 peer-checked:bg-teal-500 peer-checked:text-white transition shadow-sm border border-transparent peer-checked:border-teal-600">Laki-laki</div>
+                    </label>
+                    <label class="cursor-pointer">
+                        <input type="radio" name="gender" value="P" id="edit_gender_P" class="hidden peer">
+                        <div class="text-center py-3 rounded-xl bg-slate-50 font-bold text-slate-600 peer-checked:bg-teal-500 peer-checked:text-white transition shadow-sm border border-transparent peer-checked:border-teal-600">Perempuan</div>
+                    </label>
+                </div>
+            </div>
+            <div class="flex gap-3 pt-4">
+                <button type="button" onclick="toggleModal('editChildModal')" class="flex-1 py-4 bg-slate-100 text-slate-600 rounded-2xl font-bold hover:bg-slate-200 transition">Batal</button>
+                <button type="submit" class="flex-1 py-4 bg-teal-500 text-white rounded-2xl font-bold shadow-lg shadow-teal-100 hover:bg-teal-600 transition">Perbarui Data</button>
             </div>
         </form>
     </div>
@@ -183,7 +240,46 @@
 <script>
     function toggleModal(id) {
         const modal = document.getElementById(id);
-        modal.classList.toggle('hidden');
+        const modalBox = modal.querySelector('[id$="ModalBox"]');
+        
+        if (modal.classList.contains('hidden')) {
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.replace('opacity-0', 'opacity-100');
+                if(modalBox) modalBox.classList.replace('scale-95', 'scale-100');
+            }, 10);
+        } else {
+            modal.classList.replace('opacity-100', 'opacity-0');
+            if(modalBox) modalBox.classList.replace('scale-100', 'scale-95');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+    }
+
+    function openEditChildModal(id, name, birth, gender) {
+        document.getElementById('edit_id').value = id;
+        document.getElementById('edit_name').value = name;
+        document.getElementById('edit_birth').value = birth;
+        if(gender === 'L') document.getElementById('edit_gender_L').checked = true;
+        else document.getElementById('edit_gender_P').checked = true;
+        toggleModal('editChildModal');
+    }
+
+    function togglePassword(inputId, eyeId) {
+        const input = document.getElementById(inputId);
+        const icon = document.getElementById(eyeId);
+        if (input.type === "password") {
+            input.type = "text";
+            icon.classList.replace('fa-eye', 'fa-eye-slash');
+        } else {
+            input.type = "password";
+            icon.classList.replace('fa-eye-slash', 'fa-eye');
+        }
+    }
+
+    // Tutup modal jika klik di luar area
+    window.onclick = function(event) {
+        if (event.target.id === 'editChildModal') toggleModal('editChildModal');
+        if (event.target.id === 'addChildModal') toggleModal('addChildModal');
     }
 </script>
 {% endblock %}
