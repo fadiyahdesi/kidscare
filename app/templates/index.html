@@ -1,154 +1,288 @@
 {% extends 'layout/app.html' %}
 
 {% block content %}
+<div class="bg-white overflow-x-hidden">
 
-<!-- BERANDA -->
-<section class="hero" id="beranda">
-    <div class="hero-text">
-        <h1>Skrining Dini ADHD<br>untuk Anak Usia Dini<br>di Kota Tegal</h1>
-        <p>Sistem analisis otomatis berbasis <b>AI Rule Based</b> untuk membantu skrining ADHD secara cepat dan akurat untuk buah hati Anda.</p>
-        <a href="#preview" class="btn btn-primary">Mulai Test Skrining</a>
+    <!-- 2. HERO SECTION -->
+    <!-- pt-32 ditambahkan untuk memberi ruang agar tidak tertutup fixed navbar -->
+    <section class="relative pt-32 pb-16 lg:pt-40 lg:pb-24 bg-white" id="beranda">
+        <!-- KONTAINER PUSAT: Ini yang membuat konten menetap di tengah seperti navbar -->
+        <div class="w-full px-6 md:px-12 lg:px-24 flex flex-col lg:flex-row items-center gap-12">
+
+            <!-- Sisi Kiri: Teks -->
+            <div class="flex-1 text-center lg:text-left z-10">
+                <span
+                    class="inline-block px-4 py-1.5 bg-teal-50 text-teal-600 rounded-full text-[10px] font-black uppercase tracking-widest mb-6 border border-teal-100">
+                    Sistem Berbasis AI Rule-Based
+                </span>
+                <h1 class="text-4xl md:text-5xl lg:text-6xl font-black text-slate-800 leading-[1.1] mb-6">
+                    Skrining ADHD <br class="hidden md:block">
+                    <span class="text-teal-500">Anak Usia Dini</span> <br class="hidden md:block">
+                </h1>
+                <p
+                    class="text-base md:text-lg text-slate-500 mb-10 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-medium">
+                    Analisis otomatis yang cepat dan akurat untuk membantu orang tua serta guru dalam mendeteksi gejala
+                    ADHD pada anak usia dini secara mandiri.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                    <a href="#preview"
+                        class="px-8 py-4 bg-teal-500 text-white rounded-2xl font-bold text-lg hover:bg-teal-600 shadow-xl shadow-teal-100 transition-all active:scale-95">Mulai
+                        Tes Skrining</a>
+                    <a href="#tentang"
+                        class="px-8 py-4 bg-slate-50 text-slate-600 rounded-2xl font-bold text-lg hover:bg-slate-100 transition-all">Pelajari
+                        Lebih Lanjut</a>
+                </div>
+            </div>
+
+            <!-- Sisi Kanan: Gambar -->
+            <div class="flex-1 relative w-full max-w-lg lg:max-w-none flex justify-center">
+                <div class="absolute inset-0 bg-teal-100 rounded-full blur-[100px] opacity-30 -z-10"></div>
+                <img src="{{ url_for('static', filename='images/foto_landing_page.png') }}" alt="Anak Bahagia"
+                    class="w-full max-w-md lg:max-w-xl h-auto floating drop-shadow-2xl"
+                    onerror="this.src='https://png.pngtree.com/png-vector/20230831/ourmid/pngtree-happy-children-holding-hands-around-the-world-vector-png-image_9198642.png'">
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. TENTANG (FITUR) -->
+    <section class="py-24 bg-slate-50/50" id="tentang">
+        <div class="w-full px-6 md:px-12 lg:px-24">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <h2 class="text-3xl md:text-4xl font-black text-slate-800 mb-4">Tentang KidsCare</h2>
+                <p class="text-slate-500 font-medium">Sistem pendukung keputusan yang dirancang untuk mempermudah
+                    deteksi dini perilaku anak melalui platform digital yang intuitif.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div
+                    class="bg-white p-8 rounded-[40px] border border-slate-100 shadow-sm hover:shadow-xl transition-all group">
+                    <div
+                        class="w-16 h-16 bg-teal-50 text-teal-500 rounded-2xl flex items-center justify-center text-2xl mb-6 group-hover:bg-teal-500 group-hover:text-white transition-all">
+                        <i class="fas fa-clipboard-list"></i>
+                    </div>
+                    <h4 class="text-xl font-black text-slate-800 mb-3">Tes Skrining</h4>
+                    <p class="text-slate-500 text-sm leading-relaxed">Metode skrining berbasis kriteria DSM-5 yang
+                        disederhanakan agar mudah diisi oleh orang tua.</p>
+                </div>
+                <div
+                    class="bg-white p-8 rounded-[40px] border border-slate-100 shadow-sm hover:shadow-xl transition-all group">
+                    <div
+                        class="w-16 h-16 bg-orange-50 text-orange-500 rounded-2xl flex items-center justify-center text-2xl mb-6 group-hover:bg-orange-500 group-hover:text-white transition-all">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h4 class="text-xl font-black text-slate-800 mb-3">Riwayat Berkala</h4>
+                    <p class="text-slate-500 text-sm leading-relaxed">Pantau perkembangan hasil tes anak Anda dari waktu
+                        ke waktu dalam satu dashboard aman.</p>
+                </div>
+                <div
+                    class="bg-white p-8 rounded-[40px] border border-slate-100 shadow-sm hover:shadow-xl transition-all group">
+                    <div
+                        class="w-16 h-16 bg-blue-50 text-blue-500 rounded-2xl flex items-center justify-center text-2xl mb-6 group-hover:bg-blue-500 group-hover:text-white transition-all">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    <h4 class="text-xl font-black text-slate-800 mb-3">Edukasi ADHD</h4>
+                    <p class="text-slate-500 text-sm leading-relaxed">Akses modul video dan artikel mengenai pola asuh
+                        untuk anak berkebutuhan khusus.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- 3. PREVIEW TEST (INTERACTIVE FEEL) -->
+<section class="py-24 px-6 md:px-12 lg:px-24 flex flex-col lg:flex-row gap-16 items-center" id="preview">
+    <div class="flex-1 w-full">
+        <div class="bg-slate-900 rounded-[48px] p-8 md:p-12 shadow-2xl relative overflow-hidden">
+            <!-- UI MOCKUP -->
+            <div class="relative z-10 text-white">
+                <div class="flex justify-between items-center mb-10">
+                    <span
+                        class="px-4 py-1.5 bg-white/10 rounded-full text-[10px] font-black uppercase tracking-widest border border-white/10">Pertanyaan
+                        1 dari 20</span>
+                    <div class="w-8 h-8 rounded-full bg-teal-500 flex items-center justify-center text-xs"><i
+                            class="fas fa-check"></i></div>
+                </div>
+                <h2 class="text-2xl md:text-3xl font-bold mb-10 leading-snug text-center lg:text-left italic">"Apakah
+                    anak tampak mudah menjadi gembira dan bertindak tanpa berpikir (impulsif)?"</h2>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <button
+                        class="py-4 px-2 rounded-2xl bg-white/5 border border-white/10 font-bold hover:bg-white/20 transition-all text-xs md:text-sm">Tidak
+                        Pernah</button>
+                    <button
+                        class="py-4 px-2 rounded-2xl bg-white/5 border border-white/10 font-bold hover:bg-white/20 transition-all text-xs md:text-sm">Jarang</button>
+                    <button
+                        class="py-4 px-2 rounded-2xl bg-teal-500 text-white font-black shadow-lg shadow-teal-500/20 text-xs md:text-sm">Sering</button>
+                    <button
+                        class="py-4 px-2 rounded-2xl bg-white/5 border border-white/10 font-bold hover:bg-white/20 transition-all text-xs md:text-sm">Sangat
+                        Sering</button>
+                </div>
+            </div>
+            <!-- Dekorasi -->
+            <div class="absolute -bottom-10 -right-10 w-40 h-40 bg-teal-500 rounded-full blur-[80px] opacity-30"></div>
+        </div>
     </div>
-    <div class="hero-image">
-        <img src="{{ url_for('static', filename='images/foto_landing_page.png') }}" alt="Ilustrasi Anak Bahagia">
+    <div class="flex-1">
+        <h2 class="text-3xl md:text-4xl font-black text-slate-800 mb-6">Dapatkan Hasil Analisis Lengkap Sekarang.</h2>
+        <p class="text-lg text-slate-500 mb-8 leading-relaxed">Dengan membuat akun, Anda akan mendapatkan rincian skor
+            inatensi, hiperaktivitas, serta saran penanganan yang dipersonalisasi untuk buah hati Anda.</p>
+        <div class="space-y-4 mb-10">
+            <div class="flex items-center gap-3 font-bold text-slate-700">
+                <i class="fas fa-check-circle text-teal-500"></i> Laporan format PDF
+            </div>
+            <div class="flex items-center gap-3 font-bold text-slate-700">
+                <i class="fas fa-check-circle text-teal-500"></i> Rekomendasi Psikolog terdekat
+            </div>
+        </div>
+        <a href="{{ url_for('main.register') }}"
+            class="inline-flex items-center gap-3 px-10 py-5 bg-teal-500 text-white rounded-[24px] font-black text-xl hover:bg-teal-600 shadow-xl shadow-teal-100 transition-all active:scale-95">
+            Daftar & Mulai Tes <i class="fas fa-arrow-right"></i>
+        </a>
     </div>
 </section>
 
-<!-- TENTANG -->
-<section class="tentang" id="tentang">
-    <h2 class="section-title">Tentang KidsCare</h2>
-    <p class="section-subtitle">
-        KidsCare adalah sistem pendukung keputusan untuk Skrining dini ADHD pada anak usia dini
-        yang dirancang khusus untuk membantu orang tua dan tenaga pendidik.
-    </p>
-
-    <div class="fitur-grid">
-        <div class="fitur-card">
-            <div class="fitur-icon">
-                <i class="fas fa-clipboard-list"></i>
-            </div>
-            <h4>Test Skrining</h4>
-            <p style="font-size: 0.9rem; margin-top: 10px;">Metode Skrining dini yang mudah digunakan.</p>
+<!-- 4. FAQ -->
+<section class="py-24 px-6 md:px-12 lg:px-24 bg-white" id="faq">
+    <div class="flex flex-col lg:flex-row gap-16 items-start">
+        <div class="lg:w-1/3 sticky top-24">
+            <h2 class="text-3xl md:text-4xl font-black text-slate-800 mb-6">Pertanyaan Umum</h2>
+            <p class="text-slate-500 leading-relaxed">Masih ragu? Temukan jawaban atas pertanyaan yang paling sering
+                diajukan seputar platform KidsCare.</p>
+            <img src="{{ url_for('static', filename='images/faqq.jpg') }}" alt="FAQ Illustration"
+                class="hidden lg:block mt-10 rounded-[32px] shadow-lg border border-slate-100"
+                onerror="this.src='https://images.unsplash.com/photo-1552072092-7f9b8d63efcb?q=80&w=1000&auto=format&fit=crop'">
         </div>
-        <div class="fitur-card">
-            <div class="fitur-icon">
-                <i class="fas fa-chart-column"></i>
-            </div>
-            <h4>Riwayat Skrining</h4>
-            <p style="font-size: 0.9rem; margin-top: 10px;">Pantau perkembangan hasil tes dari waktu ke waktu.</p>
-        </div>
-        <div class="fitur-card">
-            <div class="fitur-icon">
-                <i class="fas fa-book-open"></i>
-            </div>
-            <h4>Edukasi ADHD</h4>
-            <p style="font-size: 0.9rem; margin-top: 10px;">Informasi lengkap seputar tumbuh kembang anak.</p>
-        </div>
-    </div>
-</section>
-
-<!-- PREVIEW TEST -->
-<section class="preview" id="preview">
-    <div class="preview-box">
-        <p class="question-header">Pertanyaan 1 dari 20</p>
-        <h2>Mudah menjadi gembira dan impulsif?</h2>
-        <div class="opsi">
-            <button onclick="selectOption(this)">Tidak ada</button>
-            <button onclick="selectOption(this)">Sesekali</button>
-            <button class="active" onclick="selectOption(this)">Sering</button>
-            <button onclick="selectOption(this)">Selalu</button>
-        </div>
-    </div>
-
-    <div class="preview-cta">
-        <h3>Ingin hasil lengkap?</h3>
-        <p>Untuk mendapatkan analisis lengkap dan saran penanganan, silakan buat akun terlebih dahulu.</p>
-        <a href="/register" class="btn" style="background: white; color: var(--primary-color);">Daftar Sekarang!</a>
-    </div>
-</section>
-
-<!-- FAQ (Updated Layout) -->
-<section class="faq" id="faq">
-    <div class="faq-container">
-        <!-- Kolom Kiri: Gambar -->
-        <div class="faq-image-side">
-            <img src="{{ url_for('static', filename='images/faqq.jpg') }}" alt="Ilustrasi FAQ">
-        </div>
-        
-        <!-- Kolom Kanan: Daftar Pertanyaan -->
-        <div class="faq-content-side">
-            <h2>Pertanyaan Umum</h2>
-            <p style="margin-bottom: 30px; color: #666;">Temukan jawaban atas pertanyaan yang sering diajukan seputar KidsCare.</p>
-
-            <details>
-                <summary>Apa itu KidsCare?</summary>
-                <p>KidsCare adalah sistem skrining awal ADHD berbasis AI yang membantu orang tua menSkrining gejala ADHD pada anak sejak dini menggunakan metode Machine Learning.</p>
+        <div class="lg:w-2/3 w-full space-y-4">
+            <details class="group bg-slate-50 rounded-3xl border border-slate-100 overflow-hidden">
+                <summary
+                    class="p-8 cursor-pointer flex justify-between items-center list-none font-bold text-slate-800">
+                    Apa itu KidsCare?
+                </summary>
+                <div class="px-8 pb-8 text-slate-500 leading-relaxed text-sm">
+                    KidsCare adalah sistem skrining awal ADHD berbasis Rule-Based yang membantu orang tua
+                    mengidentifikasi gejala ADHD pada anak sejak dini menggunakan parameter klinis DSM-5.
+                </div>
             </details>
-
-            <details>
-                <summary>Apakah hasil ini diagnosis medis?</summary>
-                <p>Tidak. Hasil dari KidsCare bersifat prediksi awal atau skrining. Untuk diagnosis pasti, silakan konsultasikan hasil ini dengan dokter anak atau psikolog klinis.</p>
+            <details class="group bg-slate-50 rounded-3xl border border-slate-100 overflow-hidden">
+                <summary
+                    class="p-8 cursor-pointer flex justify-between items-center list-none font-bold text-slate-800">
+                    Apakah hasil ini diagnosis medis?
+                </summary>
+                <div class="px-8 pb-8 text-slate-500 leading-relaxed text-sm">
+                    Tidak. Hasil dari KidsCare bersifat prediksi awal atau skrining mandiri. Untuk diagnosis klinis
+                    resmi, Anda wajib berkonsultasi dengan psikolog atau dokter spesialis anak.
+                </div>
             </details>
-
-            <details>
-                <summary>Siapa yang dapat menggunakan KidsCare?</summary>
-                <p>Aplikasi ini dirancang untuk Orang tua, Guru PAUD/TK, dan Tenaga Pendidik lainnya yang ingin memantau perkembangan perilaku anak.</p>
+            <details class="group bg-slate-50 rounded-3xl border border-slate-100 overflow-hidden">
+                <summary
+                    class="p-8 cursor-pointer flex justify-between items-center list-none font-bold text-slate-800">
+                    Siapa yang dapat menggunakan KidsCare?
+                </summary>
+                <div class="px-8 pb-8 text-slate-500 leading-relaxed text-sm">
+                    Aplikasi ini dirancang untuk Orang tua dan Guru (PAUD/TK) yang ingin memantau perilaku anak secara
+                    lebih objektif dan terstruktur.
+                </div>
             </details>
-            
-            <details>
-                <summary>Apakah data anak saya aman?</summary>
-                <p>Ya, kami menjaga privasi data pengguna dengan enkripsi standar dan tidak membagikan data pribadi kepada pihak ketiga tanpa izin.</p>
+            <details class="group bg-slate-50 rounded-3xl border border-slate-100 overflow-hidden">
+                <summary
+                    class="p-8 cursor-pointer flex justify-between items-center list-none font-bold text-slate-800">
+                    Apakah data anak saya aman?
+                </summary>
+                <div class="px-8 pb-8 text-slate-500 leading-relaxed text-sm">
+                    Ya. Kami menjaga privasi data Anda dengan enkripsi standar industri dan tidak pernah membagikan
+                    informasi pribadi kepada pihak ketiga tanpa persetujuan Anda.
+                </div>
             </details>
         </div>
     </div>
 </section>
 
-<section class="kontak" id="kontak">
-    <h2 class="section-title">Kontak Kami</h2>
-    <p class="section-subtitle">
-        Jangan ragu untuk bertanya atau menyampaikan saran
-    </p>
+<!-- 5. KONTAK -->
+<section class="py-24 px-6 md:px-12 lg:px-24 bg-slate-900 rounded-t-[60px] text-white" id="kontak">
+    <div class="max-w-6xl mx-auto flex flex-col lg:flex-row gap-16">
+        <div class="flex-1">
+            <h2 class="text-4xl font-black mb-6">Hubungi Kami</h2>
+            <p class="text-slate-400 text-lg mb-12">Punya pertanyaan teknis atau saran pengembangan? Kami sangat senang
+                mendengar masukan dari Anda.</p>
 
-    <div class="kontak-wrapper">
-
-        <!-- FORM -->
-        <div class="kontak-form">
-            <label>Nama:</label>
-            <input type="text" placeholder="Masukkan nama Anda">
-
-            <label>Email / Nomor WhatsApp:</label>
-            <input type="text" placeholder="Masukkan email atau nomor WhatsApp">
-
-            <label>Saran atau Pesan:</label>
-            <textarea rows="4" placeholder="Tuliskan pesan Anda"></textarea>
-
-            <button type="submit" class="btn-kontak">
-                Kirim
-            </button>
-        </div>
-
-        <!-- INFO -->
-        <div class="kontak-info">
-            <h3>Hubungi Kami:</h3>
-
-            <div class="info-item">
-                <i class="fas fa-phone"></i>
-                <span>+62 812 3456 789</span>
-            </div>
-
-            <div class="info-item">
-                <i class="fas fa-envelope"></i>
-                <span>kidscare@gmail.com</span>
-            </div>
-
-            <div class="info-item">
-                <i class="fas fa-location-dot"></i>
-                <span>Kota Tegal, Jawa Tengah</span>
+            <div class="space-y-8">
+                <div class="flex items-center gap-6 group">
+                    <div
+                        class="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-teal-400 text-xl border border-white/10 group-hover:bg-teal-500 group-hover:text-white transition-all">
+                        <i class="fas fa-phone"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs font-black uppercase text-slate-500 tracking-widest mb-1">Telepon/WA</p>
+                        <p class="text-lg font-bold">+62 823 2292 269</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-6 group">
+                    <div
+                        class="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-teal-400 text-xl border border-white/10 group-hover:bg-teal-500 group-hover:text-white transition-all">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs font-black uppercase text-slate-500 tracking-widest mb-1">Email</p>
+                        <p class="text-lg font-bold">support@kidscare.id</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-6 group">
+                    <div
+                        class="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-teal-400 text-xl border border-white/10 group-hover:bg-teal-500 group-hover:text-white transition-all">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs font-black uppercase text-slate-500 tracking-widest mb-1">Lokasi</p>
+                        <p class="text-lg font-bold">Slawi, Tegal - Jawa Tengah</p>
+                    </div>
+                </div>
             </div>
         </div>
 
+        <div class="flex-1">
+            <div class="bg-white/5 backdrop-blur-md p-8 md:p-12 rounded-[40px] border border-white/10">
+                <form class="space-y-6">
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Nama
+                            Lengkap</label>
+                        <input type="text" placeholder="Masukkan nama Anda"
+                            class="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl focus:border-teal-500 outline-none transition-all font-semibold text-white">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Kontak
+                            (WA/Email)</label>
+                        <input type="text" placeholder="Masukkan nomor atau email"
+                            class="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl focus:border-teal-500 outline-none transition-all font-semibold text-white">
+                    </div>
+                    <div class="space-y-2">
+                        <label
+                            class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Pesan</label>
+                        <textarea rows="4" placeholder="Tuliskan pesan Anda..."
+                            class="w-full px-6 py-4 bg-white/5 border border-white/10 rounded-2xl focus:border-teal-500 outline-none transition-all font-semibold text-white resize-none"></textarea>
+                    </div>
+                    <button type="submit"
+                        class="w-full py-5 bg-teal-500 text-white rounded-2xl font-black text-lg hover:bg-teal-600 transition-all active:scale-95 shadow-lg shadow-teal-500/20">
+                        Kirim Pesan
+                    </button>
+                </form>
+            </div>
+        </div>
     </div>
+    <!-- 
+        <div class="mt-24 pt-12 border-t border-white/5 text-center">
+            <p class="text-slate-500 text-sm">© 2026 KidsCare Health System. All rights reserved.</p>
+        </div> -->
 </section>
 
+</div>
 
+<script>
+    function selectOption(btn) {
+        const buttons = btn.parentElement.querySelectorAll('button');
+        buttons.forEach(b => b.classList.remove('bg-teal-500', 'text-white'));
+        buttons.forEach(b => b.classList.add('bg-white/5', 'text-white'));
+        btn.classList.remove('bg-white/5');
+        btn.classList.add('bg-teal-500');
+    }
+</script>
 {% endblock %}

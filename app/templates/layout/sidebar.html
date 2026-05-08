@@ -1,51 +1,163 @@
 <!-- templates/layout/sidebar.html -->
-<aside class="sidebar" id="sidebar">
-    <div class="sidebar-logo">
-        <span class="logo-main">Kids</span><span class="logo-sub">Care</span>
-        <i class="fas fa-bars menu-toggle" onclick="toggleSidebar()"></i>
+<!-- Sidebar dengan warna Slate 950 dan teks putih murni -->
+<aside class="fixed left-0 top-0 h-screen w-72 bg-slate-950 border-r border-white/10 flex flex-col z-[1050] transition-all duration-300 shadow-2xl transform lg:translate-x-0" id="sidebar">
+    
+    <!-- SIDEBAR HEADER: LOGO & HAMBURGER -->
+    <div class="p-8 flex items-center justify-between border-b border-white/5">
+        <a href="{{ url_for('user.index') }}" class="flex items-center gap-3 group">
+            <div class="w-10 h-10 rounded-2xl bg-teal-500 flex items-center justify-center text-white shadow-lg shadow-teal-500/20 group-hover:rotate-12 transition-transform duration-300">
+                <i class="fas fa-heart-pulse text-lg"></i>
+            </div>
+            <span class="text-2xl font-black tracking-tighter text-white">
+                Kids<span class="text-teal-500">Care</span>
+            </span>
+        </a>
+        <!-- TANDA HAMBURGER: Hanya muncul di mobile -->
+        <button onclick="toggleSidebar()" class="text-white/70 hover:text-white transition-colors p-2 lg:hidden">
+            <i class="fas fa-bars-staggered text-xl"></i>
+        </button>
     </div>
 
-    <nav class="sidebar-menu">
+    <!-- MAIN NAVIGATION -->
+    <nav class="flex-1 px-4 space-y-2 mt-8 overflow-y-auto custom-scrollbar">
+        <p class="px-4 text-[10px] font-black uppercase tracking-[0.2em] text-white mb-4 opacity-80">Menu Utama</p>
+        
         <!-- Beranda -->
         <a href="{{ url_for('user.index') }}"
-           class="{% if request.endpoint == 'user.index' %}active{% endif %}">
-            <i class="fas fa-house"></i>
-            <span>Beranda</span>
+           class="flex items-center gap-4 px-4 py-3.5 rounded-2xl font-bold transition-all duration-300 group
+           {% if request.endpoint == 'user.index' %}
+           bg-teal-500 text-white shadow-lg shadow-teal-500/20
+           {% else %}
+           text-white hover:bg-white/10
+           {% endif %}">
+            <div class="w-5 flex justify-center">
+                <i class="fas fa-house text-lg transition-transform group-hover:scale-110 text-white"></i>
+            </div>
+            <span class="text-sm tracking-wide text-white">Beranda</span>
         </a>
 
-        <!-- Test Skrining - Diperbaiki sesuai saran error -->
+        <!-- Test Skrining -->
         <a href="{{ url_for('user.test_skrining') }}"
-           class="{% if request.endpoint == 'user.test_skrining' %}active{% endif %}">
-            <i class="fas fa-notes-medical"></i>
-            <span>Test Skrining</span>
+           class="flex items-center gap-4 px-4 py-3.5 rounded-2xl font-bold transition-all duration-300 group
+           {% if request.endpoint == 'user.test_skrining' %}
+           bg-teal-500 text-white shadow-lg shadow-teal-500/20
+           {% else %}
+           text-white hover:bg-white/10
+           {% endif %}">
+            <div class="w-5 flex justify-center">
+                <i class="fas fa-clipboard-check text-lg transition-transform group-hover:scale-110 text-white"></i>
+            </div>
+            <span class="text-sm tracking-wide text-white">Test Skrining</span>
         </a>
 
-        <!-- Riwayat - Menggunakan pola flat (user.fungsi) -->
+        <!-- Riwayat -->
         <a href="{{ url_for('user.riwayat_skrining') }}"
-           class="{% if request.endpoint == 'user.riwayat_skrining' %}active{% endif %}">
-            <i class="fas fa-clock-rotate-left"></i>
-            <span>Riwayat</span>
+           class="flex items-center gap-4 px-4 py-3.5 rounded-2xl font-bold transition-all duration-300 group
+           {% if request.endpoint == 'user.riwayat_skrining' %}
+           bg-teal-500 text-white shadow-lg shadow-teal-500/20
+           {% else %}
+           text-white hover:bg-white/10
+           {% endif %}">
+            <div class="w-5 flex justify-center">
+                <i class="fas fa-clock-rotate-left text-lg transition-transform group-hover:scale-110 text-white"></i>
+            </div>
+            <span class="text-sm tracking-wide text-white">Riwayat</span>
         </a>
+
+        <div class="pt-6 pb-2 border-t border-white/5 mt-6 mx-4">
+             <p class="text-[10px] font-black uppercase tracking-[0.2em] text-white opacity-80">Layanan & Akun</p>
+        </div>
 
         <!-- Konsultasi -->
         <a href="{{ url_for('user.konsultasi_psikolog') }}"
-           class="{% if request.endpoint == 'user.konsultasi_psikolog' %}active{% endif %}">
-            <i class="fas fa-comments"></i>
-            <span>Konsultasi</span>
+           class="flex items-center gap-4 px-4 py-3.5 rounded-2xl font-bold transition-all duration-300 group
+           {% if request.endpoint == 'user.konsultasi_psikolog' %}
+           bg-teal-500 text-white shadow-lg shadow-teal-500/20
+           {% else %}
+           text-white hover:bg-white/10
+           {% endif %}">
+            <div class="w-5 flex justify-center">
+                <i class="fas fa-user-doctor text-lg transition-transform group-hover:scale-110 text-white"></i>
+            </div>
+            <span class="text-sm tracking-wide text-white">Konsultasi Ahli</span>
         </a>
 
         <!-- Edukasi -->
         <a href="{{ url_for('user.edukasi_user') }}"
-           class="{% if request.endpoint == 'user.edukasi_user' %}active{% endif %}">
-            <i class="fas fa-book-open-reader"></i>
-            <span>Edukasi</span>
+           class="flex items-center gap-4 px-4 py-3.5 rounded-2xl font-bold transition-all duration-300 group
+           {% if request.endpoint == 'user.edukasi_user' %}
+           bg-teal-500 text-white shadow-lg shadow-teal-500/20
+           {% else %}
+           text-white hover:bg-white/10
+           {% endif %}">
+            <div class="w-5 flex justify-center">
+                <i class="fas fa-book-open-reader text-lg transition-transform group-hover:scale-110 text-white"></i>
+            </div>
+            <span class="text-sm tracking-wide text-white">Pusat Edukasi</span>
         </a>
 
         <!-- Profil -->
         <a href="{{ url_for('user.profil_user') }}"
-           class="{% if request.endpoint == 'user.profil_user' %}active{% endif %}">
-            <i class="fas fa-user"></i>
-            <span>Profil</span>
+           class="flex items-center gap-4 px-4 py-3.5 rounded-2xl font-bold transition-all duration-300 group
+           {% if request.endpoint == 'user.profil_user' %}
+           bg-teal-500 text-white shadow-lg shadow-teal-500/20
+           {% else %}
+           text-white hover:bg-white/10
+           {% endif %}">
+            <div class="w-5 flex justify-center">
+                <i class="fas fa-user-gear text-lg transition-transform group-hover:scale-110 text-white"></i>
+            </div>
+            <span class="text-sm tracking-wide text-white">Pengaturan Profil</span>
         </a>
     </nav>
+
+    <!-- SIDEBAR FOOTER: LOGOUT -->
+    <!-- <div class="p-6 border-t border-white/5">
+        <a href="{{ url_for('main.logout') }}" 
+           class="flex items-center gap-4 px-4 py-4 rounded-2xl font-black text-white bg-white/5 hover:bg-rose-500 transition-all duration-300 group">
+            <div class="w-5 flex justify-center">
+                <i class="fas fa-power-off transition-transform group-hover:rotate-12 text-white"></i>
+            </div>
+            <span class="text-xs uppercase tracking-widest text-white">Keluar Aplikasi</span>
+        </a>
+    </div> -->
 </aside>
+
+<script>
+    /**
+     * Logic Sidebar Toggle
+     */
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const body = document.body;
+        const isDesktop = window.innerWidth >= 1024;
+
+        if (isDesktop) {
+            sidebar.classList.toggle('sidebar-closed');
+            if (sidebar.classList.contains('sidebar-closed')) {
+                body.classList.add('sidebar-is-closed');
+            } else {
+                body.classList.remove('sidebar-is-closed');
+            }
+        } else {
+            if (sidebar.style.transform === 'translateX(0px)' || sidebar.style.transform === 'none' || !sidebar.style.transform) {
+                sidebar.style.transform = 'translateX(-100%)';
+            } else {
+                sidebar.style.transform = 'translateX(0px)';
+            }
+        }
+    }
+</script>
+
+<style>
+    /* Scrollbar minimalis untuk tema gelap */
+    .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 10px; }
+    
+    @media (max-width: 1023px) {
+        #sidebar { transform: translateX(-100%); }
+    }
+    
+    #sidebar.sidebar-closed { transform: translateX(-100%) !important; }
+</style>

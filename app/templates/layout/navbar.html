@@ -1,21 +1,69 @@
-<!-- templates/layout/navbar.html -->
-<header class="navbar">
-    <div class="logo">
-        <a href="{{ url_for('main.landing') }}">
-            <i class="fas fa-child"></i> Kids<span>Care</span>
-        </a>
+<!-- NAVBAR: SOLID FIXED HEADER FULL WIDTH -->
+<header class="fixed top-0 left-0 right-0 z-[1000] bg-white border-b border-slate-100 shadow-sm" id="main-header">
+    <div class="w-full max-w-7xl mx-auto px-6 md:px-12 py-4 flex items-center justify-between">
+        
+        <!-- LOGO -->
+        <div class="flex items-center gap-2 group">
+            <a href="{{ url_for('main.landing') }}" class="flex items-center gap-2">
+                <div class="w-9 h-9 rounded-xl bg-teal-500 flex items-center justify-center text-white shadow-lg shadow-teal-500/20 group-hover:rotate-12 transition-transform duration-300">
+                    <i class="fas fa-heart-pulse text-base"></i>
+                </div>
+                <span class="text-xl font-black tracking-tighter text-slate-800">
+                    Kids<span class="text-teal-500">Care</span>
+                </span>
+            </a>
+        </div>
+
+        <!-- NAV LINKS: DESKTOP -->
+        <nav class="hidden lg:flex items-center gap-8">
+            <a href="{{ url_for('main.landing') }}#beranda" class="text-[10px] font-black text-slate-500 hover:text-teal-500 transition-colors uppercase tracking-[0.2em]">Beranda</a>
+            <a href="{{ url_for('main.landing') }}#tentang" class="text-[10px] font-black text-slate-500 hover:text-teal-500 transition-colors uppercase tracking-[0.2em]">Tentang</a>
+            <a href="{{ url_for('main.landing') }}#faq" class="text-[10px] font-black text-slate-500 hover:text-teal-500 transition-colors uppercase tracking-[0.2em]">FAQ</a>
+            <a href="{{ url_for('main.landing') }}#kontak" class="text-[10px] font-black text-slate-500 hover:text-teal-500 transition-colors uppercase tracking-[0.2em]">Kontak</a>
+        </nav>
+
+        <!-- AUTH BUTTONS -->
+        <div class="hidden md:flex items-center gap-3">
+            <a href="{{ url_for('main.login') }}" class="px-5 py-2 text-xs font-bold text-slate-700 hover:text-teal-500 transition-all">
+                Masuk
+            </a>
+            <a href="{{ url_for('main.register') }}" class="px-6 py-2.5 bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-teal-500 shadow-lg shadow-slate-200 transition-all active:scale-95">
+                Daftar Sekarang
+            </a>
+        </div>
+
+        <!-- MOBILE TOGGLE -->
+        <button onclick="toggleMobileMenu()" class="lg:hidden text-slate-600">
+            <i class="fas fa-bars-staggered text-xl" id="menu-icon"></i>
+        </button>
     </div>
 
-    <nav class="nav-links">
-        <a href="{{ url_for('main.landing') }}#beranda">Beranda</a>
-        <a href="{{ url_for('main.landing') }}#tentang">Tentang</a>
-        <a href="{{ url_for('main.landing') }}#faq">FAQ</a>
-        <a href="{{ url_for('main.landing') }}#kontak">Kontak</a>
-    </nav>
-
-    <div class="auth-buttons">
-        <a href="{{ url_for('main.login') }}" class="btn btn-outline">Masuk</a>
-        <a href="{{ url_for('main.register') }}" class="btn btn-primary">Daftar</a>
+    <!-- MOBILE MENU OVERLAY -->
+    <div id="mobile-menu" class="fixed inset-x-4 top-20 bg-white border border-slate-100 shadow-2xl rounded-[32px] p-8 transform -translate-y-10 opacity-0 pointer-events-none transition-all duration-500 lg:hidden">
+        <nav class="flex flex-col gap-5 text-center">
+            <a href="{{ url_for('main.landing') }}#beranda" onclick="toggleMobileMenu()" class="text-lg font-black text-slate-800 py-2">Beranda</a>
+            <a href="{{ url_for('main.landing') }}#tentang" onclick="toggleMobileMenu()" class="text-lg font-black text-slate-800 py-2">Tentang Kami</a>
+            <hr class="border-slate-100">
+            <div class="flex flex-col gap-4">
+                <a href="{{ url_for('main.login') }}" class="w-full py-4 rounded-2xl font-bold text-slate-700 bg-slate-50">Masuk Akun</a>
+                <a href="{{ url_for('main.register') }}" class="w-full py-4 rounded-2xl font-black text-white bg-teal-500 shadow-lg shadow-teal-100">Mulai Skrining</a>
+            </div>
+        </nav>
     </div>
 </header>
 
+<script>
+    function toggleMobileMenu() {
+        const menu = document.getElementById('mobile-menu');
+        const icon = document.getElementById('menu-icon');
+        if (menu.classList.contains('opacity-0')) {
+            menu.classList.remove('opacity-0', 'pointer-events-none', '-translate-y-10');
+            menu.classList.add('opacity-100', 'translate-y-0');
+            icon.className = 'fas fa-times text-xl';
+        } else {
+            menu.classList.add('opacity-0', 'pointer-events-none', '-translate-y-10');
+            menu.classList.remove('opacity-100', 'translate-y-0');
+            icon.className = 'fas fa-bars-staggered text-xl';
+        }
+    }
+</script>

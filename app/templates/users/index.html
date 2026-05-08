@@ -3,140 +3,172 @@
 {% block title %}Beranda | KidsCare{% endblock %}
 
 {% block content %}
-<div class="px-8 py-8">
-    
-    <!-- HEADER (Identik dengan Profil & Skrining - Full Width) -->
-    <div class="flex items-center justify-between mb-10">
-        <div>
-            <h1 class="text-3xl font-black text-slate-800 tracking-tight">Selamat Datang,</h1>
-            <h2 class="text-xl font-bold text-teal-600 mt-1">{{ user.username }}</h2>
-        </div>
-        <div class="w-20 h-20 rounded-3xl bg-teal-100 flex items-center justify-center text-teal-600 text-3xl shadow-sm">
-            <i class="fas fa-house-chimney-window"></i>
-        </div>
-    </div>
+<!-- CSS KHUSUS DASHBOARD USER UNTUK MENCEGAH SIDEBAR MENUTUPI KONTEN -->
+<style>
+    /* Transisi halus agar pergeseran konten terasa premium */
+    .dashboard-main-content {
+        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        min-height: 100vh;
+    }
 
-    <!-- FLASH MESSAGES -->
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        {% for category, message in messages %}
-          <div class="mb-8 p-4 rounded-2xl bg-teal-50 text-teal-700 border border-teal-100 font-bold flex items-center gap-3 animate-fade-in shadow-sm">
-            <i class="fas fa-circle-check"></i>
-            {{ message }}
-          </div>
-        {% endfor %}
-      {% endif %}
-    {% endwith %}
+    @media (min-width: 1024px) {
+        /* Secara default, berikan ruang di kiri sebesar lebar sidebar (18rem) */
+        .dashboard-main-content {
+            margin-left: 18rem;
+        }
 
-    <!-- GRID UTAMA (Full Width 1:2) -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        /* Jika sidebar ditutup (Class dipasang pada body melalui script toggle) */
+        body.sidebar-is-closed .dashboard-main-content {
+            margin-left: 0;
+        }
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in {
+        animation: fadeIn 0.4s ease-out forwards;
+    }
+</style>
+
+<!-- WRAPPER UTAMA DASHBOARD -->
+<div class="dashboard-main-content bg-slate-50/30">
+    <div class="px-8 py-8">
         
-        <!-- KOLOM KIRI: STATUS PROFIL UTAMA -->
-        <div class="lg:col-span-1">
-            <div class="bg-white rounded-[32px] p-8 shadow-sm border border-slate-100 h-full">
-                <h3 class="text-lg font-bold text-slate-800 mb-6 flex items-center">
-                    <i class="fas fa-star mr-2 text-teal-500"></i> Profil Utama Anak
-                </h3>
-                
-                {% if child %}
-                <div class="bg-slate-50 rounded-[28px] p-6 border border-slate-100 text-center relative overflow-hidden group">
-                    <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-4 text-teal-500 text-3xl shadow-sm border border-slate-100 group-hover:bg-teal-500 group-hover:text-white transition-all duration-500">
-                        <i class="fas fa-child"></i>
-                    </div>
-                    <h4 class="text-xl font-black text-slate-800 mb-1">{{ child.name }}</h4>
-                    <p class="text-xs text-slate-400 font-medium mb-4 uppercase tracking-widest">
-                        {{ 'Laki-laki' if child.gender == 'L' else 'Perempuan' }} • {{ child.status if child.status else 'Belum Tes' }}
-                    </p>
-                    
-                    <div class="py-3 px-4 bg-white rounded-2xl border border-slate-100 mb-6">
-                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Status Terakhir</p>
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black {% if 'Normal' in child.status %}bg-emerald-100 text-emerald-700{% elif 'ADHD' in child.status %}bg-orange-100 text-orange-700{% else %}bg-slate-200 text-slate-500{% endif %}">
-                            {{ child.status }}
-                        </span>
-                    </div>
-
-                    <a href="{{ url_for('user.skrining_form', child_id=child._id) }}" 
-                       class="block w-full py-4 bg-teal-500 text-white rounded-2xl font-bold hover:bg-teal-600 transition-all shadow-lg shadow-teal-100 active:scale-95">
-                        Mulai Skrining Baru
-                    </a>
-                </div>
-                {% else %}
-                <div class="text-center py-10">
-                    <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-200">
-                        <i class="fas fa-user-plus text-xl"></i>
-                    </div>
-                    <p class="text-slate-400 text-sm italic">Belum ada data anak.</p>
-                    <a href="{{ url_for('user.profil_user') }}" class="text-teal-500 font-bold text-xs hover:underline mt-2 inline-block">+ Tambah Profil Sekarang</a>
-                </div>
-                {% endif %}
-
-                <!-- QUICK ACTIONS -->
-                <div class="mt-8 space-y-3">
-                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">Aksi Cepat</p>
-                    <a href="{{ url_for('user.riwayat_skrining') }}" class="flex items-center gap-3 p-4 bg-slate-50 rounded-2xl text-slate-600 font-bold text-sm hover:bg-white hover:border-teal-300 border border-transparent transition-all">
-                        <i class="fas fa-clock-rotate-left text-teal-500"></i> Lihat Riwayat
-                    </a>
-                    <button onclick="toggleModal('logoutModal')" class="w-full flex items-center gap-3 p-4 bg-slate-50 rounded-2xl text-rose-500 font-bold text-sm hover:bg-rose-50 border border-transparent transition-all">
-                        <i class="fas fa-power-off"></i> Keluar Aplikasi
-                    </button>
-                </div>
+        <!-- HEADER -->
+        <div class="flex items-center justify-between mb-10">
+            <div>
+                <h1 class="text-3xl font-black text-slate-800 tracking-tight">Selamat Datang,</h1>
+                <h2 class="text-xl font-bold text-teal-600 mt-1">{{ user.username }}</h2>
+            </div>
+            <div class="w-20 h-20 rounded-3xl bg-teal-100 flex items-center justify-center text-teal-600 text-3xl shadow-sm">
+                <i class="fas fa-house-chimney-window"></i>
             </div>
         </div>
 
-        <!-- KOLOM KANAN: EDUKASI & PENGETAHUAN -->
-        <div class="lg:col-span-2 space-y-8">
-            <div class="bg-white rounded-[32px] p-8 shadow-sm border border-slate-100 h-full">
-                <div class="flex items-center justify-between mb-8">
-                    <h3 class="text-lg font-bold text-slate-800 flex items-center">
-                        <i class="fas fa-book-open mr-2 text-teal-500"></i> Mengenal ADHD
+        <!-- FLASH MESSAGES -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="mb-8 p-4 rounded-2xl bg-teal-50 text-teal-700 border border-teal-100 font-bold flex items-center gap-3 animate-fade-in shadow-sm">
+                <i class="fas fa-circle-check"></i>
+                {{ message }}
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <!-- GRID UTAMA -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- KOLOM KIRI: STATUS PROFIL UTAMA -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-[32px] p-8 shadow-sm border border-slate-100 h-full">
+                    <h3 class="text-lg font-bold text-slate-800 mb-6 flex items-center">
+                        <i class="fas fa-star mr-2 text-teal-500"></i> Profil Utama Anak
                     </h3>
-                    <a href="{{ url_for('user.edukasi_user') }}" class="text-xs font-bold text-teal-500 hover:underline">Lihat Semua</a>
+                    
+                    {% if child %}
+                    <div class="bg-slate-50 rounded-[28px] p-6 border border-slate-100 text-center relative overflow-hidden group">
+                        <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-4 text-teal-500 text-3xl shadow-sm border border-slate-100 group-hover:bg-teal-500 group-hover:text-white transition-all duration-500">
+                            <i class="fas fa-child"></i>
+                        </div>
+                        <h4 class="text-xl font-black text-slate-800 mb-1">{{ child.name }}</h4>
+                        <p class="text-xs text-slate-400 font-medium mb-4 uppercase tracking-widest">
+                            {{ 'Laki-laki' if child.gender == 'L' else 'Perempuan' }} • {{ child.status if child.status else 'Belum Tes' }}
+                        </p>
+                        
+                        <div class="py-3 px-4 bg-white rounded-2xl border border-slate-100 mb-6">
+                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Status Terakhir</p>
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black {% if 'Normal' in child.status %}bg-emerald-100 text-emerald-700{% elif 'ADHD' in child.status %}bg-orange-100 text-orange-700{% else %}bg-slate-200 text-slate-500{% endif %}">
+                                {{ child.status }}
+                            </span>
+                        </div>
+
+                        <a href="{{ url_for('user.skrining_form', child_id=child._id) }}" 
+                           class="block w-full py-4 bg-teal-500 text-white rounded-2xl font-bold hover:bg-teal-600 transition-all shadow-lg shadow-teal-100 active:scale-95">
+                            Mulai Skrining Baru
+                        </a>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-10">
+                        <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-200">
+                            <i class="fas fa-user-plus text-xl"></i>
+                        </div>
+                        <p class="text-slate-400 text-sm italic">Belum ada data anak.</p>
+                        <a href="{{ url_for('user.profil_user') }}" class="text-teal-500 font-bold text-xs hover:underline mt-2 inline-block">+ Tambah Profil Sekarang</a>
+                    </div>
+                    {% endif %}
+
+                    <!-- AKSI CEPAT -->
+                    <div class="mt-8 space-y-3">
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">Aksi Cepat</p>
+                        <a href="{{ url_for('user.riwayat_skrining') }}" class="flex items-center gap-3 p-4 bg-slate-50 rounded-2xl text-slate-600 font-bold text-sm hover:bg-white hover:border-teal-300 border border-transparent transition-all">
+                            <i class="fas fa-clock-rotate-left text-teal-500"></i> Lihat Riwayat
+                        </a>
+                        <button onclick="toggleModal('logoutModal')" class="w-full flex items-center gap-3 p-4 bg-slate-50 rounded-2xl text-rose-500 font-bold text-sm hover:bg-rose-50 border border-transparent transition-all">
+                            <i class="fas fa-power-off"></i> Keluar Aplikasi
+                        </button>
+                    </div>
                 </div>
+            </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <article class="p-6 bg-slate-50 rounded-[28px] border border-slate-100 hover:bg-white hover:border-teal-200 transition-all group">
-                        <div class="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center text-teal-500 mb-4 group-hover:bg-teal-500 group-hover:text-white transition-all">
-                            <i class="fas fa-brain"></i>
-                        </div>
-                        <h4 class="font-black text-slate-800 mb-2">Apa itu ADHD?</h4>
-                        <p class="text-xs text-slate-500 leading-relaxed mb-6">Pahami kondisi neurologis yang mempengaruhi rentang perhatian dan pengendalian diri pada anak.</p>
-                        <a href="{{ url_for('user.edukasi_user') }}" class="text-[10px] font-black text-teal-600 uppercase tracking-widest flex items-center gap-2">
-                            Baca Selengkapnya <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </article>
+            <!-- KOLOM KANAN: EDUKASI & PENGETAHUAN -->
+            <div class="lg:col-span-2 space-y-8">
+                <div class="bg-white rounded-[32px] p-8 shadow-sm border border-slate-100 h-full">
+                    <div class="flex items-center justify-between mb-8">
+                        <h3 class="text-lg font-bold text-slate-800 flex items-center">
+                            <i class="fas fa-book-open mr-2 text-teal-500"></i> Mengenal ADHD
+                        </h3>
+                        <a href="{{ url_for('user.edukasi_user') }}" class="text-xs font-bold text-teal-500 hover:underline">Lihat Semua</a>
+                    </div>
 
-                    <article class="p-6 bg-slate-50 rounded-[28px] border border-slate-100 hover:bg-white hover:border-teal-200 transition-all group">
-                        <div class="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center text-teal-500 mb-4 group-hover:bg-teal-500 group-hover:text-white transition-all">
-                            <i class="fas fa-list-check"></i>
-                        </div>
-                        <h4 class="font-black text-slate-800 mb-2">Gejala Umum</h4>
-                        <p class="text-xs text-slate-500 leading-relaxed mb-6">Identifikasi tanda-tanda awal inatensi dan hiperaktivitas sesuai kriteria klinis DSM-5.</p>
-                        <a href="{{ url_for('user.edukasi_user') }}" class="text-[10px] font-black text-teal-600 uppercase tracking-widest flex items-center gap-2">
-                            Cek Gejala <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </article>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <article class="p-6 bg-slate-50 rounded-[28px] border border-slate-100 hover:bg-white hover:border-teal-200 transition-all group">
+                            <div class="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center text-teal-500 mb-4 group-hover:bg-teal-500 group-hover:text-white transition-all">
+                                <i class="fas fa-brain"></i>
+                            </div>
+                            <h4 class="font-black text-slate-800 mb-2">Apa itu ADHD?</h4>
+                            <p class="text-xs text-slate-500 leading-relaxed mb-6">Pahami kondisi neurologis yang mempengaruhi rentang perhatian dan pengendalian diri pada anak.</p>
+                            <a href="{{ url_for('user.edukasi_user') }}" class="text-[10px] font-black text-teal-600 uppercase tracking-widest flex items-center gap-2">
+                                Baca Selengkapnya <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </article>
 
-                    <article class="p-6 bg-slate-50 rounded-[28px] border border-slate-100 hover:bg-white hover:border-teal-200 transition-all group">
-                        <div class="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center text-teal-500 mb-4 group-hover:bg-teal-500 group-hover:text-white transition-all">
-                            <i class="fas fa-hand-holding-heart"></i>
-                        </div>
-                        <h4 class="font-black text-slate-800 mb-2">Tips Parenting</h4>
-                        <p class="text-xs text-slate-500 leading-relaxed mb-6">Metode pengasuhan yang efektif untuk mendukung tumbuh kembang anak dengan kebutuhan khusus.</p>
-                        <a href="{{ url_for('user.edukasi_user') }}" class="text-[10px] font-black text-teal-600 uppercase tracking-widest flex items-center gap-2">
-                            Pelajari Tips <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </article>
+                        <article class="p-6 bg-slate-50 rounded-[28px] border border-slate-100 hover:bg-white hover:border-teal-200 transition-all group">
+                            <div class="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center text-teal-500 mb-4 group-hover:bg-teal-500 group-hover:text-white transition-all">
+                                <i class="fas fa-list-check"></i>
+                            </div>
+                            <h4 class="font-black text-slate-800 mb-2">Gejala Umum</h4>
+                            <p class="text-xs text-slate-500 leading-relaxed mb-6">Identifikasi tanda-tanda awal inatensi dan hiperaktivitas sesuai kriteria klinis DSM-5.</p>
+                            <a href="{{ url_for('user.edukasi_user') }}" class="text-[10px] font-black text-teal-600 uppercase tracking-widest flex items-center gap-2">
+                                Cek Gejala <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </article>
 
-                    <article class="p-6 bg-slate-50 rounded-[28px] border border-slate-100 hover:bg-white hover:border-teal-200 transition-all group">
-                        <div class="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center text-teal-500 mb-4 group-hover:bg-teal-500 group-hover:text-white transition-all">
-                            <i class="fas fa-user-doctor"></i>
-                        </div>
-                        <h4 class="font-black text-slate-800 mb-2">Konsultasi Ahli</h4>
-                        <p class="text-xs text-slate-500 leading-relaxed mb-6">Hubungi psikolog profesional untuk mendapatkan diagnosis klinis dan penanganan tepat.</p>
-                        <a href="{{ url_for('user.konsultasi_psikolog') }}" class="text-[10px] font-black text-teal-600 uppercase tracking-widest flex items-center gap-2">
-                            Cari Psikolog <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </article>
+                        <article class="p-6 bg-slate-50 rounded-[28px] border border-slate-100 hover:bg-white hover:border-teal-200 transition-all group">
+                            <div class="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center text-teal-500 mb-4 group-hover:bg-teal-500 group-hover:text-white transition-all">
+                                <i class="fas fa-hand-holding-heart"></i>
+                            </div>
+                            <h4 class="font-black text-slate-800 mb-2">Tips Parenting</h4>
+                            <p class="text-xs text-slate-500 leading-relaxed mb-6">Metode pengasuhan yang efektif untuk mendukung tumbuh kembang anak dengan kebutuhan khusus.</p>
+                            <a href="{{ url_for('user.edukasi_user') }}" class="text-[10px] font-black text-teal-600 uppercase tracking-widest flex items-center gap-2">
+                                Pelajari Tips <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </article>
+
+                        <article class="p-6 bg-slate-50 rounded-[28px] border border-slate-100 hover:bg-white hover:border-teal-200 transition-all group">
+                            <div class="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center text-teal-500 mb-4 group-hover:bg-teal-500 group-hover:text-white transition-all">
+                                <i class="fas fa-user-doctor"></i>
+                            </div>
+                            <h4 class="font-black text-slate-800 mb-2">Konsultasi Ahli</h4>
+                            <p class="text-xs text-slate-500 leading-relaxed mb-6">Hubungi psikolog profesional untuk mendapatkan diagnosis klinis dan penanganan tepat.</p>
+                            <a href="{{ url_for('user.konsultasi_psikolog') }}" class="text-[10px] font-black text-teal-600 uppercase tracking-widest flex items-center gap-2">
+                                Cari Psikolog <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </article>
+                    </div>
                 </div>
             </div>
         </div>
@@ -144,7 +176,7 @@
 </div>
 
 <!-- MODAL KONFIRMASI KELUAR -->
-<div id="logoutModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[999] flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+<div id="logoutModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[2000] flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
     <div id="modalBox" class="bg-white w-full max-w-sm p-8 rounded-[32px] shadow-2xl mx-4 transform scale-95 transition-transform duration-300">
         <div class="text-center">
             <div class="w-20 h-20 bg-rose-50 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl">
@@ -188,14 +220,4 @@ window.onclick = function(event) {
     }
 }
 </script>
-
-<style>
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-.animate-fade-in {
-    animation: fadeIn 0.4s ease-out forwards;
-}
-</style>
 {% endblock %}

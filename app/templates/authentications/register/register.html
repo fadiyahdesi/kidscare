@@ -1,85 +1,166 @@
 {% extends 'layout/app.html' %}
 
-{% block title %}Daftar | KidsCare{% endblock %}
+{% block title %}Daftar Akun Baru | KidsCare{% endblock %}
 
 {% block content %}
-<section class="register-section">
-    <div class="register-header">
-        <h2>Daftar Akun Baru</h2>
-        <p>Harap isi data dengan benar untuk memulai skrining</p>
-    </div>
-
-    <!-- Menampilkan Flash Message jika ada error -->
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        {% for category, message in messages %}
-          <div style="padding: 10px; margin-bottom: 20px; border-radius: 5px; background-color: {% if category == 'success' %}#d4edda{% else %}#f8d7da{% endif %}; color: {% if category == 'success' %}#155724{% else %}#721c24{% endif %};">
-            {{ message }}
-          </div>
-        {% endfor %}
-      {% endif %}
-    {% endwith %}
-
-    <form method="POST" action="{{ url_for('main.register') }}" class="register-form">
-        <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+<!-- CONTAINER UTAMA: H-SCREEN & FULL WIDTH -->
+<section class="min-h-screen w-full flex flex-col md:flex-row bg-white overflow-hidden">
+    
+    <!-- SISI KIRI: BRANDING & VISUAL (Fixed on Desktop) -->
+    <div class="hidden md:flex md:w-[40%] lg:w-[35%] bg-teal-600 p-16 flex-col justify-between text-white relative overflow-hidden shrink-0 shadow-2xl z-10">
+        <!-- Background Ornamen -->
+        <div class="absolute top-[-10%] -left-10 w-64 h-64 bg-teal-500 rounded-full opacity-30 blur-3xl"></div>
+        <div class="absolute bottom-[-10%] -right-10 w-80 h-80 bg-white/10 rounded-full opacity-20 blur-3xl"></div>
+        
+        <div class="relative z-10">
+            <div class="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/10 mb-12">
+                <i class="fas fa-heart-pulse text-teal-200"></i>
+                <span class="text-xs font-black uppercase tracking-[0.2em] text-white">KidsCare Health</span>
+            </div>
             
-            <!-- Kolom Kiri: Data Orang Tua -->
-            <div class="parent-info">
-                <h3 style="margin-bottom: 15px; color: #2ec4c4;">Data Orang Tua</h3>
-                <div class="form-group">
-                    <label>Nama Orang Tua / Wali <span class="required">*</span></label>
-                    <input type="text" name="parent_name" placeholder="Masukkan nama" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Email <span class="required">*</span></label>
-                    <input type="email" name="contact" placeholder="email@contoh.com" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Password <span class="required">*</span></label>
-                    <input type="password" name="password" placeholder="Minimal 6 karakter" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Alamat <span class="required">*</span></label>
-                    <input type="text" name="address" placeholder="Alamat Lengkap" required>
-                </div>
-            </div>
-
-            <!-- Kolom Kanan: Data Anak -->
-            <div class="child-info">
-                <h3 style="margin-bottom: 15px; color: #2ec4c4;">Data Anak</h3>
-                <div class="form-group">
-                    <label>Nama Lengkap Anak <span class="required">*</span></label>
-                    <input type="text" name="child_name" placeholder="Nama lengkap anak" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Tanggal Lahir Anak <span class="required">*</span></label>
-                    <input type="date" name="child_birth" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Jenis Kelamin Anak <span class="required">*</span></label>
-                    <select name="gender" required>
-                        <option value="">-- Pilih --</option>
-                        <option value="L">Laki-laki</option>
-                        <option value="P">Perempuan</option>
-                    </select>
-                </div>
-            </div>
-
+            <h2 class="text-5xl font-black mb-8 leading-[1.1] tracking-tight">Setiap Detik Berarti untuk Buah Hati.</h2>
+            <p class="text-teal-50 text-lg leading-relaxed opacity-80 font-medium">Platform deteksi dini ADHD berbasis DSM-5 untuk membantu orang tua memantau perkembangan anak secara akurat dan mandiri.</p>
         </div>
 
-        <button type="submit" class="btn-register" style="width: 100%; margin-top: 20px; padding: 12px; background: #2ec4c4; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
-            Daftar Sekarang
-        </button>
+        <!-- <div class="relative z-10">
+            <div class="p-6 bg-white/5 backdrop-blur-sm rounded-[32px] border border-white/10 mb-8">
+                <div class="flex items-center gap-4 mb-4">
+                    <div class="flex -space-x-3">
+                        <img src="https://ui-avatars.com/api/?name=User+1&background=random" class="w-10 h-10 rounded-full border-2 border-teal-600">
+                        <img src="https://ui-avatars.com/api/?name=User+2&background=random" class="w-10 h-10 rounded-full border-2 border-teal-600">
+                        <img src="https://ui-avatars.com/api/?name=User+3&background=random" class="w-10 h-10 rounded-full border-2 border-teal-600">
+                    </div>
+                    <span class="text-xs font-bold text-teal-100">+2k Orang Tua Terdaftar</span>
+                </div>
+                <p class="text-sm italic text-teal-50 opacity-70">"Aplikasi ini sangat membantu saya mendeteksi perilaku hiperaktif anak sejak dini."</p>
+            </div>
+            <p class="text-[10px] font-bold uppercase tracking-widest opacity-40">System Version 2.5.0</p>
+        </div> -->
+    </div>
 
-        <p class="login-link" style="text-align: center; margin-top: 15px;">
-            Sudah punya akun?
-            <a href="{{ url_for('main.login') }}" style="color: #2ec4c4; text-decoration: none; font-weight: 600;">Masuk</a>
-        </p>
-    </form>
+    <!-- SISI KANAN: FORM REGISTRASI (Scrollable & Centered Content) -->
+    <div class="flex-1 h-screen overflow-y-auto bg-slate-50/50 flex flex-col items-center">
+        
+        <!-- Wrapper agar Form tidak melar terlalu lebar (Max Width 800px) -->
+        <div class="w-full max-w-3xl py-20 px-8 md:px-12">
+            
+            <div class="mb-12">
+                <h1 class="text-4xl font-black text-slate-900 mb-4">Ayo Mulai!</h1>
+                <p class="text-slate-500 font-medium">Buat akun untuk memantau tumbuh kembang si kecil.</p>
+            </div>
+
+            <!-- FLASH MESSAGES -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                    <div class="mb-10 p-5 rounded-[24px] bg-rose-50 text-rose-700 border border-rose-100 font-bold flex items-center gap-4 animate-fade-in">
+                        <i class="fas fa-circle-exclamation text-xl"></i>
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="{{ url_for('main.register') }}" class="space-y-12">
+                
+                <!-- BAGIAN 1: ORANG TUA -->
+                <section>
+                    <div class="flex items-center gap-3 mb-8">
+                        <div class="w-8 h-8 rounded-xl bg-teal-500 text-white flex items-center justify-center text-xs font-black shadow-lg shadow-teal-100">1</div>
+                        <h3 class="text-sm font-black text-slate-400 uppercase tracking-widest">Informasi Wali</h3>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label class="text-[11px] font-black text-slate-500 uppercase tracking-widest ml-1 block">Nama Lengkap</label>
+                            <input type="text" name="parent_name" placeholder="Sesuai KTP" required
+                                class="w-full px-6 py-4 rounded-2xl bg-white border-2 border-slate-100 focus:border-teal-500 outline-none transition-all font-semibold text-slate-700 shadow-sm">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[11px] font-black text-slate-500 uppercase tracking-widest ml-1 block">Email</label>
+                            <input type="email" name="contact" placeholder="budi@email.com" required
+                                class="w-full px-6 py-4 rounded-2xl bg-white border-2 border-slate-100 focus:border-teal-500 outline-none transition-all font-semibold text-slate-700 shadow-sm">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[11px] font-black text-slate-500 uppercase tracking-widest ml-1 block">Kata Sandi</label>
+                            <div class="relative">
+                                <input type="password" id="regPassword" name="password" placeholder="Min. 6 Karakter" required
+                                    class="w-full px-6 py-4 rounded-2xl bg-white border-2 border-slate-100 focus:border-teal-500 outline-none transition-all font-semibold text-slate-700 shadow-sm">
+                                <button type="button" onclick="toggleRegPassword()" class="absolute right-6 top-1/2 -translate-y-1/2 text-slate-300 hover:text-teal-500 transition-colors">
+                                    <i class="fas fa-eye" id="regEye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[11px] font-black text-slate-500 uppercase tracking-widest ml-1 block">Alamat Rumah</label>
+                            <input type="text" name="address" placeholder="Contoh: Slawi, Tegal" required
+                                class="w-full px-6 py-4 rounded-2xl bg-white border-2 border-slate-100 focus:border-teal-500 outline-none transition-all font-semibold text-slate-700 shadow-sm">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- BAGIAN 2: ANAK -->
+                <section>
+                    <div class="flex items-center gap-3 mb-8">
+                        <div class="w-8 h-8 rounded-xl bg-orange-400 text-white flex items-center justify-center text-xs font-black shadow-lg shadow-orange-100">2</div>
+                        <h3 class="text-sm font-black text-slate-400 uppercase tracking-widest">Profil Anak</h3>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label class="text-[11px] font-black text-slate-500 uppercase tracking-widest ml-1 block">Nama Panggilan</label>
+                            <input type="text" name="child_name" placeholder="Nama si kecil" required
+                                class="w-full px-6 py-4 rounded-2xl bg-white border-2 border-slate-100 focus:border-orange-400 outline-none transition-all font-semibold text-slate-700 shadow-sm">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[11px] font-black text-slate-500 uppercase tracking-widest ml-1 block">Tanggal Lahir</label>
+                            <input type="date" name="child_birth" required
+                                class="w-full px-6 py-4 rounded-2xl bg-white border-2 border-slate-100 focus:border-orange-400 outline-none transition-all font-semibold text-slate-700 shadow-sm">
+                        </div>
+                        <div class="md:col-span-2 space-y-2">
+                            <label class="text-[11px] font-black text-slate-500 uppercase tracking-widest ml-1 block">Jenis Kelamin</label>
+                            <div class="grid grid-cols-2 gap-4">
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="gender" value="L" checked class="hidden peer">
+                                    <div class="text-center py-4 rounded-2xl border-2 border-slate-100 bg-white font-bold text-slate-400 peer-checked:border-orange-400 peer-checked:bg-orange-50 peer-checked:text-orange-600 transition-all">Laki-laki</div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="gender" value="P" class="hidden peer">
+                                    <div class="text-center py-4 rounded-2xl border-2 border-slate-100 bg-white font-bold text-slate-400 peer-checked:border-orange-400 peer-checked:bg-orange-50 peer-checked:text-orange-600 transition-all">Perempuan</div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- FOOTER FORM -->
+                <div class="pt-8 border-t border-slate-200">
+                    <button type="submit" class="w-full py-5 bg-slate-900 text-white rounded-[24px] font-black text-xl hover:bg-teal-600 shadow-2xl shadow-slate-200 transition-all active:scale-[0.98] transform">
+                        Daftar & Mulai Skrining <i class="fas fa-arrow-right ml-2 text-sm"></i>
+                    </button>
+
+                    <div class="mt-10 text-center">
+                        <span class="text-slate-500 font-medium">Sudah memiliki akun?</span> 
+                        <a href="{{ url_for('main.login') }}" class="ml-1 text-teal-600 font-black hover:underline decoration-2 underline-offset-8">Masuk Sekarang</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
 </section>
+
+<script>
+function toggleRegPassword() {
+    const input = document.getElementById('regPassword');
+    const icon = document.getElementById('regEye');
+    if (input.type === "password") {
+        input.type = "text";
+        icon.classList.replace('fa-eye', 'fa-eye-slash');
+    } else {
+        input.type = "password";
+        icon.classList.replace('fa-eye-slash', 'fa-eye');
+    }
+}
+</script>
+
 {% endblock %}

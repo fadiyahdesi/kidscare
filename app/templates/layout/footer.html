@@ -1,4 +1,75 @@
-<!-- templates/layout/footer.html -->
-<footer class="footer" id="kontak">
-    <p>© 2025 KidsCare • Sistem Skrining Dini ADHD Kota Tegal</p>
+<footer class="bg-slate-950 text-white pt-16 pb-10 px-6 md:px-12 lg:px-24 border-t border-white/10" id="kontak">
+    <div class="max-w-7xl mx-auto">
+        <!-- GRID UTAMA FOOTER -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+            
+            <!-- KOLOM 1: BRANDING & DESKRIPSI -->
+            <div class="lg:col-span-2">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-10 h-10 rounded-xl bg-teal-500 flex items-center justify-center text-white shadow-lg shadow-teal-500/20">
+                        <i class="fas fa-heart-pulse"></i>
+                    </div>
+                    <span class="text-2xl font-black tracking-tighter text-white">KidsCare</span>
+                </div>
+                <p class="text-slate-400 max-w-sm leading-relaxed mb-8 text-sm">
+                    Sistem Skrining Dini ADHD yang berfokus pada kesejahteraan dan tumbuh kembang anak usia dini melalui analisis perilaku berbasis AI Rule-Based sesuai standar DSM-5.
+                </p>
+                <!-- SOSIAL MEDIA: Minimalist Style -->
+                <div class="flex gap-3">
+                    <a href="#" class="w-9 h-9 rounded-xl bg-white/5 flex items-center justify-center hover:bg-teal-500 hover:text-white transition-all duration-300 border border-white/10 text-slate-400">
+                        <i class="fab fa-instagram text-sm"></i>
+                    </a>
+                    <a href="#" class="w-9 h-9 rounded-xl bg-white/5 flex items-center justify-center hover:bg-teal-500 hover:text-white transition-all duration-300 border border-white/10 text-slate-400">
+                        <i class="fab fa-facebook-f text-sm"></i>
+                    </a>
+                    <a href="#" class="w-9 h-9 rounded-xl bg-white/5 flex items-center justify-center hover:bg-teal-500 hover:text-white transition-all duration-300 border border-white/10 text-slate-400">
+                        <i class="fab fa-whatsapp text-sm"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- KOLOM 2: TAUTAN NAVIGASI -->
+            <div class="md:pl-4">
+                <h4 class="text-[11px] font-black uppercase tracking-[0.2em] mb-8 text-teal-500">Navigasi</h4>
+                <ul class="space-y-4 text-slate-400 font-medium text-sm">
+                    <li><a href="{{ url_for('main.landing') }}#beranda" class="hover:text-white transition-all">Beranda</a></li>
+                    <li><a href="{{ url_for('main.landing') }}#tentang" class="hover:text-white transition-all">Tentang Kami</a></li>
+                    <li><a href="{{ url_for('main.landing') }}#preview" class="hover:text-white transition-all">Tes Skrining</a></li>
+                    <li><a href="{{ url_for('main.landing') }}#faq" class="hover:text-white transition-all">Tanya Jawab</a></li>
+                </ul>
+            </div>
+
+            <!-- KOLOM 3: LEGAL & KEBIJAKAN -->
+            <div>
+                <h4 class="text-[11px] font-black uppercase tracking-[0.2em] mb-8 text-teal-500">Kebijakan</h4>
+                <ul class="space-y-4 text-slate-400 font-medium text-sm">
+                    <li><a href="#" class="hover:text-white transition-all">Syarat & Ketentuan</a></li>
+                    <li><a href="#" class="hover:text-white transition-all">Kebijakan Privasi</a></li>
+                    <li><a href="#" class="hover:text-white transition-all">Keamanan Data</a></li>
+                    <li><a href="#" class="hover:text-white transition-all">Pusat Bantuan</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- GARIS PEMBATAS HALUS -->
+        <div class="h-px w-full bg-white/5 mb-10"></div>
+
+        <!-- BARIS TERAKHIR: COPYRIGHT -->
+        <div class="flex flex-col md:flex-row justify-between items-center gap-6 text-slate-500 text-[10px] font-bold uppercase tracking-[0.2em]">
+            <div class="flex items-center gap-2">
+                <span>© 2026 KidsCare</span>
+                <span class="opacity-20">|</span>
+                <span>Sistem Skrining Dini ADHD</span>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <span class="flex items-center gap-2">
+                    <span class="w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse"></span>
+                    System Online
+                </span>
+                <div class="w-px h-3 bg-white/10 hidden md:block"></div>
+                <span>Powered by DSM-5 Standard</span>
+            </div>
+        </div>
+    </div>
 </footer>

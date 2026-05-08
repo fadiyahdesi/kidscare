@@ -3,149 +3,178 @@
 {% block title %}Pilih Profil Anak | KidsCare{% endblock %}
 
 {% block content %}
-<!-- HEADER (Identik dengan profil_user.html - Tanpa wrapper pembatas) -->
-<div class="flex items-center justify-between mb-10">
-    <div>
-        <h1 class="text-3xl font-black text-slate-800">Test Skrining ADHD</h1>
-        <p class="text-slate-500">Pilih profil anak untuk memulai evaluasi perkembangan mandiri.</p>
-    </div>
-    <div class="w-20 h-20 rounded-3xl bg-teal-100 flex items-center justify-center text-teal-600 text-3xl">
-        <i class="fas fa-clipboard-check"></i>
-    </div>
-</div>
+<!-- CSS KHUSUS DASHBOARD UNTUK MENCEGAH SIDEBAR MENUTUPI KONTEN -->
+<style>
+    /* Transisi halus agar pergeseran konten terasa premium */
+    .dashboard-main-content {
+        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        min-height: 100vh;
+    }
 
-<!-- FLASH MESSAGES -->
-{% with messages = get_flashed_messages(with_categories=true) %}
-{% if messages %}
-{% for category, message in messages %}
-<div class="mb-6 p-4 rounded-2xl bg-teal-50 text-teal-700 border border-teal-100 font-bold flex items-center gap-3 animate-fade-in">
-    <i class="fas fa-check-circle"></i>
-    {{ message }}
-</div>
-{% endfor %}
-{% endif %}
-{% endwith %}
+    @media (min-width: 1024px) {
+        /* Secara default, berikan ruang di kiri sebesar lebar sidebar (18rem) */
+        .dashboard-main-content {
+            margin-left: 18rem;
+        }
 
-<!-- GRID UTAMA (Identik dengan profil_user.html: 1/3 Kolom Kiri, 2/3 Kolom Kanan) -->
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-    
-    <!-- KOLOM KIRI: PETUNJUK (Identik dengan Style "Akun Anda") -->
-    <div class="lg:col-span-1">
-        <div class="bg-white rounded-[32px] p-8 shadow-sm border border-slate-100">
-            <h3 class="text-lg font-bold text-slate-800 mb-6 flex items-center">
-                <i class="fas fa-info-circle mr-2 text-teal-500"></i> Petunjuk Pengisian
-            </h3>
+        /* Jika sidebar ditutup (Class dipasang pada body melalui script toggle) */
+        body.sidebar-is-closed .dashboard-main-content {
+            margin-left: 0;
+        }
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in {
+        animation: fadeIn 0.4s ease-out forwards;
+    }
+</style>
+
+<!-- WRAPPER UTAMA DASHBOARD -->
+<div class="dashboard-main-content bg-slate-50/30">
+    <div class="px-8 py-8">
+        
+        <!-- HEADER -->
+        <div class="flex items-center justify-between mb-10">
+            <div>
+                <h1 class="text-3xl font-black text-slate-800">Test Skrining ADHD</h1>
+                <p class="text-slate-500">Pilih profil anak untuk memulai evaluasi perkembangan mandiri.</p>
+            </div>
+            <div class="w-20 h-20 rounded-3xl bg-teal-100 flex items-center justify-center text-teal-600 text-3xl shadow-sm">
+                <i class="fas fa-clipboard-check"></i>
+            </div>
+        </div>
+
+        <!-- FLASH MESSAGES -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="mb-6 p-4 rounded-2xl bg-teal-50 text-teal-700 border border-teal-100 font-bold flex items-center gap-3 animate-fade-in shadow-sm">
+            <i class="fas fa-check-circle"></i>
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <!-- GRID UTAMA -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             
-            <div class="space-y-6">
-                <p class="text-slate-600 leading-relaxed text-sm">
-                    Bandingkan perilaku anak dengan teman seusianya dalam <strong class="text-slate-800">6 bulan terakhir</strong>.
-                </p>
+            <!-- KOLOM KIRI: PETUNJUK -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-[32px] p-8 shadow-sm border border-slate-100 h-full">
+                    <h3 class="text-lg font-bold text-slate-800 mb-6 flex items-center">
+                        <i class="fas fa-info-circle mr-2 text-teal-500"></i> Petunjuk Pengisian
+                    </h3>
+                    
+                    <div class="space-y-6">
+                        <p class="text-slate-600 leading-relaxed text-sm">
+                            Bandingkan perilaku anak dengan teman seusianya dalam <strong class="text-slate-800">6 bulan terakhir</strong>.
+                        </p>
 
-                <div class="space-y-4">
-                    <div class="flex items-start gap-3">
-                        <div class="w-6 h-6 rounded-full bg-teal-50 flex items-center justify-center text-teal-600 flex-shrink-0 mt-0.5">
-                            <i class="fas fa-check text-[10px]"></i>
-                        </div>
-                        <div>
-                            <p class="font-bold text-slate-800 text-xs uppercase tracking-widest">Target Usia</p>
-                            <p class="text-xs text-slate-500">Optimasi untuk usia 4–6 tahun</p>
-                        </div>
-                    </div>
-                    <div class="flex items-start gap-3">
-                        <div class="w-6 h-6 rounded-full bg-teal-50 flex items-center justify-center text-teal-600 flex-shrink-0 mt-0.5">
-                            <i class="fas fa-user-edit text-[10px]"></i>
-                        </div>
-                        <div>
-                            <p class="font-bold text-slate-800 text-xs uppercase tracking-widest">Pelapor</p>
-                            <p class="text-xs text-slate-500">Diisi oleh Orang Tua atau Wali</p>
+                        <div class="space-y-4">
+                            <div class="flex items-start gap-3">
+                                <div class="w-6 h-6 rounded-full bg-teal-50 flex items-center justify-center text-teal-600 flex-shrink-0 mt-0.5">
+                                    <i class="fas fa-check text-[10px]"></i>
+                                </div>
+                                <div>
+                                    <p class="font-bold text-slate-800 text-xs uppercase tracking-widest">Target Usia</p>
+                                    <p class="text-xs text-slate-500">Optimasi untuk usia 4–6 tahun</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <div class="w-6 h-6 rounded-full bg-teal-50 flex items-center justify-center text-teal-600 flex-shrink-0 mt-0.5">
+                                    <i class="fas fa-user-edit text-[10px]"></i>
+                                </div>
+                                <div>
+                                    <p class="font-bold text-slate-800 text-xs uppercase tracking-widest">Pelapor</p>
+                                    <p class="text-xs text-slate-500">Diisi oleh Orang Tua atau Wali</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <!-- KOLOM KANAN: DAFTAR ANAK (Identik dengan Style "Daftar Profil Anak") -->
-    <div class="lg:col-span-2">
-        <div class="bg-white rounded-[32px] p-8 shadow-sm border border-slate-100">
-            <div class="flex items-center justify-between mb-8">
-                <h3 class="text-lg font-bold text-slate-800 flex items-center">
-                    <i class="fas fa-children mr-2 text-teal-500"></i> Pilih Profil Anak
-                </h3>
-                {% if children %}
-                <span class="text-[10px] font-black text-teal-600 bg-teal-50 px-3 py-1 rounded-full border border-teal-100 uppercase tracking-widest shadow-sm">{{ children|length }} Profil</span>
-                {% endif %}
-            </div>
+            <!-- KOLOM KANAN: DAFTAR ANAK -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-[32px] p-8 shadow-sm border border-slate-100 h-full">
+                    <div class="flex items-center justify-between mb-8">
+                        <h3 class="text-lg font-bold text-slate-800 flex items-center">
+                            <i class="fas fa-children mr-2 text-teal-500"></i> Pilih Profil Anak
+                        </h3>
+                        {% if children %}
+                        <span class="text-[10px] font-black text-teal-600 bg-teal-50 px-3 py-1 rounded-full border border-teal-100 uppercase tracking-widest shadow-sm">{{ children|length }} Profil</span>
+                        {% endif %}
+                    </div>
 
-            <div class="space-y-4">
-                {% if children %}
-                    {% for child in children %}
-                    <div class="flex items-center justify-between p-5 rounded-2xl border {% if loop.first %}bg-teal-50/30 border-teal-200 shadow-sm{% else %}bg-slate-50 border-slate-100 opacity-70{% endif %} group transition-all">
-                        
-                        <div class="flex items-center gap-4">
-                            <!-- Icon Profil -->
-                            <div class="w-12 h-12 rounded-full {% if loop.first %}bg-teal-500 text-white shadow-teal-200{% else %}bg-white text-teal-500 shadow-sm{% endif %} flex items-center justify-center text-lg">
-                                <i class="fas fa-child"></i>
-                            </div>
-                            
-                            <div>
-                                <div class="flex items-center gap-2">
-                                    <h4 class="font-bold text-slate-800">{{ child.name }}</h4>
+                    <div class="space-y-4">
+                        {% if children %}
+                            {% for child in children %}
+                            <div class="flex items-center justify-between p-5 rounded-2xl border {% if loop.first %}bg-teal-50/30 border-teal-200 shadow-sm{% else %}bg-slate-50 border-slate-100 opacity-70{% endif %} group transition-all">
+                                
+                                <div class="flex items-center gap-4">
+                                    <div class="w-12 h-12 rounded-full {% if loop.first %}bg-teal-500 text-white shadow-teal-200{% else %}bg-white text-teal-500 shadow-sm{% endif %} flex items-center justify-center text-lg">
+                                        <i class="fas fa-child"></i>
+                                    </div>
+                                    
+                                    <div>
+                                        <div class="flex items-center gap-2">
+                                            <h4 class="font-bold text-slate-800">{{ child.name }}</h4>
+                                            {% if loop.first %}
+                                            <span class="px-2 py-0.5 rounded-full bg-teal-500 text-[9px] font-black text-white uppercase tracking-tighter">Utama</span>
+                                            {% endif %}
+                                        </div>
+                                        <p class="text-xs text-slate-500">
+                                            Lahir: {{ child.birth_date.strftime('%d %b %Y') }} • 
+                                            <span>{{ 'Laki-laki' if child.gender == 'L' else 'Perempuan' }}</span>
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center">
                                     {% if loop.first %}
-                                    <span class="px-2 py-0.5 rounded-full bg-teal-500 text-[9px] font-black text-white uppercase tracking-tighter">Utama</span>
+                                        <a href="{{ url_for('user.skrining_form', child_id=child._id) }}" 
+                                           class="px-6 py-2.5 bg-teal-500 text-white rounded-xl font-bold text-xs hover:bg-teal-600 shadow-lg shadow-teal-100 transition-all active:scale-95">
+                                            Mulai Skrining
+                                        </a>
+                                    {% else %}
+                                        <a href="{{ url_for('user.profil_user') }}" 
+                                           class="px-4 py-2 bg-white border border-slate-200 text-slate-500 rounded-xl font-bold text-[10px] hover:bg-teal-500 hover:text-white hover:border-teal-500 transition-all shadow-sm flex items-center gap-2">
+                                            <i class="fas fa-exchange-alt"></i> Ganti ke Utama
+                                        </a>
                                     {% endif %}
                                 </div>
-                                <p class="text-xs text-slate-500">
-                                    Lahir: {{ child.birth_date.strftime('%d %b %Y') }} • 
-                                    <span>{{ 'Laki-laki' if child.gender == 'L' else 'Perempuan' }}</span>
-                                </p>
                             </div>
-                        </div>
-                        
-                        <div class="flex items-center">
-                            {% if loop.first %}
-                                <!-- Tombol Mulai (Hanya untuk Profil Utama) -->
-                                <a href="{{ url_for('user.skrining_form', child_id=child._id) }}" 
-                                   class="px-6 py-2.5 bg-teal-500 text-white rounded-xl font-bold text-xs hover:bg-teal-600 shadow-lg shadow-teal-100 transition-all active:scale-95">
-                                    Mulai Skrining
+                            {% endfor %}
+                        {% else %}
+                            <div class="py-16 text-center text-slate-400">
+                                <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <i class="fas fa-users-slash text-xl"></i>
+                                </div>
+                                <p class="font-medium text-sm">Belum ada data anak.</p>
+                                <a href="{{ url_for('user.profil_user') }}" class="mt-4 inline-block text-teal-500 font-bold text-xs hover:underline">
+                                    + Tambah Profil Sekarang
                                 </a>
-                            {% else %}
-                                <!-- Tombol Ganti (Untuk profil lainnya) -->
-                                <a href="{{ url_for('user.profil_user') }}" 
-                                   class="px-4 py-2 bg-white border border-slate-200 text-slate-500 rounded-xl font-bold text-[10px] hover:bg-teal-500 hover:text-white hover:border-teal-500 transition-all shadow-sm flex items-center gap-2">
-                                    <i class="fas fa-exchange-alt"></i> Ganti ke Utama
-                                </a>
-                            {% endif %}
-                        </div>
+                            </div>
+                        {% endif %}
                     </div>
-                    {% endfor %}
-                {% else %}
-                    <!-- Tampilan Kosong -->
-                    <div class="py-16 text-center text-slate-400">
-                        <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <i class="fas fa-users-slash text-xl"></i>
-                        </div>
-                        <p class="font-medium text-sm">Belum ada data anak.</p>
-                        <a href="{{ url_for('user.profil_user') }}" class="mt-4 inline-block text-teal-500 font-bold text-xs hover:underline">
-                            + Tambah Profil Sekarang
-                        </a>
-                    </div>
-                {% endif %}
-            </div>
 
-            <!-- Catatan Informasi Bawah -->
-            {% if children %}
-            <p class="mt-8 text-[10px] text-slate-400 italic bg-slate-50 p-4 rounded-2xl border border-dashed border-slate-200 leading-relaxed">
-                <i class="fas fa-info-circle mr-1 text-teal-500"></i>
-                Hanya <strong>Profil Utama</strong> yang diizinkan untuk melakukan skrining. Untuk mengganti, silakan masuk ke menu profil dan pilih anak yang ingin dijadikan utama.
-            </p>
-            {% endif %}
+                    {% if children %}
+                    <p class="mt-8 text-[10px] text-slate-400 italic bg-slate-50 p-4 rounded-2xl border border-dashed border-slate-200 leading-relaxed">
+                        <i class="fas fa-info-circle mr-1 text-teal-500"></i>
+                        Hanya <strong>Profil Utama</strong> yang diizinkan untuk melakukan skrining. Untuk mengganti, silakan masuk ke menu profil dan pilih anak yang ingin dijadikan utama.
+                    </p>
+                    {% endif %}
+                </div>
+                
+                <p class="text-center text-[10px] text-slate-400 mt-8">
+                    <i class="fas fa-shield-halved mr-1"></i> Data keluarga Anda terlindungi & diproses sesuai standar DSM-5.
+                </p>
+            </div>
         </div>
-        
-        <!-- Footer Privasi -->
-        <p class="text-center text-[10px] text-slate-400 mt-8">
-            <i class="fas fa-shield-halved mr-1"></i> Data keluarga Anda terlindungi & diproses sesuai standar DSM-5.
-        </p>
     </div>
 </div>
 {% endblock %}

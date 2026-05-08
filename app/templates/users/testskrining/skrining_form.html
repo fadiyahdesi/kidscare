@@ -2,79 +2,128 @@
 {% block title %}Tes Skrining | KidsCare{% endblock %}
 
 {% block content %}
-<div class="flex flex-col h-full px-8 py-6">
+<!-- CSS KHUSUS UNTUK MENCEGAH SIDEBAR MENUTUPI FORM -->
+<style>
+    .dashboard-main-content {
+        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
 
-    <!-- HEADER -->
-    <div>
-        <h1 class="text-3xl font-extrabold text-slate-800">Skrining ADHD: <span class="text-teal-600">{{ child.name }}</span></h1>
-        <p class="text-slate-500 mt-1">Isi sesuai perilaku anak selama 6 bulan terakhir</p>
+    @media (min-width: 1024px) {
+        .dashboard-main-content {
+            margin-left: 18rem;
+        }
 
-        <div class="mt-6">
-            <p class="text-sm font-semibold text-slate-600" id="progress-text">
-                Pertanyaan 1 dari {{ questions|length }}
-            </p>
-            <div class="w-full h-2 bg-slate-200 rounded-full mt-2">
-                <div id="progress-bar" class="h-full bg-teal-400 rounded-full transition-all duration-500"
-                    style="width:5%"></div>
+        body.sidebar-is-closed .dashboard-main-content {
+            margin-left: 0;
+        }
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in {
+        animation: fadeIn 0.4s ease-out forwards;
+    }
+</style>
+
+<!-- WRAPPER UTAMA DASHBOARD -->
+<div class="dashboard-main-content bg-slate-50/30">
+    <div class="flex flex-col h-full px-8 py-8">
+
+        <!-- HEADER -->
+        <div class="animate-fade-in">
+            <h1 class="text-3xl font-extrabold text-slate-800">Skrining ADHD: <span class="text-teal-600">{{ child.name }}</span></h1>
+            <p class="text-slate-500 mt-1 font-medium">Isi sesuai perilaku anak selama 6 bulan terakhir</p>
+
+            <div class="mt-8 max-w-4xl">
+                <div class="flex justify-between items-end mb-2">
+                    <p class="text-sm font-black text-teal-600 uppercase tracking-widest" id="progress-text">
+                        Pertanyaan 1 dari {{ questions|length }}
+                    </p>
+                    <span class="text-[10px] font-bold text-slate-400 bg-white px-2 py-0.5 rounded-full border border-slate-100">Progress</span>
+                </div>
+                <div class="w-full h-3 bg-white rounded-full shadow-sm overflow-hidden border border-slate-100 p-0.5">
+                    <div id="progress-bar" class="h-full bg-teal-400 rounded-full transition-all duration-700 ease-out shadow-sm shadow-teal-100"
+                        style="width:5%"></div>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- FORM: Sekarang diarahkan ke /predict -->
-    <form id="screeningForm" method="POST" action="{{ url_for('user.predict') }}"
-        class="flex-1 flex flex-col items-center justify-center mt-10">
+        <!-- FORM: Sekarang diarahkan ke /predict -->
+        <form id="screeningForm" method="POST" action="{{ url_for('user.predict') }}"
+            class="flex-1 flex flex-col items-center justify-center mt-12 mb-12">
 
-        <!-- INPUT HIDDEN: INI KUNCI SINKRONISASI -->
-        <input type="hidden" name="child_id" value="{{ child._id }}">
+            <!-- INPUT HIDDEN: INI KUNCI SINKRONISASI -->
+            <input type="hidden" name="child_id" value="{{ child._id }}">
 
-        {% for q in questions %}
-        {% set i = loop.index0 %}
-        <div class="question-step {% if not loop.first %}hidden{% endif %} w-full max-w-4xl text-center transition-all duration-300"
-            data-step="{{ i }}">
+            {% for q in questions %}
+            {% set i = loop.index0 %}
+            <div class="question-step {% if not loop.first %}hidden{% endif %} w-full max-w-4xl text-center transition-all duration-300"
+                data-step="{{ i }}">
 
-            <div class="bg-cyan-50 border-2 border-cyan-100 rounded-[40px] px-10 py-16 mb-10 shadow-sm">
-                <h2 class="text-2xl md:text-3xl font-bold text-slate-800 leading-snug">{{ q.text }}</h2>
-                <span
-                    class="inline-block mt-4 px-3 py-1 bg-white rounded-full text-[10px] font-black text-cyan-600 uppercase tracking-widest border border-cyan-100">
-                    Kategori: {{ q.category }}
-                </span>
+                <!-- KOTAK PERTANYAAN -->
+                <div class="bg-white border border-slate-100 rounded-[48px] px-10 py-16 mb-12 shadow-xl shadow-slate-200/50 relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-1.5 bg-teal-500 opacity-20"></div>
+                    
+                    <h2 class="text-2xl md:text-4xl font-black text-slate-800 leading-tight mb-6 animate-fade-in">{{ q.text }}</h2>
+                    
+                    <span class="inline-block px-4 py-1.5 bg-teal-50 rounded-full text-[10px] font-black text-teal-600 uppercase tracking-[0.2em] border border-teal-100">
+                        Kategori Gejala: {{ q.category }}
+                    </span>
+                    
+                    <!-- Ornamen Background -->
+                    <div class="absolute -bottom-12 -right-12 w-40 h-40 bg-teal-50 rounded-full blur-3xl -z-10"></div>
+                </div>
+
+                <!-- PILIHAN JAWABAN -->
+                <div class="flex justify-center gap-4 md:gap-6 flex-wrap">
+                    {% if q.type == 'likert' %}
+                        {% for val,label in [('0','Tidak pernah'),('1','Jarang'),('2','Sering'),('3','Sangat Sering')] %}
+                        <label class="cursor-pointer group flex-1 min-w-[140px] max-w-[200px]">
+                            <input type="radio" name="q{{ i }}" value="{{ val }}" class="hidden peer" required>
+                            <div class="h-full px-4 py-6 rounded-[24px] border-2 border-white bg-white text-slate-500 font-bold group-hover:border-teal-100 group-hover:bg-teal-50/30 peer-checked:border-teal-500 peer-checked:bg-teal-500 peer-checked:text-white transition-all shadow-sm hover:shadow-md flex items-center justify-center text-center text-sm md:text-base">
+                                {{ label }}
+                            </div>
+                        </label>
+                        {% endfor %}
+                    {% else %}
+                        {% for val,label in [('1','Ya'),('0','Tidak')] %}
+                        <label class="cursor-pointer group flex-1 min-w-[200px] max-w-[300px]">
+                            <input type="radio" name="q{{ i }}" value="{{ val }}" class="hidden peer" required>
+                            <div class="h-full px-12 py-6 rounded-[24px] border-2 border-white bg-white text-slate-500 font-bold group-hover:border-teal-100 group-hover:bg-teal-50/30 peer-checked:border-teal-500 peer-checked:bg-teal-500 peer-checked:text-white transition-all shadow-sm hover:shadow-md flex items-center justify-center text-center text-sm md:text-base">
+                                {{ label }}
+                            </div>
+                        </label>
+                        {% endfor %}
+                    {% endif %}
+                </div>
             </div>
+            {% endfor %}
+        </form>
 
-            <div class="flex justify-center gap-4 md:gap-6 flex-wrap">
-                {% if q.type == 'likert' %}
-                {% for val,label in [('0','Tidak pernah'),('1','Jarang'),('2','Sering'),('3','Sangat Sering')] %}
-                <label class="cursor-pointer group">
-                    <input type="radio" name="q{{ i }}" value="{{ val }}" class="hidden peer" required>
-                    <div
-                        class="px-8 py-4 rounded-2xl border-2 border-slate-100 bg-white text-slate-600 font-bold group-hover:border-teal-200 peer-checked:border-teal-500 peer-checked:bg-teal-500 peer-checked:text-white transition-all shadow-sm">
-                        {{ label }}
-                    </div>
-                </label>
-                {% endfor %}
-                {% else %}
-                {% for val,label in [('1','Ya'),('0','Tidak')] %}
-                <label class="cursor-pointer group">
-                    <input type="radio" name="q{{ i }}" value="{{ val }}" class="hidden peer" required>
-                    <div
-                        class="px-12 py-4 rounded-2xl border-2 border-slate-100 bg-white text-slate-600 font-bold group-hover:border-teal-200 peer-checked:border-teal-500 peer-checked:bg-teal-500 peer-checked:text-white transition-all shadow-sm">
-                        {{ label }}
-                    </div>
-                </label>
-                {% endfor %}
-                {% endif %}
-            </div>
+        <!-- NAVIGATION -->
+        <div class="flex justify-between items-center max-w-4xl mx-auto w-full mt-auto pb-10">
+            <button type="button" id="prevBtn" 
+                class="flex items-center gap-3 px-8 py-4 rounded-2xl font-black text-slate-400 hover:text-teal-600 hover:bg-teal-50 transition-all disabled:opacity-0 disabled:pointer-events-none">
+                <i class="fas fa-arrow-left"></i> Sebelumnya
+            </button>
+            
+            <button type="button" id="nextBtn" 
+                class="flex items-center gap-3 px-10 py-4 bg-slate-900 text-white rounded-[24px] font-black hover:bg-slate-800 transition-all shadow-xl shadow-slate-200 active:scale-95">
+                Berikutnya <i class="fas fa-arrow-right"></i>
+            </button>
+
+            <button type="button" id="submitBtn" 
+                class="hidden flex items-center gap-3 px-10 py-4 bg-teal-500 text-white rounded-[24px] font-black hover:bg-teal-600 transition-all shadow-xl shadow-teal-100 active:scale-95">
+                Kirim Hasil Skrining <i class="fas fa-paper-plane"></i>
+            </button>
         </div>
-        {% endfor %}
-    </form>
 
-    <!-- NAVIGATION -->
-    <div class="flex justify-between items-center text-lg font-semibold text-teal-700 mt-10">
-        <button type="button" id="prevBtn" class="disabled:opacity-30">Sebelumnya</button>
-        <button type="button" id="nextBtn" class="px-8 py-3 bg-teal-500 text-white rounded-xl">Selanjutnya</button>
-        <button type="button" id="submitBtn" class="hidden px-10 py-3 rounded-xl bg-teal-600 text-white font-bold">Kirim
-            Jawaban</button>
     </div>
-
 </div>
 
 <script>
@@ -96,12 +145,15 @@
                 if (i === index) step.classList.remove('hidden');
             });
 
+            // Update Progress Bar secara halus
             const percent = ((index + 1) / totalSteps) * 100;
             progressBar.style.width = percent + '%';
             progressText.innerText = `Pertanyaan ${index + 1} dari ${totalSteps}`;
 
+            // Tombol Sebelumnya
             prevBtn.disabled = index === 0;
 
+            // Tombol Navigasi Akhir
             if (index === totalSteps - 1) {
                 nextBtn.classList.add('hidden');
                 submitBtn.classList.remove('hidden');
@@ -109,6 +161,9 @@
                 nextBtn.classList.remove('hidden');
                 submitBtn.classList.add('hidden');
             }
+            
+            // Scroll ke atas otomatis setiap ganti soal
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function isAnswered() {
@@ -117,7 +172,8 @@
 
         nextBtn.addEventListener('click', () => {
             if (!isAnswered()) {
-                alert("Harap pilih jawaban terlebih dahulu.");
+                // Gunakan cara halus daripada alert jika ingin UI lebih premium
+                alert("Harap pilih salah satu jawaban untuk melanjutkan.");
                 return;
             }
             currentStep++;
@@ -132,7 +188,7 @@
         // Submit form secara nyata ke Flask
         submitBtn.addEventListener('click', () => {
             if (!isAnswered()) {
-                alert("Harap pilih jawaban terakhir.");
+                alert("Harap pilih jawaban pada pertanyaan terakhir.");
                 return;
             }
             form.submit();
