@@ -1,0 +1,228 @@
+{% extends 'layout/dashboard.html' %}
+
+{% block title %}Profil Profesional | KidsCare{% endblock %}
+
+{% block content %}
+<style>
+    /* Mengikuti standar transisi dashboard agar konsisten saat sidebar dibuka/tutup */
+    .dashboard-main-content {
+        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        background-color: #f8fafc;
+    }
+
+    @media (min-width: 1024px) {
+        .dashboard-main-content { 
+            margin-left: 18rem; 
+        }
+        body.sidebar-is-closed .dashboard-main-content { 
+            margin-left: 0; 
+        }
+    }
+
+    @keyframes fadeIn { 
+        from { opacity: 0; transform: translateY(-10px); } 
+        to { opacity: 1; transform: translateY(0); } 
+    }
+    .animate-fade-in { 
+        animation: fadeIn 0.4s ease-out forwards; 
+    }
+
+    /* Memastikan input terlihat interaktif saat diklik untuk edit */
+    .profile-input:focus {
+        background-color: white;
+        border-color: #14b8a6;
+        box-shadow: 0 10px 15px -3px rgba(20, 184, 166, 0.1);
+    }
+    
+    /* Animasi ikon pensil saat area input di-hover */
+    .input-group:hover .edit-icon {
+        color: #14b8a6;
+        transform: scale(1.2);
+    }
+
+    .glass-card {
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+</style>
+
+<div class="dashboard-main-content bg-slate-50/50">
+    <!-- Kontainer menggunakan px-8 py-10 agar sama persis dengan Dashboard -->
+    <div class="px-8 py-10 w-full">
+        
+        <!-- HEADER: Mengikuti Style Dashboard Utama Anda -->
+        <div class="flex items-center justify-between mb-10 animate-fade-in">
+            <div>
+                <p class="text-[10px] font-black text-teal-600 uppercase tracking-[0.3em] mb-2">Manajemen Akun</p>
+                <h1 class="text-3xl font-black text-slate-800">Profil Profesional</h1>
+                <p class="text-slate-500 font-medium">Perbarui informasi identitas dan kredensial profesional Anda.</p>
+            </div>
+            <!-- Icon Dashboard Style -->
+            <div class="w-16 h-16 rounded-[24px] bg-teal-500 text-white flex items-center justify-center text-2xl shadow-xl shadow-teal-100 rotate-3 hover:rotate-0 transition-transform duration-300">
+                <i class="fas fa-id-card"></i>
+            </div>
+        </div>
+
+        <!-- NOTIFIKASI FLASH -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="mb-8 p-5 rounded-[24px] bg-emerald-50 text-emerald-700 border border-emerald-100 font-bold flex items-center gap-3 shadow-sm animate-fade-in">
+                <i class="fas fa-check-circle text-lg"></i> {{ message }}
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start animate-fade-in" style="animation-delay: 0.1s;">
+            
+            <!-- KOLOM KIRI: KARTU IDENTITAS DIGITAL (Desktop: 4 Col) -->
+            <div class="lg:col-span-4 space-y-6">
+                <div class="bg-slate-900 rounded-[40px] p-8 text-white relative overflow-hidden shadow-2xl shadow-slate-200">
+                    <div class="relative z-10">
+                        <!-- Avatar Icon -->
+                        <div class="w-16 h-16 rounded-2xl bg-teal-500 flex items-center justify-center text-2xl mb-6 shadow-lg shadow-teal-500/30">
+                            <i class="fas fa-user-md"></i>
+                        </div>
+                        <h3 class="text-xl font-black mb-1 leading-tight">{{ psych.username }}</h3>
+                        <p class="text-teal-400 text-[10px] font-black uppercase tracking-[0.2em] mb-8">{{ psych.specialization }}</p>
+                        
+                        <!-- Detail Info Preview -->
+                        <div class="space-y-5 pt-6 border-t border-white/10">
+                            <div class="flex items-center gap-4">
+                                <i class="fas fa-envelope text-white/30 text-xs w-5"></i>
+                                <span class="text-xs font-medium text-white/70">{{ psych.email }}</span>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <i class="fab fa-whatsapp text-white/30 text-xs w-5"></i>
+                                <span class="text-xs font-medium text-white/70">+{{ psych.whatsapp }}</span>
+                            </div>
+                            <div class="flex items-start gap-4">
+                                <i class="fas fa-location-dot text-white/30 text-xs w-5 mt-1"></i>
+                                <span class="text-[11px] font-medium text-white/60 leading-relaxed">{{ psych.address|default('Alamat belum diatur') }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Dekorasi Ornamen -->
+                    <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-teal-500/10 rounded-full blur-3xl"></div>
+                </div>
+                
+                <!-- Status Akun Card -->
+                <div class="p-6 bg-white rounded-[32px] border border-slate-100 shadow-sm flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-500 flex items-center justify-center text-lg">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div>
+                        <p class="text-[10px] text-slate-400 font-black uppercase tracking-widest">Status Verifikasi</p>
+                        <p class="text-sm font-bold text-slate-700">Mitra Psikolog Terverifikasi</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KOLOM KANAN: FORM EDIT PROFIL (Desktop: 8 Col) -->
+            <div class="lg:col-span-8">
+                <div class="bg-white rounded-[40px] p-8 md:p-10 shadow-sm border border-slate-100">
+                    <form method="POST" action="{{ url_for('psychologist.profile') }}" class="space-y-8">
+                        
+                        <!-- DATA DASAR -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 block">Nama Lengkap & Gelar</label>
+                                <div class="relative input-group">
+                                    <input type="text" name="username" value="{{ psych.username }}" required
+                                        class="profile-input w-full px-6 py-4 pr-12 rounded-2xl bg-slate-50 border-2 border-transparent outline-none transition-all font-semibold text-slate-700 shadow-inner">
+                                    <i class="fas fa-pencil-alt absolute right-5 top-1/2 -translate-y-1/2 text-slate-300 edit-icon transition-all text-xs"></i>
+                                </div>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 block">Alamat Email</label>
+                                <div class="relative input-group">
+                                    <input type="email" name="email" value="{{ psych.email }}" required
+                                        class="profile-input w-full px-6 py-4 pr-12 rounded-2xl bg-slate-50 border-2 border-transparent outline-none transition-all font-semibold text-slate-700 shadow-inner">
+                                    <i class="fas fa-pencil-alt absolute right-5 top-1/2 -translate-y-1/2 text-slate-300 edit-icon transition-all text-xs"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- DATA PROFESIONAL -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 block">Nomor WhatsApp</label>
+                                <div class="relative input-group">
+                                    <input type="text" name="whatsapp" value="{{ psych.whatsapp }}" required
+                                        class="profile-input w-full px-6 py-4 pr-12 rounded-2xl bg-slate-50 border-2 border-transparent outline-none transition-all font-semibold text-slate-700 shadow-inner">
+                                    <i class="fas fa-pencil-alt absolute right-5 top-1/2 -translate-y-1/2 text-slate-300 edit-icon transition-all text-xs"></i>
+                                </div>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 block">Bidang Spesialisasi</label>
+                                <div class="relative input-group">
+                                    <input type="text" name="specialization" value="{{ psych.specialization }}" required
+                                        class="profile-input w-full px-6 py-4 pr-12 rounded-2xl bg-slate-50 border-2 border-transparent outline-none transition-all font-semibold text-slate-700 shadow-inner">
+                                    <i class="fas fa-pencil-alt absolute right-5 top-1/2 -translate-y-1/2 text-slate-300 edit-icon transition-all text-xs"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ALAMAT PRAKTIK -->
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 block">Alamat Lengkap Praktik</label>
+                            <div class="relative input-group">
+                                <textarea name="address" rows="3" required
+                                    class="profile-input w-full px-6 py-4 pr-12 rounded-2xl bg-slate-50 border-2 border-transparent outline-none transition-all font-semibold text-slate-700 shadow-inner resize-none leading-relaxed">{{ psych.address|default('') }}</textarea>
+                                <i class="fas fa-pencil-alt absolute right-5 top-8 text-slate-300 edit-icon transition-all text-xs"></i>
+                            </div>
+                        </div>
+
+                        <!-- KEAMANAN (Password) -->
+                        <div class="pt-8 border-t border-slate-100">
+                            <h3 class="text-sm font-black text-slate-800 uppercase tracking-widest mb-6 flex items-center gap-3">
+                                <i class="fas fa-lock text-slate-300"></i> Keamanan Akun
+                            </h3>
+                            <div class="space-y-2 max-w-md">
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 block">Ubah Kata Sandi</label>
+                                <div class="relative group">
+                                    <input type="password" name="password" id="psychPass" placeholder="Biarkan kosong jika tidak ingin mengubah"
+                                        class="profile-input w-full px-6 py-4 pr-12 rounded-2xl bg-slate-50 border-2 border-transparent outline-none transition-all font-semibold text-slate-700 shadow-inner">
+                                    <button type="button" onclick="togglePsychPass()" class="absolute right-5 top-1/2 -translate-y-1/2 text-slate-300 hover:text-teal-500 transition-colors">
+                                        <i class="fas fa-eye" id="psychEye"></i>
+                                    </button>
+                                </div>
+                                <p class="text-[9px] text-slate-400 italic mt-2 ml-1">*Kosongkan jika tidak ada perubahan.</p>
+                            </div>
+                        </div>
+
+                        <!-- TOMBOL SUBMIT -->
+                        <div class="pt-6">
+                            <button type="submit" class="w-full py-5 bg-teal-500 text-white rounded-[24px] font-black text-xs uppercase tracking-[0.2em] shadow-xl shadow-teal-100 hover:bg-teal-600 transition-all active:scale-95 transform">
+                                Simpan Perubahan Profil
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    /**
+     * Fungsi Toggle Visibility Password
+     */
+    function togglePsychPass() {
+        const input = document.getElementById('psychPass');
+        const icon = document.getElementById('psychEye');
+        if (input.type === "password") {
+            input.type = "text";
+            icon.classList.replace('fa-eye', 'fa-eye-slash');
+        } else {
+            input.type = "password";
+            icon.classList.replace('fa-eye-slash', 'fa-eye');
+        }
+    }
+</script>
+{% endblock %}

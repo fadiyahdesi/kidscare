@@ -2,43 +2,38 @@
 {% block title %}Riwayat Skrining | KidsCare{% endblock %}
 
 {% block content %}
-<!-- CSS KHUSUS UNTUK MENCEGAH SIDEBAR MENUTUPI KONTEN -->
 <style>
-    /* Transisi halus agar pergeseran konten terasa premium */
     .dashboard-main-content {
         transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         min-height: 100vh;
     }
-
     @media (min-width: 1024px) {
-        /* Secara default, berikan ruang di kiri sebesar lebar sidebar (18rem) */
-        .dashboard-main-content {
-            margin-left: 18rem;
-        }
-
-        /* Jika sidebar ditutup (Class dipasang pada body melalui script toggle) */
-        body.sidebar-is-closed .dashboard-main-content {
-            margin-left: 0;
-        }
+        .dashboard-main-content { margin-left: 18rem; }
+        body.sidebar-is-closed .dashboard-main-content { margin-left: 0; }
     }
-
     @keyframes fadeIn {
         from { opacity: 0; transform: translateY(-10px); }
         to { opacity: 1; transform: translateY(0); }
     }
-    .animate-fade-in { 
-        animation: fadeIn 0.3s ease-out forwards; 
+    .animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
+
+    .pagination-btn:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+        filter: grayscale(1);
     }
 </style>
 
-<!-- WRAPPER UTAMA DASHBOARD -->
+{% set indo_months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"] %}
+
 <div class="dashboard-main-content bg-slate-50/30">
     <div class="px-8 py-8">
-        <!-- HEADER (Sinkron dengan Beranda & Profil) -->
+        <!-- HEADER -->
         <div class="flex items-center justify-between mb-10">
             <div>
+                <span class="inline-block px-3 py-1 bg-teal-50 text-teal-600 rounded-full text-[9px] font-black uppercase tracking-[0.2em] mb-2 border border-teal-100">Layanan Skrining</span>
                 <h1 class="text-3xl font-black text-slate-800">Riwayat Skrining</h1>
-                <p class="text-slate-500">Pantau perkembangan dan hasil pemeriksaan anak Anda secara berkala.</p>
+                <p class="text-slate-500 font-medium">Pantau perkembangan dan hasil pemeriksaan anak secara berkala.</p>
             </div>
             <div class="w-20 h-20 rounded-3xl bg-teal-100 flex items-center justify-center text-teal-600 text-3xl shadow-sm">
                 <i class="fas fa-clock-rotate-left"></i>
@@ -58,7 +53,6 @@
         {% endwith %}
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            
             <!-- KOLOM KIRI: SIDEBAR PILIH ANAK -->
             <div class="lg:col-span-1">
                 <div class="bg-white rounded-[32px] p-8 shadow-sm border border-slate-100 sticky top-10">
@@ -68,7 +62,6 @@
                     
                     <div class="space-y-3">
                         {% for child in children %}
-                            {# KRUSIAL: Gunakan |string agar perbandingan ObjectID MongoDB akurat #}
                             {% set is_active = (selected_child and selected_child._id|string == child._id|string) %}
                             
                             <a href="{{ url_for('user.riwayat_skrining', child_id=child._id) }}" 
@@ -88,20 +81,17 @@
                 </div>
             </div>
 
-            <!-- KOLOM KANAN: TABEL RIWAYAT -->
+            <!-- KOLOM KANAN: TABEL RIWAYAT DENGAN PAGINASI -->
             <div class="lg:col-span-2">
-                <div class="bg-white rounded-[32px] p-8 shadow-sm border border-slate-100 min-h-[500px]">
+                <div class="bg-white rounded-[40px] p-8 shadow-sm border border-slate-100 min-h-[580px] flex flex-col">
                     <div class="flex items-center justify-between mb-8">
                         <h3 class="text-lg font-bold text-slate-800 flex items-center">
                             <i class="fas fa-file-medical mr-2 text-teal-500"></i> 
                             Riwayat: <span class="ml-1 text-teal-600">{{ selected_child.name if selected_child else '-' }}</span>
                         </h3>
-                        {% if history %}
-                        <span class="text-[10px] font-black text-teal-600 bg-teal-50 px-3 py-1 rounded-full border border-teal-100 uppercase tracking-widest shadow-sm">{{ history|length }} Sesi</span>
-                        {% endif %}
                     </div>
 
-                    <div class="overflow-x-auto">
+                    <div class="overflow-x-auto flex-1">
                         <table class="w-full text-left border-separate border-spacing-y-3">
                             <thead class="bg-slate-50">
                                 <tr>
@@ -116,76 +106,104 @@
                                     {% for item in history %}
                                     <tr class="group transition-all">
                                         <td class="px-6 py-5 bg-slate-50 border-y border-l border-slate-100 rounded-l-2xl">
-                                            <p class="font-bold text-slate-700 text-sm">{{ item.created_at.strftime('%d %b %Y') }}</p>
-                                            <p class="text-[10px] text-slate-400">{{ item.created_at.strftime('%H:%M WIB') }}</p>
+                                            {% set wib_time = item.created_at|to_wib %}
+                                            <p class="font-bold text-slate-700 text-sm">
+                                                {{ wib_time.day }} {{ indo_months[wib_time.month - 1] }} {{ wib_time.year }}
+                                            </p>
+                                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">{{ wib_time.strftime('%H:%M') }} WIB</p>
                                         </td>
                                         <td class="px-6 py-5 bg-slate-50 border-y border-slate-100 text-center">
-                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black {% if 'Normal' in item.category %}bg-emerald-100 text-emerald-700{% else %}bg-orange-100 text-orange-700{% endif %}">
+                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest {% if 'Normal' in item.category %}bg-emerald-100 text-emerald-700{% else %}bg-orange-100 text-orange-700{% endif %}">
                                                 {{ item.category }}
                                             </span>
                                         </td>
                                         <td class="px-6 py-5 bg-slate-50 border-y border-slate-100 text-center">
-                                            <div class="flex justify-center gap-4">
-                                                <div class="text-center">
-                                                    <p class="text-[9px] font-bold">IN</p>
-                                                    <p class="font-bold text-slate-700 text-xs">{{ item.inattentive_score }}</p>
-                                                </div>
+                                            <div class="flex justify-center gap-3">
+                                                <div class="text-center"><p class="text-[8px] font-black text-slate-400 uppercase">IN</p><p class="font-black text-slate-700 text-xs">{{ item.inattentive_score }}</p></div>
                                                 <div class="w-px h-6 bg-slate-200"></div>
-                                                <div class="text-center">
-                                                    <p class="text-[9px] font-bold">HY</p>
-                                                    <p class="font-bold text-slate-700 text-xs">{{ item.hyperactive_score }}</p>
-                                                </div>
+                                                <div class="text-center"><p class="text-[8px] font-black text-slate-400 uppercase">HY</p><p class="font-black text-slate-700 text-xs">{{ item.hyperactive_score }}</p></div>
                                             </div>
                                         </td>
                                         <td class="px-6 py-5 bg-slate-50 border-y border-r border-slate-100 rounded-r-2xl text-right">
-                                            <button onclick="openDetail('{{ item.created_at.strftime('%d %b %Y, %H:%M') }}', '{{ item.category }}', 'Inatensi: {{ item.inattentive_score }}, Hiperaktif: {{ item.hyperactive_score }}')" 
-                                                    class="px-4 py-2 bg-white border border-slate-200 text-teal-600 font-bold text-[10px] rounded-xl hover:bg-teal-500 hover:text-white transition-all shadow-sm">
-                                                Lihat Detail
-                                            </button>
+                                            <div class="flex items-center justify-end gap-2">
+                                                <!-- Tombol Detail -->
+                                                <button onclick="openDetail('{{ wib_time.day }} {{ indo_months[wib_time.month - 1] }} {{ wib_time.year }}', '{{ item.category }}', 'Inatensi: {{ item.inattentive_score }}, Hiperaktif: {{ item.hyperactive_score }}')" 
+                                                        class="px-4 py-2 bg-white border border-slate-200 text-teal-600 font-black text-[9px] uppercase tracking-widest rounded-xl hover:bg-teal-500 hover:text-white transition-all shadow-sm">
+                                                    Detail
+                                                </button>
+                                                
+                                                <!-- TOMBOL CETAK DENGAN DATA JAWABAN -->
+                                                <button onclick="printResult('{{ wib_time.day }} {{ indo_months[wib_time.month - 1] }} {{ wib_time.year }} {{ wib_time.strftime('%H:%M') }} WIB', '{{ item.category }}', 'Inatensi: {{ item.inattentive_score }} | Hiperaktif: {{ item.hyperactive_score }}', '{{ selected_child.name if selected_child else 'Anak' }}', this)" 
+                                                        data-answers="{{ item.answers | tojson | forceescape if item.answers else '[]' }}"
+                                                        class="px-4 py-2 bg-slate-900 text-white font-black text-[9px] uppercase tracking-widest rounded-xl hover:bg-teal-600 transition-all shadow-sm flex items-center gap-1.5">
+                                                    <i class="fas fa-print"></i> Cetak
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                     {% endfor %}
                                 {% else %}
                                     <tr>
-                                        <td colspan="4" class="px-6 py-20 text-center text-slate-400 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+                                        <td colspan="4" class="px-6 py-20 text-center text-slate-400">
                                             <i class="fas fa-folder-open text-3xl mb-3 opacity-20 block"></i>
-                                            <p class="text-sm font-medium">Belum ada riwayat pemeriksaan untuk profil {{ selected_child.name if selected_child else 'ini' }}.</p>
-                                            <a href="{{ url_for('user.test_skrining') }}" class="text-teal-500 font-bold text-xs hover:underline mt-2 inline-block">Mulai Skrining Sekarang →</a>
+                                            <p class="text-sm font-medium">Belum ada riwayat pemeriksaan profil ini.</p>
                                         </td>
                                     </tr>
                                 {% endif %}
                             </tbody>
                         </table>
                     </div>
+
+                    {% if history %}
+                    <div class="pt-8 border-t border-slate-50 flex items-center justify-between mt-auto">
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Halaman {{ page }}</p>
+                        <div class="flex gap-3">
+                            <a href="{{ url_for('user.riwayat_skrining', child_id=selected_child._id|string, page=page-1) }}" 
+                               class="pagination-btn px-6 py-3 bg-slate-100 text-slate-500 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-200 transition-all {% if not has_prev %}pointer-events-none opacity-30{% endif %}">
+                                <i class="fas fa-chevron-left mr-2"></i> Sebelumnya
+                            </a>
+                            <a href="{{ url_for('user.riwayat_skrining', child_id=selected_child._id|string, page=page+1) }}" 
+                               class="pagination-btn px-6 py-3 bg-teal-500 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-teal-600 transition-all shadow-xl shadow-teal-100 {% if not has_next %}pointer-events-none opacity-30{% endif %}">
+                                Selanjutnya <i class="fas fa-chevron-right ml-2"></i>
+                            </a>
+                        </div>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- MODAL DETAIL -->
-<div id="detailModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[999] flex items-center justify-center hidden opacity-0 transition-all duration-300">
-    <div id="modalBox" class="bg-white w-full max-w-lg mx-4 rounded-[32px] shadow-2xl overflow-hidden transform scale-95 transition-all duration-300">
+<!-- MODAL DETAIL (Tetap ada sebagai opsi view biasa) -->
+<div id="detailModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[2000] flex items-center justify-center hidden opacity-0 transition-all duration-300">
+    <div id="modalBox" class="bg-white w-full max-w-md mx-4 rounded-[40px] shadow-2xl overflow-hidden transform scale-95 transition-all duration-300">
         <div class="px-8 pt-8 pb-4 flex justify-between items-center border-b border-slate-50">
-            <h2 class="text-2xl font-black text-slate-800">Detail Hasil</h2>
-            <button onclick="closeDetail()" class="text-slate-400 hover:text-slate-600 transition"><i class="fas fa-times text-lg"></i></button>
+            <h2 class="text-2xl font-black text-slate-800">Detail Skrining</h2>
+            <button onclick="closeDetail()" class="w-8 h-8 rounded-full bg-slate-50 text-slate-400 hover:text-rose-500 transition"><i class="fas fa-times"></i></button>
         </div>
-        <div class="px-8 py-6 space-y-5">
-            <div class="flex items-start gap-4 p-4 bg-slate-50 rounded-2xl">
+        <div class="px-8 py-8 space-y-5">
+            <div class="flex items-start gap-4 p-5 bg-slate-50 rounded-3xl">
                 <div class="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center text-teal-500"><i class="fas fa-calendar-check"></i></div>
-                <div><p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Waktu</p><p class="font-bold text-slate-700" id="modalDate"></p></div>
+                <div><p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Waktu Pemeriksaan</p><p class="font-bold text-slate-700" id="modalDate"></p></div>
             </div>
-            <div class="flex items-start gap-4 p-4 bg-slate-50 rounded-2xl">
+            
+            <div class="flex items-start gap-4 p-5 bg-slate-50 rounded-3xl">
                 <div class="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center text-orange-500"><i class="fas fa-stethoscope"></i></div>
-                <div><p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Kategori</p><p class="font-black text-teal-600 text-lg" id="modalResult"></p></div>
+                <div>
+                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Hasil Klasifikasi</p>
+                    <p class="font-black text-teal-600 text-lg leading-tight mb-3" id="modalResult"></p>
+                    <div id="modalExplanation" class="p-4 bg-white border border-teal-100 rounded-2xl text-xs text-slate-600 font-medium leading-relaxed"></div>
+                </div>
             </div>
-            <div class="flex items-start gap-4 p-4 bg-slate-50 rounded-2xl">
+
+            <div class="flex items-start gap-4 p-5 bg-slate-50 rounded-3xl">
                 <div class="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center text-blue-500"><i class="fas fa-list-ol"></i></div>
-                <div><p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Skor</p><p class="font-bold text-slate-700" id="modalScore"></p></div>
+                <div><p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Rincian Skor Gejala</p><p class="font-bold text-slate-700" id="modalScore"></p></div>
             </div>
         </div>
-        <div class="p-8 border-t border-slate-50">
-            <button onclick="closeDetail()" class="w-full py-4 bg-slate-800 text-white rounded-2xl font-bold hover:bg-slate-700 transition">Tutup Detail</button>
+        <div class="p-8 bg-slate-50/50 border-t border-slate-100">
+            <button onclick="closeDetail()" class="w-full py-4 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-slate-200 hover:bg-teal-600 transition-all">Tutup Laporan</button>
         </div>
     </div>
 </div>
@@ -198,6 +216,22 @@
         document.getElementById('modalDate').innerText = date;
         document.getElementById('modalResult').innerText = result;
         document.getElementById('modalScore').innerText = score;
+
+        const explanationBox = document.getElementById('modalExplanation');
+        let resLower = result.toLowerCase();
+        
+        if (resLower.includes("normal") || resLower.includes("rendah")) {
+            explanationBox.innerText = "Hasil skrining anak berada dalam batas normal. Tidak ditemukan indikasi gangguan pemusatan perhatian yang signifikan.";
+        } else if (resLower.includes("campuran")) {
+            explanationBox.innerText = "Anak menunjukkan gejala inatensi (kurang fokus) dan hiperaktivitas yang sama-sama dominan. Disarankan untuk observasi lebih lanjut.";
+        } else if (resLower.includes("inatensi")) {
+            explanationBox.innerText = "Anak menunjukkan kecenderungan kesulitan fokus dan mudah teralihkan oleh stimulus luar. Sering membutuhkan arahan berulang.";
+        } else if (resLower.includes("hiperaktif")) {
+            explanationBox.innerText = "Anak memiliki tingkat energi yang sangat tinggi, sulit untuk duduk tenang, dan cenderung impulsif dalam bertindak.";
+        } else {
+            explanationBox.innerText = "Penjelasan klinis tidak tersedia untuk kategori ini.";
+        }
+
         modal.classList.remove('hidden');
         setTimeout(() => {
             modal.classList.replace('opacity-0', 'opacity-100');
@@ -209,6 +243,135 @@
         modal.classList.replace('opacity-100', 'opacity-0');
         modalBox.classList.replace('scale-100', 'scale-95');
         setTimeout(() => { modal.classList.add('hidden'); }, 300);
+    }
+
+    // FUNGSI PRINT DENGAN TABEL JAWABAN
+    function printResult(date, result, score, childName, btnElement) {
+        let explanation = "";
+        let resLower = result.toLowerCase();
+        
+        if (resLower.includes("normal") || resLower.includes("rendah")) {
+            explanation = "Berdasarkan penilaian mandiri, perilaku anak saat ini berada dalam batas wajar. Tidak ditemukan indikasi gejala gangguan pemusatan perhatian yang mencolok. Dianjurkan untuk tetap memantau tumbuh kembang secara umum.";
+        } else if (resLower.includes("campuran")) {
+            explanation = "Hasil penilaian mengindikasikan adanya kemunculan gejala inatensi (kesulitan mempertahankan fokus) sekaligus hiperaktivitas-impulsivitas secara bersamaan. Anak cenderung kesulitan berkonsentrasi sekaligus sulit mengendalikan energi dan impuls. Disarankan segera berkonsultasi dengan Tenaga Ahli/Psikolog untuk observasi klinis.";
+        } else if (resLower.includes("inatensi")) {
+            explanation = "Hasil penilaian menonjolkan adanya gejala inatensi. Anak mungkin sering terlihat kesulitan mempertahankan fokus, mudah teralihkan oleh stimulus dari luar, dan sering lupa pada aktivitas sehari-hari. Disarankan berkonsultasi dengan Tenaga Ahli/Psikolog.";
+        } else if (resLower.includes("hiperaktif")) {
+            explanation = "Hasil penilaian menonjolkan adanya gejala hiperaktivitas dan impulsivitas. Anak cenderung memiliki tingkat energi yang sangat tinggi, kesulitan untuk diam atau duduk tenang, dan sering merespons situasi tanpa berpikir panjang (impulsif). Disarankan berkonsultasi dengan Tenaga Ahli/Psikolog.";
+        } else {
+            explanation = "Kategori tidak teridentifikasi. Silakan hubungi admin.";
+        }
+
+        // Ambil dan buat tabel jawaban
+        let answersHtml = "";
+        try {
+            const rawAnswers = btnElement.getAttribute('data-answers');
+            const answers = JSON.parse(rawAnswers);
+            
+            if (answers && answers.length > 0) {
+                answersHtml = `
+                    <div style="margin-top: 35px; page-break-inside: avoid;">
+                        <h3 style="font-size: 14px; color: #0f172a; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 15px;">Rincian Jawaban Kuesioner (DSM-5)</h3>
+                        <table style="width: 100%; border-collapse: collapse; font-size: 12px; text-align: left;">
+                            <thead>
+                                <tr style="background-color: #f8fafc;">
+                                    <th style="padding: 12px; border-bottom: 2px solid #cbd5e1; width: 75%;">Pertanyaan Redaksi</th>
+                                    <th style="padding: 12px; border-bottom: 2px solid #cbd5e1; width: 25%; text-align: center;">Kondisi Anak</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+                
+                answers.forEach((item, index) => {
+                    answersHtml += `
+                        <tr>
+                            <td style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9; color: #334155;">${index + 1}. ${item.question}</td>
+                            <td style="padding: 10px 12px; border-bottom: 1px solid #f1f5f9; text-align: center; font-weight: bold; color: #14b8a6;">${item.answer}</td>
+                        </tr>
+                    `;
+                });
+                
+                answersHtml += `
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            } else {
+                answersHtml = `<div style="margin-top: 20px; font-size: 12px; color: #94a3b8; font-style: italic;">* Rincian jawaban untuk tes lama ini tidak terekam dalam database. Lakukan tes baru untuk menyimpan riwayat jawaban.</div>`;
+            }
+        } catch (e) {
+            console.error("Gagal memparsing jawaban:", e);
+        }
+
+        const printContent = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Cetak Dokumen - Laporan Skrining Anak</title>
+                <style>
+                    body { font-family: 'Segoe UI', Arial, sans-serif; color: #334155; padding: 40px; line-height: 1.6; max-width: 800px; margin: 0 auto; }
+                    .header { text-align: center; margin-bottom: 40px; border-bottom: 3px solid #e2e8f0; padding-bottom: 25px; }
+                    .header h1 { color: #0f172a; margin: 0 0 5px 0; font-size: 26px; text-transform: uppercase; letter-spacing: 2px; }
+                    .header p { color: #64748b; margin: 0; font-size: 14px; font-weight: bold; letter-spacing: 1px;}
+                    .info-section { margin-bottom: 35px; background: #f8fafc; padding: 25px; border-radius: 12px; border: 1px solid #f1f5f9; }
+                    .info-row { display: flex; margin-bottom: 12px; font-size: 15px; }
+                    .info-label { font-weight: bold; width: 180px; color: #0f172a; text-transform: uppercase; font-size: 12px; letter-spacing: 1px;}
+                    .result-box { background-color: #fff; border: 2px solid #14b8a6; border-radius: 16px; padding: 30px; margin-bottom: 25px; }
+                    .result-title { font-size: 12px; font-weight: bold; color: #14b8a6; text-transform: uppercase; letter-spacing: 2px; margin-top: 0; margin-bottom: 5px; }
+                    .result-value { font-size: 24px; font-weight: 900; color: #0f172a; margin-top: 0; margin-bottom: 20px;}
+                    .score-box { display: flex; gap: 20px; margin-top: 25px; padding-top: 20px; border-top: 1px dashed #cbd5e1; font-size: 14px;}
+                    .footer { margin-top: 50px; font-size: 11px; color: #94a3b8; text-align: center; font-style: italic; border-top: 1px solid #e2e8f0; padding-top: 20px;}
+                </style>
+            </head>
+            <body>
+                <div class="header">
+                    <h1>Data Skrining KidsCare</h1>
+                    <p>DOKUMEN PENDUKUNG KONSULTASI PSIKOLOG</p>
+                </div>
+                
+                <div class="info-section">
+                    <div class="info-row">
+                        <div class="info-label">Nama Pasien / Anak</div>
+                        <div style="font-weight: bold; color: #0f172a;">: ${childName}</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Waktu Pemeriksaan</div>
+                        <div>: ${date}</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">Metode Uji</div>
+                        <div>: Kuesioner Mandiri (Standar Penilaian DSM-5)</div>
+                    </div>
+                </div>
+
+                <div class="result-box">
+                    <div class="result-title">Hasil Indikasi Klasifikasi</div>
+                    <div class="result-value">${result}</div>
+                    <p style="margin: 0; font-size: 15px; color: #475569;">${explanation}</p>
+                    <div class="score-box">
+                        <strong style="color: #0f172a;">Rincian Skor Gejala :</strong> ${score}
+                    </div>
+                </div>
+
+                ${answersHtml}
+
+                <div class="footer">
+                    * Dokumen fisik ini dicetak langsung dari sistem KidsCare dan valid digunakan sebagai data riwayat observasi awal.<br>
+                    * Ini <b>bukan</b> merupakan diagnosis medis akhir. Diagnosis resmi hanya dapat dikeluarkan secara sah oleh psikolog atau tenaga medis profesional.
+                </div>
+            </body>
+            </html>
+        `;
+
+        const printWindow = window.open('', '_blank', 'width=800,height=800');
+        printWindow.document.write(printContent);
+        printWindow.document.close();
+        printWindow.focus();
+        
+        setTimeout(() => {
+            printWindow.print();
+            printWindow.close();
+        }, 300);
     }
 </script>
 {% endblock %}

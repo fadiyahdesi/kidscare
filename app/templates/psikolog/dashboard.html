@@ -1,0 +1,195 @@
+{% extends 'layout/dashboard.html' %}
+
+{% block title %}Dashboard Psikolog | KidsCare{% endblock %}
+
+{% block content %}
+<style>
+     .dashboard-main-content {
+        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        background-color: #f8fafc;
+    }
+    
+    @media (min-width: 1024px) {
+        .dashboard-main-content { margin-left: 18rem; }
+        body.sidebar-is-closed .dashboard-main-content { margin-left: 0; }
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+    .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
+
+    /* Custom Scrollbar Ramping */
+    .compact-scroll::-webkit-scrollbar { width: 4px; }
+    .compact-scroll::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+    
+    .hover-lift:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05);
+    }
+</style>
+
+<div class="dashboard-main-content bg-slate-50/50">
+    <!-- Padding disamakan dengan Beranda (px-8 py-8) dan menghapus max-w pembatas -->
+    <div class="px-4 md:px-8 py-10 w-full max-w-[1920px] mx-auto">
+        
+        <!-- HEADER RINGKAS (Gaya Beranda) -->
+        <div class="flex items-center justify-between mb-10 animate-fade-in">
+            <div>
+                <p class="text-[10px] font-black text-teal-600 uppercase tracking-[0.3em] mb-1">Panel Profesional</p>
+                <h1 class="text-3xl font-black text-slate-800 tracking-tight">Halo, {{ session['name'] }}!</h1>
+                <p class="text-slate-500 font-medium text-sm mt-1">Kelola jadwal praktik dan pantau kegiatan Anda hari ini.</p>
+            </div>
+            <div class="w-20 h-20 rounded-3xl bg-teal-100 flex items-center justify-center text-teal-600 text-3xl shadow-sm">
+                <i class="fas fa-user-md"></i>
+            </div>
+        </div>
+
+        <!-- STATS CARDS (Konsisten 3 Kolom) -->
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-8 mb-10 animate-fade-in" style="animation-delay: 0.1s;">
+            <div class="bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm flex items-center gap-5 hover-lift transition-all">
+                <div class="w-14 h-14 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center text-xl">
+                    <i class="fas fa-comments"></i>
+                </div>
+                <div>
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Konsultasi Chat</p>
+                    <p class="text-2xl font-black text-slate-800">{{ consultations|length }}</p>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm flex items-center gap-5 hover-lift transition-all">
+                <div class="w-14 h-14 rounded-2xl bg-orange-50 text-orange-500 flex items-center justify-center text-xl">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <div>
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Jadwal Praktik</p>
+                    <p class="text-2xl font-black text-slate-800">{{ schedules|length }}</p>
+                </div>
+            </div>
+            <div class="hidden md:flex bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm items-center gap-5 hover-lift transition-all">
+                <div class="w-14 h-14 rounded-2xl bg-blue-50 text-blue-500 flex items-center justify-center text-xl">
+                    <i class="fas fa-bullhorn"></i>
+                </div>
+                <div>
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Agenda Terbit</p>
+                    <p class="text-2xl font-black text-slate-800">{{ upcoming_events|length }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- BENTO GRID UTAMA (Gap 8 sesuai Beranda) -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-fade-in" style="animation-delay: 0.2s;">
+            
+            <!-- 1. JADWAL PRAKTIK (Utama - Dark Premium) -->
+            <div class="lg:col-span-1">
+                <div class="bg-slate-900 rounded-[40px] p-8 text-white shadow-2xl shadow-slate-200 h-full flex flex-col hover-lift transition-all duration-300">
+                    <div class="flex items-center justify-between mb-8">
+                        <h3 class="text-xs font-black uppercase tracking-widest text-teal-400">Jadwal Praktik</h3>
+                        <i class="fas fa-clock text-slate-500"></i>
+                    </div>
+                    <div class="space-y-4 flex-1">
+                        {% if schedules %}
+                            {% for schedule in schedules %}
+                            <div class="flex justify-between items-center pb-3 border-b border-white/5 group">
+                                <span class="text-xs font-bold text-slate-400 group-hover:text-white transition-colors">{{ schedule.day }}</span>
+                                <div class="text-right">
+                                    {% if schedule.status == 'Libur' %}
+                                        <span class="text-[9px] font-black text-rose-400 uppercase">Tutup</span>
+                                    {% else %}
+                                        <span class="text-xs font-black text-teal-400">{{ schedule.start_time }} - {{ schedule.end_time }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="py-10 text-center opacity-20"><i class="fas fa-calendar-slash text-3xl"></i></div>
+                        {% endif %}
+                    </div>
+                    <a href="{{ url_for('psychologist.schedule_management') }}" 
+                       class="block w-full text-center py-4 mt-8 bg-white/5 hover:bg-teal-500 hover:text-white rounded-2xl font-black text-[9px] uppercase tracking-widest transition-all border border-white/5 hover:border-teal-500">
+                        Kelola Jadwal
+                    </a>
+                </div>
+            </div>
+
+            <!-- 2. AGENDA TERBARU (Utama - Clean White) -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-[40px] p-8 border border-slate-100 shadow-sm h-full flex flex-col hover-lift transition-all duration-300">
+                    <div class="flex items-center justify-between mb-8">
+                        <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest">Agenda Terbaru</h3>
+                        <i class="fas fa-calendar-alt text-teal-500"></i>
+                    </div>
+                    
+                    <div class="space-y-4 flex-1 overflow-y-auto compact-scroll pr-1">
+                        {% if upcoming_events %}
+                            {% for event in upcoming_events %}
+                            <div class="p-5 bg-slate-50 rounded-3xl border border-slate-100 group hover:border-teal-500 transition-all">
+                                <div class="flex justify-between items-start mb-2">
+                                    <p class="text-[9px] font-black {% if event.type == 'Webinar' %}text-orange-500{% else %}text-teal-600{% endif %} uppercase tracking-tighter">{{ event.type }}</p>
+                                    <span class="text-[8px] text-slate-300 font-bold">{{ event.time }}</span>
+                                </div>
+                                <h4 class="text-sm font-black text-slate-800 leading-tight group-hover:text-teal-600 transition-colors">{{ event.title }}</h4>
+                                <p class="text-[9px] text-slate-400 font-bold mt-3 uppercase"><i class="far fa-calendar-check mr-1 text-teal-500"></i> {{ event.date }}</p>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="py-10 text-center opacity-20 flex flex-col items-center">
+                                <i class="fas fa-bullhorn text-3xl mb-2"></i>
+                                <p class="text-[10px] font-black uppercase tracking-widest">Belum ada agenda</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <a href="{{ url_for('psychologist.event_management') }}" 
+                       class="block w-full text-center py-4 mt-8 bg-teal-50 text-teal-600 rounded-2xl font-black text-[9px] uppercase tracking-widest hover:bg-teal-500 hover:text-white transition-all shadow-sm">
+                        + Buat Agenda
+                    </a>
+                </div>
+            </div>
+
+            <!-- 3. CHAT TERBARU (Pendukung - Kotak Ramping) -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-[40px] p-8 border border-slate-100 shadow-sm h-full flex flex-col hover-lift transition-all duration-300">
+                    <div class="flex items-center justify-between mb-8">
+                        <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest">Chat Terbaru</h3>
+                        <span class="bg-emerald-50 text-emerald-600 text-[8px] font-black px-2 py-0.5 rounded-lg border border-emerald-100 uppercase">{{ consultations|length }} Aktif</span>
+                    </div>
+
+                    <div class="space-y-3 overflow-y-auto compact-scroll pr-1 flex-1" style="max-height: 400px;">
+                        {% if consultations %}
+                            {% for consult in consultations %}
+                            <div class="flex items-center justify-between p-4 bg-slate-50/50 rounded-2xl border border-slate-100 hover:border-teal-300 hover:bg-white transition-all group">
+                                <div class="flex items-center gap-3 min-w-0">
+                                    <div class="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-teal-500 shadow-sm font-black text-xs uppercase shrink-0">
+                                        {{ consult.parent_name[0] }}
+                                    </div>
+                                    <div class="truncate">
+                                        <h4 class="font-bold text-slate-800 text-xs truncate">{{ consult.parent_name }}</h4>
+                                        <p class="text-[8px] text-slate-400 font-medium italic">Klik untuk membalas</p>
+                                    </div>
+                                </div>
+                                <a href="{{ url_for('psychologist.consultation_list', consult_id=consult._id) }}" 
+                                   class="w-9 h-9 bg-slate-900 text-white rounded-xl flex items-center justify-center hover:bg-teal-500 transition-all shrink-0">
+                                   <i class="fas fa-chevron-right text-[10px]"></i>
+                                </a>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="py-10 text-center opacity-20 flex flex-col items-center">
+                                <i class="fas fa-comments text-3xl mb-2"></i>
+                                <p class="text-[10px] font-black uppercase tracking-widest">Belum ada chat</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <a href="{{ url_for('psychologist.consultation_list') }}" 
+                       class="block w-full text-center py-4 mt-8 bg-teal-50 text-teal-600 rounded-2xl font-black text-[9px] uppercase tracking-widest hover:bg-teal-500 hover:text-white transition-all shadow-sm">
+                        Buka Semua Pesan <i class="fas fa-external-link-alt text-[7px]"></i>
+                    </a>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

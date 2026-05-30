@@ -1,0 +1,179 @@
+{% extends 'layout/dashboard.html' %}
+
+{% block title %}Manajemen Pertanyaan | KidsCare Admin{% endblock %}
+
+{% block content %}
+<style>
+    .dashboard-main-content {
+        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        min-height: 100vh;
+        background-color: #fff;
+    }
+    @media (min-width: 1024px) { .dashboard-main-content { margin-left: 18rem; } body.sidebar-is-closed .dashboard-main-content { margin-left: 0; } }
+</style>
+
+<div class="dashboard-main-content">
+    <div class="px-8 py-10 w-full max-w-7xl mx-auto animate-fade-in">
+        
+        <!-- HEADER -->
+        <div class="flex items-center justify-between mb-8 animate-fade-in">
+            <div>
+                <span class="inline-block px-3 py-1 bg-indigo-50 text-indigo-600 rounded-full text-[9px] font-black uppercase tracking-[0.2em] mb-3 border border-indigo-100">
+                    Konfigurasi Sistem
+                </span>
+                <h1 class="text-3xl font-black text-slate-800">Manajemen Pertanyaan</h1>
+                <p class="text-slate-500 font-medium mt-1">Ubah redaksi atau nonaktifkan pertanyaan skrining ADHD.</p>
+            </div>
+            <div class="w-16 h-16 rounded-[24px] bg-indigo-600 text-white flex items-center justify-center text-2xl shadow-xl shadow-indigo-200">
+                <i class="fas fa-clipboard-list"></i>
+            </div>
+        </div>
+
+        <!-- INFO WARNING -->
+        <div class="mb-10 p-5 bg-amber-50 border border-amber-200 rounded-3xl flex items-start gap-4 animate-fade-in" style="animation-delay: 0.1s;">
+            <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center shrink-0">
+                <i class="fas fa-triangle-exclamation text-lg"></i>
+            </div>
+            <div>
+                <h4 class="text-amber-800 font-black text-sm mb-1 uppercase tracking-widest">Peringatan Master Data</h4>
+                <p class="text-amber-700/80 text-xs font-medium leading-relaxed">Pertanyaan di bawah ini mengacu pada standar <strong class="text-amber-900">DSM-5</strong>. Hindari menonaktifkan pertanyaan secara permanen tanpa persetujuan Psikolog Klinis karena dapat mempengaruhi akurasi kalkulasi sistem skrining.</p>
+            </div>
+        </div>
+
+        <!-- FLASH MESSAGES -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <div class="mb-8 p-5 rounded-[24px] bg-emerald-50 text-emerald-700 border border-emerald-100 font-bold flex items-center gap-3 animate-fade-in">
+                    <i class="fas fa-check-circle text-lg"></i> {{ message }}
+                </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- TABEL DATA -->
+        <div class="bg-white p-8 md:p-10 rounded-[40px] shadow-sm border border-slate-100">
+            <!-- SEARCH & INFO -->
+           <div class="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
+                <h3 class="text-lg font-black text-slate-800 flex items-center gap-3">
+                    <i class="fas fa-list-check text-indigo-500"></i> Instrumen Tes
+                </h3>
+                
+                <div class="flex items-center gap-4 w-full sm:w-auto">
+                    <!-- COUNTER -->
+                    <span id="questionCount" class="px-5 py-3 bg-indigo-50 border border-indigo-100 rounded-2xl text-[10px] font-black text-indigo-600 uppercase tracking-widest whitespace-nowrap">
+                        {{ questions|length }} Pertanyaan
+                    </span>
+                    <!-- SEARCH -->
+                    <input type="text" id="searchInput" onkeyup="searchQuestions()" placeholder="Cari pertanyaan..." 
+                           class="flex-1 sm:w-64 bg-white border border-indigo-700 rounded-2xl px-5 py-3 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none shadow-inner">
+                </div>
+            </div>
+            
+            
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-separate border-spacing-y-2" id="questionTable">
+                    <thead class="bg-slate-50">
+                        <tr class="text-[10px] uppercase text-slate-400 font-black tracking-widest">
+                            <th class="py-4 px-6 rounded-l-2xl text-center w-16">No</th>
+                            <th class="py-4 px-6">Redaksi Pertanyaan</th>
+                            <th class="py-4 px-6 text-center w-32">Status</th>
+                            <th class="py-4 px-6 text-right rounded-r-2xl w-28">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-sm" id="tableBody">
+                        {% for q in questions %}
+                        <tr class="question-row group hover:bg-slate-50/50 transition-all" data-text="{{ q.text|lower }}">
+                            <!-- VIEW MODE -->
+                            <td colspan="4" class="p-0">
+                                <div id="view-{{ q._id }}" class="flex items-center border-y border-slate-50">
+                                    <div class="py-5 px-6 text-center w-16 font-black text-slate-400">{{ q.order }}</div>
+                                    <div class="py-5 px-6 flex-1">
+                                        <p class="font-bold text-slate-700">{{ q.text }}</p>
+                                    </div>
+                                    <div class="py-5 px-6 w-32 text-center">
+                                        <span class="px-3 py-1 rounded-full text-[9px] font-black uppercase {% if q.is_active != False %}bg-emerald-50 text-emerald-600{% else %}bg-rose-50 text-rose-600{% endif %}">
+                                            {{ 'Aktif' if q.is_active != False else 'Nonaktif' }}
+                                        </span>
+                                    </div>
+                                    <div class="py-5 px-6 w-28 text-right">
+                                        <button onclick="toggleEdit('{{ q._id }}')" class="w-10 h-10 bg-white border border-slate-200 text-indigo-500 rounded-xl hover:bg-indigo-500 hover:text-white transition-all shadow-sm flex items-center justify-center ml-auto">
+                                            <i class="fas fa-pencil-alt text-xs"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- EDIT MODE -->
+                                <div id="edit-{{ q._id }}" class="hidden bg-indigo-50/50 border-2 border-indigo-100 rounded-3xl p-5 my-2 shadow-inner">
+                                    <form action="{{ url_for('admin.edit_question', question_id=q._id) }}" method="POST" class="flex flex-col md:flex-row items-center gap-4">
+                                        <div class="w-10 text-center font-black text-indigo-300">{{ q.order }}.</div>
+                                        <input type="text" name="question_text" value="{{ q.text }}" required class="flex-1 w-full bg-white px-5 py-3 rounded-2xl text-sm font-bold shadow-sm border-0 focus:ring-2 focus:ring-indigo-500">
+                                        <label class="flex items-center gap-2 bg-white px-4 py-3 rounded-2xl border border-slate-100">
+                                            <input type="checkbox" name="is_active" {% if q.is_active != False %}checked{% endif %} class="w-4 h-4 text-indigo-600">
+                                            <span class="text-[10px] font-black uppercase">Aktif</span>
+                                        </label>
+                                        <button type="submit" class="px-6 py-3 bg-indigo-600 text-white rounded-2xl text-[10px] font-black uppercase">Simpan</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- PAGINASI -->
+            <div class="flex justify-between items-center mt-8 pt-6 border-t border-slate-100">
+                <button onclick="changePage(-1)" class="px-6 py-3 bg-slate-100 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-200">Sebelumnya</button>
+                <span id="pageInfo" class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Halaman 1</span>
+                <button onclick="changePage(1)" class="px-6 py-3 bg-indigo-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-700">Selanjutnya</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentPage = 1;
+    const itemsPerPage = 10;
+    const rows = document.querySelectorAll('.question-row');
+
+    function updateTable() {
+        const input = document.getElementById('searchInput').value.toLowerCase();
+        // Saring berdasarkan input
+        let filteredRows = Array.from(rows).filter(row => row.getAttribute('data-text').includes(input));
+        
+        // Sembunyikan semua
+        rows.forEach(r => r.style.display = 'none');
+        
+        // Tampilkan hanya yang di halaman aktif
+        const start = (currentPage - 1) * itemsPerPage;
+        const end = start + itemsPerPage;
+        
+        filteredRows.slice(start, end).forEach(r => r.style.display = 'table-row');
+        
+        document.getElementById('pageInfo').innerText = `Halaman ${currentPage}`;
+        document.getElementById('questionCount').innerText = `${filteredRows.length} Pertanyaan`;
+    }
+
+    function changePage(dir) {
+        const input = document.getElementById('searchInput').value.toLowerCase();
+        const filteredRows = Array.from(rows).filter(r => r.getAttribute('data-text').includes(input));
+        const maxPage = Math.ceil(filteredRows.length / itemsPerPage);
+        
+        currentPage = Math.max(1, Math.min(maxPage, currentPage + dir));
+        updateTable();
+    }
+
+    function searchQuestions() { 
+        currentPage = 1; 
+        updateTable(); 
+    }
+    
+    function toggleEdit(id) {
+        document.getElementById(`view-${id}`).classList.toggle('hidden');
+        document.getElementById(`edit-${id}`).classList.toggle('hidden');
+    }
+    
+    window.onload = updateTable;
+</script>
+{% endblock %}

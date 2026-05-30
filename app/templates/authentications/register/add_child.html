@@ -1,0 +1,56 @@
+{% extends 'layout/app.html' %}
+
+{% block title %}Lengkapi Profil Anak | KidsCare{% endblock %}
+
+{% block content %}
+<!-- Menambahkan pt-24 untuk memberi jarak dari navbar -->
+<section class="min-h-screen w-full flex items-start justify-center bg-slate-50 p-6 pt-24">
+    <div class="w-full max-w-xl bg-white p-8 md:p-12 rounded-[32px] shadow-xl border border-slate-100">
+        
+        <div class="mb-10 text-center">
+            <div class="w-16 h-16 bg-orange-100 text-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-6 text-2xl">
+                <i class="fas fa-child"></i>
+            </div>
+            <h1 class="text-3xl font-black text-slate-900 mb-2">Lengkapi Data Si Kecil</h1>
+            <p class="text-slate-500 font-medium">Data ini diperlukan agar kami bisa memberikan skrining yang akurat.</p>
+        </div>
+
+        <form method="POST" action="{{ url_for('main.add_child_profile') }}" class="space-y-6">
+            
+            <!-- Nama Panggilan -->
+            <div class="space-y-2">
+                <label class="text-[11px] font-black text-slate-500 uppercase tracking-widest ml-1 block">Nama Panggilan</label>
+                <input type="text" name="child_name" placeholder="Nama si kecil" required
+                    class="w-full px-6 py-4 rounded-2xl bg-white border-2 border-slate-100 focus:border-orange-400 outline-none transition-all font-semibold text-slate-700 shadow-sm">
+            </div>
+
+            <!-- Tanggal Lahir -->
+            <div class="space-y-2">
+                <label class="text-[11px] font-black text-slate-500 uppercase tracking-widest ml-1 block">Tanggal Lahir</label>
+                <input type="date" name="child_birth" required
+                    class="w-full px-6 py-4 rounded-2xl bg-white border-2 border-slate-100 focus:border-orange-400 outline-none transition-all font-semibold text-slate-700 shadow-sm">
+            </div>
+
+            <!-- Jenis Kelamin -->
+            <div class="space-y-2">
+                <label class="text-[11px] font-black text-slate-500 uppercase tracking-widest ml-1 block">Jenis Kelamin</label>
+                <div class="grid grid-cols-2 gap-4">
+                    <label class="cursor-pointer">
+                        <input type="radio" name="gender" value="L" checked class="hidden peer">
+                        <div class="text-center py-4 rounded-2xl border-2 border-slate-100 bg-white font-bold text-slate-400 peer-checked:border-orange-400 peer-checked:bg-orange-50 peer-checked:text-orange-600 transition-all">Laki-laki</div>
+                    </label>
+                    <label class="cursor-pointer">
+                        <input type="radio" name="gender" value="P" class="hidden peer">
+                        <div class="text-center py-4 rounded-2xl border-2 border-slate-100 bg-white font-bold text-slate-400 peer-checked:border-orange-400 peer-checked:bg-orange-50 peer-checked:text-orange-600 transition-all">Perempuan</div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Tombol Simpan -->
+            <button type="submit" class="w-full py-5 mt-6 bg-slate-900 text-white rounded-[24px] font-black text-lg hover:bg-orange-500 shadow-xl transition-all active:scale-[0.98]">
+                Simpan & Mulai Skrining
+            </button>
+        </form>
+    </div>
+</section>
+{% endblock %}

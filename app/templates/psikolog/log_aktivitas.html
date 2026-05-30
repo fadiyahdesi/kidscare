@@ -1,0 +1,293 @@
+{% extends 'layout/dashboard.html' %}
+
+{% block title %}Antrean Rekomendasi | KidsCare Professional{% endblock %}
+
+{% block content %}
+<style>
+    /* LAYOUT STABIL & RESPONSIVE */
+    .dashboard-main-content {
+        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        background-color: #f8fafc;
+        min-width: 1200px;
+    }
+
+    @media (min-width: 1024px) {
+        .dashboard-main-content { margin-left: 18rem; }
+        body.sidebar-is-closed .dashboard-main-content { margin-left: 0; }
+    }
+
+    @keyframes fadeIn { 
+        from { opacity: 0; transform: translateY(-10px); } 
+        to { opacity: 1; transform: translateY(0); } 
+    }
+    .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
+
+    .log-table-row:hover {
+        background-color: #f8fafc;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+
+    .pulse-amber {
+        box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4);
+        animation: pulse-amber 2s infinite;
+    }
+    @keyframes pulse-amber {
+        0% { transform: scale(0.98); box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.6); }
+        70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(245, 158, 11, 0); }
+        100% { transform: scale(0.98); box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+    }
+</style>
+
+{% set indo_months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"] %}
+
+<div class="dashboard-main-content">
+    <div class="px-8 py-10 w-full">
+        
+        <!-- HEADER HALAMAN -->
+        <div class="flex items-center justify-between mb-10 animate-fade-in">
+            <div>
+                <p class="text-[10px] font-black text-teal-600 uppercase tracking-[0.3em] mb-2">Manajemen Pasien</p>
+                <h1 class="text-3xl font-black text-slate-800 tracking-tight">Antrean Rekomendasi</h1>
+                <p class="text-slate-500 font-medium">Berikan ulasan klinis eksklusif bagi anak yang sedang berkonsultasi aktif dengan Anda.</p>
+            </div>
+            <div class="w-16 h-16 rounded-[24px] bg-teal-500 text-white flex items-center justify-center text-2xl shadow-xl shadow-teal-100 rotate-3 hover:rotate-0 transition-all duration-300">
+                <i class="fas fa-microscope"></i>
+            </div>
+        </div>
+
+        <!-- NOTIFIKASI FLASH -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="mb-8 p-5 rounded-[24px] {% if category == 'success' %}bg-emerald-50 text-emerald-700 border-emerald-100{% else %}bg-amber-50 text-amber-700 border-amber-100{% endif %} font-bold flex items-center gap-3 animate-fade-in shadow-sm">
+                <i class="fas {% if category == 'success' %}fa-check-circle{% else %}fa-circle-exclamation{% endif %}"></i> {{ message }}
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <!-- TABEL ANTREAN UTAMA -->
+        <div class="bg-white rounded-[40px] p-8 md:p-10 shadow-sm border border-slate-100 overflow-hidden animate-fade-in">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-separate border-spacing-y-4">
+                    <thead class="bg-slate-50">
+                        <tr>
+                            <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest rounded-l-2xl">Pasien & Skor Terbaru</th>
+                            <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Status Chat</th>
+                            <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Data Skrining</th>
+                            <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Waktu Update</th>
+                            <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right rounded-r-2xl">Laporan</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if logs %}
+                            {% for log in logs %}
+                            <tr class="log-table-row transition-all group">
+                                <td class="px-6 py-5 bg-slate-50 border-y border-l border-slate-100 rounded-l-3xl">
+                                    <div class="flex flex-col">
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <span class="font-black text-slate-800 text-sm">{{ log.child_name }}</span>
+                                            <span class="text-[8px] font-black text-slate-300 uppercase">/ {{ log.parent_name }}</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-[9px] font-black {% if 'Normal' in log.category %}text-emerald-500{% else %}text-orange-500{% endif %} uppercase">{{ log.category }}</span>
+                                            <span class="text-[9px] text-slate-400 font-bold">• {{ log.scores }}</span>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td class="px-6 py-5 bg-slate-50 border-y border-slate-100 text-center">
+                                    <a href="{{ url_for('psychologist.consultation_list', consult_id=log.consult_id) }}" 
+                                       class="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-blue-50 text-blue-600 rounded-full text-[9px] font-black uppercase border border-blue-100 hover:bg-blue-600 hover:text-white transition-all shadow-sm">
+                                        <i class="fas fa-comment-dots"></i> Buka Chat
+                                    </a>
+                                </td>
+
+                                <td class="px-6 py-5 bg-slate-50 border-y border-slate-100 text-center">
+                                    <button type="button"
+                                            id="btn-history-{{ log.test_id }}"
+                                            data-name="{{ log.child_name }}"
+                                            data-history='{{ log.history_data | tojson | safe }}'
+                                            onclick="openHistoryModal('btn-history-{{ log.test_id }}')" 
+                                            class="px-4 py-2 bg-white border border-slate-200 text-teal-600 font-black text-[9px] uppercase rounded-xl hover:bg-teal-500 hover:text-white transition-all shadow-sm flex items-center gap-2 mx-auto">
+                                        <i class="fas fa-history"></i> {{ log.total_screenings }}x Tes
+                                    </button>
+                                </td>
+
+                                <td class="px-6 py-5 bg-slate-50 border-y border-slate-100 text-[10px] text-slate-400 font-bold uppercase">
+                                    {{ log.last_updated.day }} {{ indo_months[log.last_updated.month - 1] }} {{ log.last_updated.year }}
+                                </td>
+
+                                <td class="px-6 py-5 bg-slate-50 border-y border-r border-slate-100 rounded-r-3xl text-right">
+                                    <button onclick="openSummaryModal('{{ log.test_id }}', '{{ log.child_name }}', '{{ (log.summary_data.summary_text|replace('\n', '\\n')|replace('\'', '\\\'')) if log.has_summary else '' }}', '{{ (log.summary_data.recommendations|join('\n')|replace('\n', '\\n')|replace('\'', '\\\'')) if log.has_summary else '' }}')"
+                                            class="px-5 py-2.5 rounded-xl font-black text-[9px] uppercase transition-all shadow-xl
+                                            {% if log.has_summary %} bg-slate-800 text-white hover:bg-slate-700 {% else %} bg-teal-500 text-white hover:bg-teal-600 pulse-amber {% endif %}">
+                                        {% if log.has_summary %}Edit Review{% else %}Beri Laporan{% endif %}
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="5" class="py-24 text-center bg-slate-50 rounded-[32px] border border-dashed border-slate-200 text-slate-400">
+                                    <i class="fas fa-user-doctor text-4xl mb-4 opacity-10 block"></i>
+                                    <p class="font-black text-xs uppercase tracking-widest">Belum ada pasien aktif yang terdaftar dalam bimbingan Anda.</p>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- PEDOMAN DSM-5 FOOTER -->
+        <div class="mt-8 p-6 bg-slate-900 rounded-[32px] text-white/70 text-[10px] font-medium leading-relaxed animate-fade-in" style="animation-delay: 0.2s;">
+            <div class="flex items-start gap-4">
+                <div class="w-8 h-8 rounded-xl bg-teal-500/10 flex items-center justify-center text-teal-400 shrink-0">
+                    <i class="fas fa-circle-info"></i>
+                </div>
+                <p>
+                    <strong class="text-teal-400 uppercase tracking-widest mr-2">Panduan DSM-5:</strong>
+                    Diagnosis ADHD memerlukan bukti bahwa gejala (Inatensi atau Hiperaktivitas) telah menetap selama minimal 6 bulan dalam tingkat yang tidak sesuai dengan tingkat perkembangan anak. Gunakan tombol <strong>"x Tes"</strong> untuk melihat konsistensi skor dari waktu ke waktu sebelum memberikan laporan akhir.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL RIWAYAT (HISTORY) -->
+<div id="historyModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[3000] flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+    <div class="bg-white w-full max-w-2xl p-10 rounded-[48px] shadow-2xl mx-4 transform scale-95 transition-all" id="historyModalBox">
+        <div class="flex justify-between items-center mb-8">
+            <div>
+                <h2 class="text-2xl font-black text-slate-800 leading-tight" id="historyTitle">Riwayat Perkembangan</h2>
+                <p class="text-[10px] font-black text-teal-600 uppercase mt-1">Lacak fluktuasi skor gejala pasien</p>
+            </div>
+            <button onclick="toggleModal('historyModal')" class="text-slate-400 hover:text-rose-500 transition-colors"><i class="fas fa-times text-lg"></i></button>
+        </div>
+        <div class="overflow-hidden border border-slate-100 rounded-3xl">
+            <table class="w-full text-left">
+                <thead class="bg-slate-50 border-b border-slate-100">
+                    <tr>
+                        <th class="px-6 py-4 text-[9px] font-black text-slate-400 uppercase">Waktu Tes</th>
+                        <th class="px-6 py-4 text-[9px] font-black text-slate-400 uppercase text-center">Hasil</th>
+                        <th class="px-6 py-4 text-[9px] font-black text-slate-400 uppercase text-right">Inatensi / Hiperaktif</th>
+                    </tr>
+                </thead>
+                <tbody id="historyTableBody" class="divide-y divide-slate-50"></tbody>
+            </table>
+        </div>
+        <div class="mt-8">
+            <button onclick="toggleModal('historyModal')" class="w-full py-4 bg-slate-900 text-white rounded-2xl font-black text-[10px] uppercase transition shadow-lg hover:bg-teal-600">Tutup Riwayat</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL LAPORAN (SUMMARY) -->
+<div id="summaryModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[2000] flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+    <div class="bg-white w-full max-w-xl p-8 md:p-10 rounded-[48px] shadow-2xl mx-4 transform scale-95 transition-all" id="summaryModalBox">
+        <div class="flex justify-between items-center mb-8">
+            <div>
+                <h2 class="text-2xl font-black text-slate-800" id="modalPatientTitle">Laporan Observasi</h2>
+                <p class="text-[10px] font-black text-orange-500 uppercase tracking-widest mt-1">Berikan Saran & "Resep" Perkembangan</p>
+            </div>
+            <button onclick="toggleModal('summaryModal')" class="w-10 h-10 rounded-full bg-slate-50 text-slate-400 hover:text-rose-500 transition-colors">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <form action="{{ url_for('psychologist.save_consultation_summary') }}" method="POST" class="space-y-6">
+            <input type="hidden" name="test_id" id="modalTestId">
+            
+            <div class="space-y-2">
+                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 block">Ringkasan Analisis Klinis</label>
+                <textarea name="summary_text" id="modalSummaryText" rows="3" placeholder="Bagaimana kondisi anak menurut kacamata Anda sebagai ahli?" required
+                    class="w-full px-6 py-4 rounded-3xl bg-slate-50 border-2 border-transparent focus:border-teal-500 focus:bg-white outline-none transition-all font-semibold text-slate-700 shadow-inner resize-none"></textarea>
+            </div>
+
+            <div class="space-y-2">
+                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 block">Rekomendasi Langkah Mandiri (Satu per Baris)</label>
+                <textarea name="recommendations" id="modalRecs" rows="5" placeholder="Contoh:&#10;Melakukan eye-contact saat bicara&#10;Memberikan instruksi singkat dan jelas&#10;Mengurangi durasi screen time" required
+                    class="w-full px-6 py-4 rounded-3xl bg-slate-50 border-2 border-transparent focus:border-emerald-500 focus:bg-white outline-none transition-all font-semibold text-slate-700 shadow-inner resize-none"></textarea>
+                <p class="text-[8px] text-slate-400 italic ml-1">*Langkah ini akan muncul sebagai checklist bagi orang tua.</p>
+            </div>
+
+            <div class="flex gap-4 pt-4">
+                <button type="button" onclick="toggleModal('summaryModal')" class="flex-1 py-4 bg-slate-100 text-slate-500 rounded-2xl font-black text-[10px] uppercase">Batal</button>
+                <button type="submit" class="flex-1 py-4 bg-teal-500 text-white rounded-2xl font-black text-[10px] uppercase shadow-xl shadow-teal-100 hover:bg-teal-600 active:scale-95 transition-all">
+                    Kirim Laporan <i class="fas fa-paper-plane ml-2"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function toggleModal(id) {
+        const modal = document.getElementById(id);
+        const box = document.getElementById(id + 'Box');
+        if (modal && box) {
+            if (modal.classList.contains('hidden')) {
+                modal.classList.remove('hidden');
+                setTimeout(() => { 
+                    modal.classList.replace('opacity-0', 'opacity-100'); 
+                    box.classList.replace('scale-95', 'scale-100'); 
+                }, 10);
+            } else {
+                modal.classList.replace('opacity-100', 'opacity-0'); 
+                box.classList.replace('scale-100', 'scale-95');
+                setTimeout(() => modal.classList.add('hidden'), 300);
+            }
+        }
+    }
+
+    function openHistoryModal(btnId) {
+        const btn = document.getElementById(btnId);
+        if (!btn) return;
+        const name = btn.getAttribute('data-name');
+        const history = JSON.parse(btn.getAttribute('data-history'));
+        
+        document.getElementById('historyTitle').innerText = `Riwayat: ${name}`;
+        const tbody = document.getElementById('historyTableBody');
+        tbody.innerHTML = '';
+        
+        history.forEach(item => {
+            const dateObj = new Date(item.date);
+            const dateStr = `${dateObj.getDate()} ${['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'][dateObj.getMonth()]} ${dateObj.getFullYear()}`;
+            
+            const row = `
+                <tr class="hover:bg-slate-50/50 transition-colors">
+                    <td class="px-6 py-4 text-xs font-bold text-slate-700">${dateStr}</td>
+                    <td class="px-6 py-4 text-center">
+                        <span class="text-[9px] font-black uppercase ${item.category.includes('Normal') ? 'text-emerald-500' : 'text-orange-500'}">${item.category}</span>
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                        <span class="text-xs font-black text-slate-700">${item.in_score} <span class="text-slate-300">/</span> ${item.hy_score}</span>
+                    </td>
+                </tr>
+            `;
+            tbody.innerHTML += row;
+        });
+        toggleModal('historyModal');
+    }
+
+    function openSummaryModal(testId, childName, summary, recommendations) {
+        document.getElementById('modalTestId').value = testId;
+        document.getElementById('modalPatientTitle').innerText = `Review: ${childName}`;
+        document.getElementById('modalSummaryText').value = summary;
+        document.getElementById('modalRecs').value = recommendations;
+        toggleModal('summaryModal');
+    }
+
+    window.onclick = function(event) {
+        if (event.target.id && event.target.id.includes('Modal') && !event.target.id.includes('Box')) {
+            toggleModal(event.target.id);
+        }
+    }
+</script>
+{% endblock %}

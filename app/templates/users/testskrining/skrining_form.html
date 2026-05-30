@@ -2,199 +2,439 @@
 {% block title %}Tes Skrining | KidsCare{% endblock %}
 
 {% block content %}
-<!-- CSS KHUSUS UNTUK MENCEGAH SIDEBAR MENUTUPI FORM -->
+
 <style>
-    .dashboard-main-content {
-        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
+
+    .dashboard-main-content{
+        min-height:100vh;
+        background:linear-gradient(to bottom right,#f8fafc,#ecfeff);
     }
 
-    @media (min-width: 1024px) {
-        .dashboard-main-content {
-            margin-left: 18rem;
-        }
-
-        body.sidebar-is-closed .dashboard-main-content {
-            margin-left: 0;
+    @media (min-width:1024px){
+        .dashboard-main-content{
+            margin-left:18rem;
+            width:calc(100% - 18rem);
         }
     }
 
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(-10px); }
-        to { opacity: 1; transform: translateY(0); }
+    @keyframes fadeSlide{
+        from{
+            opacity:0;
+            transform:translateY(15px);
+        }
+        to{
+            opacity:1;
+            transform:translateY(0);
+        }
     }
-    .animate-fade-in {
-        animation: fadeIn 0.4s ease-out forwards;
+
+    .animate-fade{
+        animation:fadeSlide .4s ease;
     }
+
+    .question-card{
+        background:white;
+        border-radius:28px;
+        padding:2rem;
+        box-shadow:
+            0 10px 25px rgba(0,0,0,.05),
+            0 5px 10px rgba(0,0,0,.03);
+        border:1px solid #e2e8f0;
+        width:100%;
+    }
+
+    .choice-card{
+        transition:all .2s ease;
+        border: #14b8a6 2px solid;
+        background:white;
+        border-radius: 9999px; /* Bulat kapsul penuh sempurna */
+        padding: 0.8rem 1.5rem; /* Ukuran lebih ramping */
+    }
+
+    .choice-card:hover{
+        border-color:#14b8a6;
+        background-color:#ffffff; /* Efek hover warna hijau muda */
+    }
+
+    input.peer:checked + .choice-card{
+        background: #14b8a6;
+        border-color:#14b8a6;
+        color:white;
+        /* Dihapus: transform: scale(1.02) karena ini yang membuat border saling tumpang tindih/terpotong */
+        box-shadow: #ffffff
+    }
+
+    .progress-glow{
+        background:linear-gradient(90deg,#14b8a6,#06b6d4);
+        box-shadow:0 0 15px rgba(20,184,166,.5);
+    }
+
+    .sticky-nav{
+        position:fixed;
+        bottom:0;
+        left:0;
+        right:0;
+        z-index:40;
+        background:#ffffff; 
+        border-top:1px solid #e2e8f0;
+    }
+    
+    @media (min-width:1024px){
+        .sticky-nav {
+            left: 18rem; /* Menyesuaikan agar tidak menimpa sidebar desktop */
+        }
+    }
+
+    .nav-btn{
+        transition:.25s;
+    }
+
+    .nav-btn:hover{
+        transform:translateY(-2px);
+    }
+
+    .nav-primary{
+        background:linear-gradient(135deg,#0f172a,#1e293b);
+    }
+
+    .nav-submit{
+        background:linear-gradient(135deg,#14b8a6,#0f766e);
+    }
+
+    /* BADGE CATEGORY CENTER */
+    .category-wrapper{
+        display:flex;
+        justify-content:center;
+        margin-bottom:1.5rem;
+    }
+
+    .category-badge{
+        background:linear-gradient(135deg,#0f172a,#1e293b);
+        color:white;
+        padding:.8rem 1.4rem;
+        border-radius:999px;
+        font-size:.75rem;
+        font-weight:900;
+        letter-spacing:.2em;
+        text-transform:uppercase;
+        box-shadow:0 10px 20px rgba(15,23,42,.25);
+    }
+
+    @media (max-width:640px){
+
+        .question-card{
+            padding:1.2rem;
+        }
+
+        .choice-card{
+            padding:1rem;
+        }
+
+    }
+
 </style>
 
-<!-- WRAPPER UTAMA DASHBOARD -->
-<div class="dashboard-main-content bg-slate-50/30">
-    <div class="flex flex-col h-full px-8 py-8">
+<div class="dashboard-main-content">
+
+    <!-- CONTAINER -->
+    <div class="w-full max-w-7xl mx-auto px-6 lg:px-12 py-8">
 
         <!-- HEADER -->
-        <div class="animate-fade-in">
-            <h1 class="text-3xl font-extrabold text-slate-800">Skrining ADHD: <span class="text-teal-600">{{ child.name }}</span></h1>
-            <p class="text-slate-500 mt-1 font-medium">Isi sesuai perilaku anak selama 6 bulan terakhir</p>
+        <div class="mb-8 animate-fade">
 
-            <div class="mt-8 max-w-4xl">
-                <div class="flex justify-between items-end mb-2">
-                    <p class="text-sm font-black text-teal-600 uppercase tracking-widest" id="progress-text">
+            <h1 class="text-3xl font-black text-slate-800">
+                Skrining ADHD:
+                <span class="text-teal-600">{{ child.name }}</span>
+            </h1>
+
+            <p class="text-slate-600 mt-2 text-lg">
+                Jawablah berdasarkan perilaku anak dalam 6 bulan terakhir dan pilihlah jawaban yang paling sesuai dengan kondisi anak Anda.
+            </p>
+
+            <!-- PROGRESS -->
+            <div class="mt-8">
+
+                <div class="flex justify-between mb-2">
+
+                    <p class="font-bold text-teal-700 text-sm tracking-wide uppercase"
+                       id="progress-text">
                         Pertanyaan 1 dari {{ questions|length }}
                     </p>
-                    <span class="text-[10px] font-bold text-slate-400 bg-white px-2 py-0.5 rounded-full border border-slate-100">Progress</span>
+
+                    <p class="font-bold text-slate-500 text-sm"
+                       id="progress-percent">
+                        0%
+                    </p>
+
                 </div>
-                <div class="w-full h-3 bg-white rounded-full shadow-sm overflow-hidden border border-slate-100 p-0.5">
-                    <div id="progress-bar" class="h-full bg-teal-400 rounded-full transition-all duration-700 ease-out shadow-sm shadow-teal-100"
-                        style="width:5%"></div>
+
+                <div class="w-full h-4 bg-white rounded-full overflow-hidden border border-slate-200 shadow-inner">
+
+                    <div id="progress-bar"
+                         class="h-full progress-glow transition-all duration-500 rounded-full"
+                         style="width:0%">
+                    </div>
+
                 </div>
+
             </div>
+
         </div>
 
-        <!-- FORM: Sekarang diarahkan ke /predict -->
-        <form id="screeningForm" method="POST" action="{{ url_for('user.predict') }}"
-            class="flex-1 flex flex-col items-center justify-center mt-12 mb-12">
-
-            <!-- INPUT HIDDEN: INI KUNCI SINKRONISASI -->
-            <input type="hidden" name="child_id" value="{{ child._id }}">
+        <!-- FORM -->
+        <form id="screeningForm"
+              method="POST"
+              action="{{ url_for('user.predict') }}"
+              class="flex-1 flex flex-col justify-center"> <input type="hidden" name="child_id" value="{{ child._id }}">
 
             {% for q in questions %}
             {% set i = loop.index0 %}
-            <div class="question-step {% if not loop.first %}hidden{% endif %} w-full max-w-4xl text-center transition-all duration-300"
-                data-step="{{ i }}">
 
-                <!-- KOTAK PERTANYAAN -->
-                <div class="bg-white border border-slate-100 rounded-[48px] px-10 py-16 mb-12 shadow-xl shadow-slate-200/50 relative overflow-hidden">
-                    <div class="absolute top-0 left-0 w-full h-1.5 bg-teal-500 opacity-20"></div>
-                    
-                    <h2 class="text-2xl md:text-4xl font-black text-slate-800 leading-tight mb-6 animate-fade-in">{{ q.text }}</h2>
-                    
-                    <span class="inline-block px-4 py-1.5 bg-teal-50 rounded-full text-[10px] font-black text-teal-600 uppercase tracking-[0.2em] border border-teal-100">
-                        Kategori Gejala: {{ q.category }}
-                    </span>
-                    
-                    <!-- Ornamen Background -->
-                    <div class="absolute -bottom-12 -right-12 w-40 h-40 bg-teal-50 rounded-full blur-3xl -z-10"></div>
+            <div class="question-step {% if not loop.first %}hidden{% endif %} animate-fade"
+                 data-step="{{ i }}">
+
+                <div class="question-card">
+
+                    <div class="category-wrapper mb-8">
+                        <div class="category-badge">
+                            TIPE: 
+                            {% if q.category|upper == 'INATTENTION' %}
+                                INATENSI (PEMUSATAN PERHATIAN)
+                            {% elif 'HYPERACTIV' in q.category|upper %}
+                                HIPERAKTIF-IMPULSIF 
+                            {% elif q.category|upper == 'COMBINED' %}
+                                CAMPURAN (INATENSI + HIPERAKTIF-IMPULSIF)
+                            {% else %}
+                                {{ q.category|upper }}
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="text-center mb-12 relative z-10">
+                        <h2 class="text-2xl md:text-3xl font-black text-slate-800 leading-snug px-4">
+                            {{ q.text }}
+                        </h2>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-xl mx-auto px-4"> 
+
+                        {% if q.type == 'likert' %}
+                            {% set choices = [
+                                ('0','Tidak Pernah'),
+                                ('1','Jarang'),
+                                ('2','Sering'),
+                                ('3','Sangat Sering')
+                            ] %}
+                        {% else %}
+                            {% set choices = [
+                                ('1','Ya'),
+                                ('0','Tidak')
+                            ] %}
+                        {% endif %}
+
+                        {% for val, label in choices %}
+
+                        <label class="cursor-pointer group">
+
+                            <input type="radio"
+                                name="q{{ i }}"
+                                value="{{ val }}"
+                                class="hidden peer"
+                                required>
+
+                           <div class="choice-card relative flex items-center justify-center py-4 px-6">
+
+                                <span class="font-bold text-sm text-center"> 
+                                    {{ label }}
+                                </span>
+
+                                <svg class="w-5 h-5 opacity-0 peer-checked:opacity-100 transition absolute right-5"
+                                     fill="none"
+                                     stroke="currentColor"
+                                     stroke-width="3"
+                                     viewBox="0 0 24 24">
+                                    <path stroke-linecap="round"
+                                          stroke-linejoin="round"
+                                          d="M5 13l4 4L19 7"/>
+                                </svg>
+
+                            </div>
+
+                        </label>
+
+                        {% endfor %}
+
+                    </div>
+
+                    <div class="text-center mt-12 pt-6 border-t border-slate-100 relative z-10 max-auto mx-auto px-4">
+                         <p class="text-slate-500 text-xs md:text-sm font-medium leading-relaxed">
+                            <i class="fas fa-info-circle text-teal-500 mr-1"></i> Tidak ada jawaban benar atau salah, pilihlah yang paling sesuai dengan kondisi Anak.
+                        </p>
+                    </div>
+
                 </div>
 
-                <!-- PILIHAN JAWABAN -->
-                <div class="flex justify-center gap-4 md:gap-6 flex-wrap">
-                    {% if q.type == 'likert' %}
-                        {% for val,label in [('0','Tidak pernah'),('1','Jarang'),('2','Sering'),('3','Sangat Sering')] %}
-                        <label class="cursor-pointer group flex-1 min-w-[140px] max-w-[200px]">
-                            <input type="radio" name="q{{ i }}" value="{{ val }}" class="hidden peer" required>
-                            <div class="h-full px-4 py-6 rounded-[24px] border-2 border-white bg-white text-slate-500 font-bold group-hover:border-teal-100 group-hover:bg-teal-50/30 peer-checked:border-teal-500 peer-checked:bg-teal-500 peer-checked:text-white transition-all shadow-sm hover:shadow-md flex items-center justify-center text-center text-sm md:text-base">
-                                {{ label }}
-                            </div>
-                        </label>
-                        {% endfor %}
-                    {% else %}
-                        {% for val,label in [('1','Ya'),('0','Tidak')] %}
-                        <label class="cursor-pointer group flex-1 min-w-[200px] max-w-[300px]">
-                            <input type="radio" name="q{{ i }}" value="{{ val }}" class="hidden peer" required>
-                            <div class="h-full px-12 py-6 rounded-[24px] border-2 border-white bg-white text-slate-500 font-bold group-hover:border-teal-100 group-hover:bg-teal-50/30 peer-checked:border-teal-500 peer-checked:bg-teal-500 peer-checked:text-white transition-all shadow-sm hover:shadow-md flex items-center justify-center text-center text-sm md:text-base">
-                                {{ label }}
-                            </div>
-                        </label>
-                        {% endfor %}
-                    {% endif %}
-                </div>
             </div>
+
             {% endfor %}
+
         </form>
 
-        <!-- NAVIGATION -->
-        <div class="flex justify-between items-center max-w-4xl mx-auto w-full mt-auto pb-10">
-            <button type="button" id="prevBtn" 
-                class="flex items-center gap-3 px-8 py-4 rounded-2xl font-black text-slate-400 hover:text-teal-600 hover:bg-teal-50 transition-all disabled:opacity-0 disabled:pointer-events-none">
-                <i class="fas fa-arrow-left"></i> Sebelumnya
-            </button>
-            
-            <button type="button" id="nextBtn" 
-                class="flex items-center gap-3 px-10 py-4 bg-slate-900 text-white rounded-[24px] font-black hover:bg-slate-800 transition-all shadow-xl shadow-slate-200 active:scale-95">
-                Berikutnya <i class="fas fa-arrow-right"></i>
-            </button>
+    </div>
 
-            <button type="button" id="submitBtn" 
-                class="hidden flex items-center gap-3 px-10 py-4 bg-teal-500 text-white rounded-[24px] font-black hover:bg-teal-600 transition-all shadow-xl shadow-teal-100 active:scale-95">
-                Kirim Hasil Skrining <i class="fas fa-paper-plane"></i>
-            </button>
+    <!-- STICKY NAVIGATION -->
+    <div class="sticky-nav">
+
+        <div class="w-full max-w-7xl mx-auto px-6 lg:px-12 py-4">
+
+            <div class="flex justify-between items-center gap-4">
+
+                <button type="button"
+                        id="prevBtn"
+                        class="nav-btn px-7 py-4 rounded-2xl bg-slate-100 font-bold text-slate-600 hover:bg-slate-200 hover:text-slate-800 disabled:opacity-40 disabled:cursor-not-allowed">
+
+                    ← Sebelumnya
+
+                </button>
+
+                <button type="button"
+                        id="nextBtn"
+                        class="nav-btn nav-primary px-9 py-4 rounded-2xl text-white font-bold shadow-xl">
+
+                    Berikutnya →
+
+                </button>
+
+                <button type="button"
+                        id="submitBtn"
+                        class="hidden nav-btn nav-submit px-9 py-4 rounded-2xl text-white font-bold shadow-xl">
+
+                    Kirim Hasil
+
+                </button>
+
+            </div>
+
         </div>
 
     </div>
+
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const steps = document.querySelectorAll('.question-step');
-        const progressBar = document.getElementById('progress-bar');
-        const progressText = document.getElementById('progress-text');
-        const nextBtn = document.getElementById('nextBtn');
-        const prevBtn = document.getElementById('prevBtn');
-        const submitBtn = document.getElementById('submitBtn');
-        const form = document.getElementById('screeningForm');
+document.addEventListener('DOMContentLoaded', function () {
 
-        let currentStep = 0;
-        const totalSteps = steps.length;
+    const steps = document.querySelectorAll('.question-step');
+    const progressBar = document.getElementById('progress-bar');
+    const progressText = document.getElementById('progress-text');
+    const progressPercent = document.getElementById('progress-percent');
+    
+    const nextBtn = document.getElementById('nextBtn');
+    const prevBtn = document.getElementById('prevBtn');
+    const submitBtn = document.getElementById('submitBtn');
+    
+    const form = document.getElementById('screeningForm');
 
-        function updateStep(index) {
-            steps.forEach((step, i) => {
-                step.classList.add('hidden');
-                if (i === index) step.classList.remove('hidden');
+    let currentStep = 0;
+    const totalSteps = steps.length;
+
+    // ==========================================
+    // 1. FITUR AUTO-NEXT SAAT JAWABAN DIPILIH
+    // ==========================================
+    steps.forEach((step, index) => {
+        // Ambil semua pilihan jawaban (radio button) di setiap pertanyaan
+        const radios = step.querySelectorAll('input[type="radio"]');
+        
+        radios.forEach(radio => {
+            radio.addEventListener('change', () => {
+                // Beri jeda 400ms (0.4 detik) agar user melihat ceklisnya dulu
+                setTimeout(() => {
+                    // Cek jika ini bukan pertanyaan terakhir
+                    if (currentStep < totalSteps - 1) {
+                        currentStep++;
+                        updateStep(currentStep);
+                    } else {
+                        // Jika pertanyaan terakhir, sembunyikan tombol next, munculkan tombol selesai
+                        nextBtn.classList.add('hidden');
+                        submitBtn.classList.remove('hidden');
+                    }
+                }, 400); 
             });
+        });
+    });
 
-            // Update Progress Bar secara halus
-            const percent = ((index + 1) / totalSteps) * 100;
-            progressBar.style.width = percent + '%';
-            progressText.innerText = `Pertanyaan ${index + 1} dari ${totalSteps}`;
-
-            // Tombol Sebelumnya
-            prevBtn.disabled = index === 0;
-
-            // Tombol Navigasi Akhir
-            if (index === totalSteps - 1) {
-                nextBtn.classList.add('hidden');
-                submitBtn.classList.remove('hidden');
+    // ==========================================
+    // 2. FUNGSI UPDATE TAMPILAN & PROGRESS BAR
+    // ==========================================
+    function updateStep(index){
+        // Tampilkan pertanyaan saat ini, sembunyikan yang lain
+        steps.forEach((step, i) => {
+            if(i === index) {
+                step.classList.remove('hidden');
+                // Paksa reflow agar animasi fade jalan ulang setiap pindah
+                step.classList.remove('animate-fade');
+                void step.offsetWidth; 
+                step.classList.add('animate-fade');
             } else {
-                nextBtn.classList.remove('hidden');
-                submitBtn.classList.add('hidden');
+                step.classList.add('hidden');
             }
-            
-            // Scroll ke atas otomatis setiap ganti soal
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // Hitung persentase progress
+        const percent = Math.round(((index + 1) / totalSteps) * 100);
+        
+        // Update Progress Bar
+        if (progressBar) progressBar.style.width = percent + '%';
+        if (progressText) progressText.innerText = `Pertanyaan ${index + 1} dari ${totalSteps}`;
+        if (progressPercent) progressPercent.innerText = percent + '%';
+
+        // Atur tombol navigasi
+        prevBtn.disabled = index === 0;
+        nextBtn.classList.toggle('hidden', index === totalSteps - 1);
+        submitBtn.classList.toggle('hidden', index !== totalSteps - 1);
+        
+        // Scroll kembali ke atas perlahan jika di HP
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ==========================================
+    // 3. KONTROL TOMBOL MANUAL (Next / Prev / Submit)
+    // ==========================================
+    nextBtn.addEventListener('click', ()=>{
+        // Validasi: pastikan sudah ada jawaban sebelum bisa next manual
+        const checked = steps[currentStep].querySelector('input:checked');
+        if(!checked){
+            alert('Silakan pilih salah satu jawaban terlebih dahulu!');
+            return;
         }
-
-        function isAnswered() {
-            return steps[currentStep].querySelector('input:checked');
-        }
-
-        nextBtn.addEventListener('click', () => {
-            if (!isAnswered()) {
-                // Gunakan cara halus daripada alert jika ingin UI lebih premium
-                alert("Harap pilih salah satu jawaban untuk melanjutkan.");
-                return;
-            }
-            currentStep++;
-            updateStep(currentStep);
-        });
-
-        prevBtn.addEventListener('click', () => {
-            currentStep--;
-            updateStep(currentStep);
-        });
-
-        // Submit form secara nyata ke Flask
-        submitBtn.addEventListener('click', () => {
-            if (!isAnswered()) {
-                alert("Harap pilih jawaban pada pertanyaan terakhir.");
-                return;
-            }
-            form.submit();
-        });
-
+        currentStep++;
         updateStep(currentStep);
     });
+
+    prevBtn.addEventListener('click', ()=>{
+        if(currentStep > 0){
+            currentStep--;
+            updateStep(currentStep);
+        }
+    });
+
+    submitBtn.addEventListener('click', ()=>{
+        const checked = steps[currentStep].querySelector('input:checked');
+        if(!checked){
+            alert('Silakan pilih jawaban untuk pertanyaan terakhir ini.');
+            return;
+        }
+        
+        // Ubah teks tombol jadi loading saat data dikirim
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Memproses...';
+        submitBtn.classList.add('opacity-70', 'cursor-not-allowed');
+        
+        form.submit();
+    });
+
+    // Jalankan fungsi update tampilan saat halaman pertama kali dimuat
+    updateStep(0);
+});
 </script>
+
 {% endblock %}

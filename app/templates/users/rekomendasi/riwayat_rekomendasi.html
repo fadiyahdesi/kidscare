@@ -1,0 +1,162 @@
+{% extends 'layout/dashboard.html' %}
+
+{% block title %}Rekomendasi Ahli | KidsCare{% endblock %}
+
+{% block content %}
+<style>
+    .dashboard-main-content {
+        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    @media (min-width: 1024px) {
+        .dashboard-main-content { 
+            margin-left: 18rem; 
+        }
+        body.sidebar-is-closed .dashboard-main-content { 
+            margin-left: 0; 
+        }
+    }
+
+    @keyframes fadeIn { 
+        from { opacity: 0; transform: translateY(10px); } 
+        to { opacity: 1; transform: translateY(0); } 
+    }
+    .animate-fade-in { 
+        animation: fadeIn 0.5s ease-out forwards; 
+    }
+
+    .recommendation-card {
+        transition: all 0.3s ease;
+    }
+    .recommendation-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
+    }
+    
+    .bg-dots {
+        background-image: radial-gradient(#14b8a6 0.5px, transparent 0.5px);
+        background-size: 24px 24px;
+        opacity: 0.05;
+    }
+</style>
+
+<div class="dashboard-main-content bg-slate-50/50 relative overflow-hidden">
+    <!-- Background Ornamen Halus -->
+    <div class="absolute inset-0 bg-dots pointer-events-none"></div>
+
+    <div class="px-8 py-10 w-full relative z-10">
+        
+        <!-- HEADER -->
+        <div class="flex items-center justify-between mb-12 animate-fade-in">
+            <div>
+                <span class="inline-block px-3 py-1 bg-teal-50 text-teal-600 rounded-full text-[9px] font-black uppercase tracking-[0.2em] mb-3 border border-teal-100">Pusat Bimbingan Ahli</span>
+                <h1 class="text-3xl font-black text-slate-800 tracking-tight">Rekomendasi Ahli</h1>
+                <p class="text-slate-500 font-medium">Laporan resmi dan panduan interaksi mandiri dari Psikolog untuk buah hati Anda.</p>
+            </div>
+            <div class="w-16 h-16 rounded-[24px] bg-teal-500 text-white flex items-center justify-center text-2xl shadow-xl shadow-teal-100 rotate-3 hover:rotate-0 transition-transform duration-300">
+                <i class="fas fa-receipt"></i>
+            </div>
+        </div>
+
+        <!-- LIST REKOMENDASI -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 animate-fade-in" style="animation-delay: 0.1s;">
+            {% if summaries %}
+                {% for s in summaries %}
+                <div class="recommendation-card bg-white rounded-[44px] border border-slate-100 shadow-sm overflow-hidden flex flex-col h-full">
+                    
+                    <!-- Top Section: Info Psikolog & Anak -->
+                    <div class="p-8 border-b border-slate-50 bg-slate-50/30">
+                        <div class="flex items-start justify-between">
+                            <div class="flex items-center gap-5">
+                                <div class="w-14 h-14 rounded-2xl bg-teal-500 text-white flex items-center justify-center text-xl shadow-lg shadow-teal-500/20">
+                                    <i class="fas fa-user-doctor"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-black text-slate-800 text-base leading-tight">{{ s.psych_name }}</h3>
+                                    <p class="text-[10px] font-bold text-teal-600 uppercase tracking-widest mt-1">
+                                        {{ s.psych_spec }} • <span class="text-slate-400 font-medium">{{ s.created_at.strftime('%d %b %Y') }}</span>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <span class="block text-[8px] font-black text-slate-300 uppercase tracking-tighter mb-1">Nama Pasien</span>
+                                <span class="px-3 py-1 bg-white border border-slate-100 rounded-lg text-[10px] font-black text-slate-700 shadow-sm">{{ s.child_name }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Content Section -->
+                    <div class="p-8 flex-1">
+                        <!-- Ringkasan Observasi -->
+                        <div class="mb-8">
+                            <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                                <i class="fas fa-comment-medical text-teal-500"></i> Analisis Klinis
+                            </h4>
+                            <div class="p-5 bg-slate-50 rounded-3xl border border-slate-100 italic text-sm text-slate-600 leading-relaxed font-medium">
+                                "{{ s.summary_text }}"
+                            </div>
+                        </div>
+
+                        <!-- Langkah Rekomendasi -->
+                        <div>
+                            <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                                <i class="fas fa-list-check text-emerald-500"></i> Langkah Mandiri (Resep)
+                            </h4>
+                            <ul class="space-y-4">
+                                {% for rec in s.recommendations %}
+                                <li class="flex items-start gap-4 group">
+                                    <div class="w-6 h-6 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 mt-0.5 border border-emerald-100 group-hover:bg-emerald-500 group-hover:text-white transition-colors">
+                                        <i class="fas fa-check text-[10px]"></i>
+                                    </div>
+                                    <span class="text-sm font-bold text-slate-700 leading-relaxed">{{ rec }}</span>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Action Footer -->
+                    <div class="p-6 bg-slate-900 flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <div class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
+                            <span class="text-[9px] font-black text-white/50 uppercase tracking-[0.2em]">Dokumen Terverifikasi</span>
+                        </div>
+                        
+                        {% if s.consultation_id %}
+                        <a href="{{ url_for('consult.room_chat', consult_id=s.consultation_id) }}" 
+                           class="px-5 py-2.5 bg-white/10 hover:bg-teal-500 text-white rounded-xl text-[9px] font-black uppercase tracking-widest transition-all shadow-lg flex items-center gap-2">
+                            Diskusikan Lanjutan <i class="fas fa-arrow-right text-[8px]"></i>
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <!-- Empty State -->
+                <div class="col-span-full py-32 text-center bg-white rounded-[48px] border-2 border-dashed border-slate-100 shadow-inner">
+                    <div class="relative inline-block mb-8">
+                        <div class="absolute inset-0 bg-teal-100 rounded-full blur-3xl opacity-30 animate-pulse"></div>
+                        <div class="relative w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center mx-auto text-slate-200 text-4xl">
+                            <i class="fas fa-file-signature"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-2xl font-black text-slate-800 mb-2">Belum Ada Laporan</h3>
+                    <p class="text-slate-400 text-sm max-w-xs mx-auto font-medium leading-relaxed">Setelah Psikolog meninjau hasil skrining anak, ringkasan dan rekomendasi tindakan akan muncul di sini.</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- FOOTER INFO -->
+        <div class="mt-20 flex flex-col items-center">
+            <div class="w-12 h-1.5 bg-slate-200 rounded-full mb-6"></div>
+            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-[0.4em] text-center">
+                KidsCare Medical Insight &copy; 2026
+            </p>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

@@ -1,23 +1,18 @@
 {% extends "layout/dashboard.html" %}
 
-{% block title %}Edukasi ADHD | KidsCare{% endblock %}
+{% block title %}Pusat Edukasi ADHD | KidsCare{% endblock %}
 
 {% block content %}
-<!-- CSS KHUSUS UNTUK MENCEGAH SIDEBAR MENUTUPI KONTEN -->
 <style>
-    /* Transisi halus agar pergeseran konten terasa premium */
     .dashboard-main-content {
         transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         min-height: 100vh;
     }
 
     @media (min-width: 1024px) {
-        /* Secara default, berikan ruang di kiri sebesar lebar sidebar (18rem) */
         .dashboard-main-content {
             margin-left: 18rem;
         }
-
-        /* Jika sidebar ditutup (Class dipasang pada body melalui script toggle) */
         body.sidebar-is-closed .dashboard-main-content {
             margin-left: 0;
         }
@@ -28,98 +23,144 @@
         to { opacity: 1; transform: translateY(0); }
     }
     .animate-fade-in { 
-        animation: fadeIn 0.3s ease-out forwards; 
+        animation: fadeIn 0.4s ease-out forwards; 
     }
+
+    .event-card:hover { transform: translateY(-5px); border-color: #14b8a6; }
 </style>
 
-<!-- WRAPPER UTAMA DASHBOARD -->
 <div class="dashboard-main-content bg-slate-50/30">
     <div class="px-8 py-8">
         
-        <!-- HEADER (Sinkron dengan Beranda, Profil, & Konsultasi) -->
-        <div class="flex items-center justify-between mb-10 animate-fade-in">
+        <div class="flex items-center justify-between mb-10">
             <div>
+                <span class="inline-block px-3 py-1 bg-teal-50 text-teal-600 rounded-full text-[9px] font-black uppercase tracking-[0.2em] mb-2 border border-teal-100">Layanan Edukasi</span>
                 <h1 class="text-3xl font-black text-slate-800">Pusat Edukasi ADHD</h1>
-                <p class="text-slate-500">Temukan berbagai informasi dan panduan materi pola asuh mengenai ADHD.</p>
+                <p class="text-slate-500 font-medium">Materi pola asuh, wawasan ahli, dan agenda kegiatan mendatang.</p>
             </div>
             <div class="w-20 h-20 rounded-3xl bg-teal-100 flex items-center justify-center text-teal-600 text-3xl shadow-sm">
                 <i class="fas fa-book-open-reader"></i>
             </div>
         </div>
 
-        <!-- FILTER CATEGORY -->
-        <div class="flex gap-4 mb-10 overflow-x-auto pb-2 animate-fade-in" style="animation-delay: 0.1s;">
-            <button class="filter-btn px-6 py-2 rounded-full font-bold bg-teal-500 text-white shadow-lg shadow-teal-100 transition whitespace-nowrap" data-filter="all">Semua</button>
-            <button class="filter-btn px-6 py-2 rounded-full font-bold bg-white text-slate-600 border border-slate-200 hover:border-teal-500 transition whitespace-nowrap" data-filter="pengertian-adhd">Pengertian</button>
-            <button class="filter-btn px-6 py-2 rounded-full font-bold bg-white text-slate-600 border border-slate-200 hover:border-teal-500 transition whitespace-nowrap" data-filter="gejala-adhd">Gejala</button>
-            <button class="filter-btn px-6 py-2 rounded-full font-bold bg-white text-slate-600 border border-slate-200 hover:border-teal-500 transition whitespace-nowrap" data-filter="cara-penanganan">Penanganan</button>
-            <button class="filter-btn px-6 py-2 rounded-full font-bold bg-white text-slate-600 border border-slate-200 hover:border-teal-500 transition whitespace-nowrap" data-filter="tips-parenting">Pola Asuh</button>
+        <div class="flex gap-4 mb-10 overflow-x-auto pb-4">
+            {% set filters = [
+                ('all', 'Semua'),
+                ('pengertian-adhd', 'Pengertian'),
+                ('gejala-adhd', 'Gejala'),
+                ('cara-penanganan', 'Penanganan'),
+                ('tips-parenting', 'Pola Asuh'),
+                ('jadwal-agenda', 'Jadwal & Agenda')
+            ] %}
+            
+            {% for slug, label in filters %}
+            <a href="{{ url_for('user.edukasi_user', filter=slug) }}" 
+               class="px-6 py-2.5 rounded-full font-black text-[10px] uppercase tracking-widest transition-all whitespace-nowrap shadow-sm border
+               {% if active_filter == slug or (active_filter == None and slug == 'all') %} 
+               bg-teal-500 text-white border-teal-500 
+               {% else %} 
+               bg-white text-slate-500 border-slate-200 hover:border-teal-500 hover:text-teal-500
+               {% endif %}">
+                {{ label }}
+            </a>
+            {% endfor %}
         </div>
 
-        <!-- LIST VIDEO DARI DATABASE -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 animate-fade-in" id="edukasi-list" style="animation-delay: 0.2s;">
-            {% if videos %}
-                {% for video in videos %}
-                <div class="edukasi-card bg-white rounded-[32px] overflow-hidden border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-300 group" 
-                     data-category="{{ video.category | lower | replace(' ', '-') }}">
-                    
-                    <!-- Thumbnail Video -->
-                    <div class="relative h-48 bg-slate-900 flex items-center justify-center overflow-hidden">
-                        {% set video_id = video.video_url.split('v=')[-1].split('&')[0] if 'v=' in video.video_url else video.video_url.split('/')[-1] %}
-                        <img src="https://img.youtube.com/vi/{{ video_id }}/mqdefault.jpg" 
-                             class="w-full h-full object-cover opacity-60 group-hover:scale-110 transition duration-500" alt="{{ video.title }}">
-                        <div class="absolute inset-0 flex items-center justify-center">
-                            <div class="w-16 h-16 rounded-full bg-teal-500/90 text-white flex items-center justify-center text-2xl shadow-xl group-hover:scale-125 transition">
-                                <i class="fas fa-play ml-1"></i>
+        <div class="animate-fade-in">
+            
+            {% if active_filter == 'jadwal-agenda' %}
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch">
+                    {% if events %}
+                        {% for event in events %}
+                        <div class="event-card bg-white p-8 rounded-[40px] border border-slate-100 shadow-sm transition-all group relative overflow-hidden flex flex-col h-full">
+                            
+                            <div class="flex-1">
+                                <div class="absolute top-0 right-0 p-6">
+                                    <span class="px-3 py-1 {% if event.type == 'Webinar' %}bg-orange-100 text-orange-600{% else %}bg-teal-100 text-teal-600{% endif %} text-[9px] font-black uppercase rounded-full">
+                                        {{ event.type }}
+                                    </span>
+                                </div>
+
+                                <div class="w-14 h-14 rounded-2xl {% if event.type == 'Webinar' %}bg-orange-50 text-orange-500{% else %}bg-teal-50 text-teal-500{% endif %} flex items-center justify-center text-2xl mb-6">
+                                    <i class="fas {% if event.type == 'Webinar' %}fa-video{% else %}fa-chalkboard-user{% endif %}"></i>
+                                </div>
+
+                                <h3 class="text-xl font-black text-slate-800 mb-2 leading-tight">{{ event.title }}</h3>
+                                <p class="text-slate-500 text-sm mb-8 line-clamp-3 leading-relaxed">{{ event.description }}</p>
+                            </div>
+
+                            <!-- INFORMASI AGENDA (DISET SEJAJAR DI BAWAH) -->
+                            <div class="space-y-3 border-t border-slate-50 pt-6 mb-8">
+                                <div class="flex items-center gap-3 text-xs font-bold text-slate-600">
+                                    <div class="w-5 flex justify-center"><i class="far fa-calendar text-teal-500"></i></div>
+                                    <span>{{ event.date }}</span>
+                                </div>
+                                <div class="flex items-center gap-3 text-xs font-bold text-slate-600">
+                                    <div class="w-5 flex justify-center"><i class="far fa-clock text-teal-500"></i></div>
+                                    <span>{{ event.time }} WIB</span>
+                                </div>
+                                <div class="flex items-center gap-3 text-xs font-bold text-teal-600">
+                                    <div class="w-5 flex justify-center"><i class="fas fa-user-doctor text-teal-400"></i></div>
+                                    <span class="truncate">Psikolog: {{ event.psychologist_name|default('Psikolog KidsCare') }}</span>
+                                </div>
+                            </div>
+
+                            <a href="{{ event.registration_link }}" target="_blank"
+                               class="block w-full text-center py-4 bg-slate-900 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-teal-500 transition-all shadow-xl shadow-slate-100 active:scale-95">
+                                Daftar / Ikuti Sekarang
+                            </a>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="col-span-full py-24 text-center text-slate-400 bg-white rounded-[40px] border border-dashed border-slate-200">
+                            <i class="fas fa-calendar-xmark text-5xl mb-4 opacity-20"></i>
+                            <p class="font-black text-slate-500 uppercase tracking-widest text-xs">Belum ada agenda terdekat</p>
+                            <p class="text-sm mt-1">Psikolog akan segera mengunggah jadwal seminar terbaru.</p>
+                        </div>
+                    {% endif %}
+                </div>
+
+            {% else %}
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch">
+                    {% if videos %}
+                        {% for video in videos %}
+                        <div class="edukasi-card bg-white rounded-[32px] overflow-hidden border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-300 group flex flex-col h-full">
+                            <div class="relative h-48 bg-slate-900 flex items-center justify-center overflow-hidden">
+                                {% set video_id = video.video_url.split('v=')[-1].split('&')[0] if 'v=' in video.video_url else video.video_url.split('/')[-1] %}
+                                <img src="https://img.youtube.com/vi/{{ video_id }}/mqdefault.jpg" 
+                                     class="w-full h-full object-cover opacity-70 group-hover:scale-110 transition duration-500" alt="{{ video.title }}">
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <div class="w-16 h-16 rounded-full bg-teal-500/90 text-white flex items-center justify-center text-2xl shadow-xl group-hover:scale-125 transition">
+                                        <i class="fas fa-play ml-1"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="p-6 flex flex-col flex-1">
+                                <div class="flex-1">
+                                    <span class="inline-block px-3 py-1 rounded-full bg-teal-50 text-teal-600 text-[9px] font-black uppercase mb-3 border border-teal-100 tracking-widest">{{ video.category }}</span>
+                                    <h3 class="text-lg font-bold text-slate-800 mb-2 line-clamp-2 h-14 leading-tight">{{ video.title }}</h3>
+                                    <p class="text-slate-500 text-xs mb-8 line-clamp-2 leading-relaxed">{{ video.description }}</p>
+                                </div>
+                                
+                                <a href="{{ url_for('user.edukasi_detail', id=video._id) }}?title={{ video.title }}&cat={{ video.category }}&desc={{ video.description }}"
+                                   class="inline-block w-full text-center py-4 rounded-2xl bg-slate-50 text-slate-700 font-black text-[10px] uppercase tracking-widest hover:bg-teal-500 hover:text-white transition duration-300 shadow-sm">
+                                    Tonton Sekarang
+                                </a>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="p-6">
-                        <span class="inline-block px-3 py-1 rounded-full bg-teal-50 text-teal-600 text-[10px] font-black uppercase mb-3 border border-teal-100">{{ video.category }}</span>
-                        <h3 class="text-xl font-bold text-slate-800 mb-2 line-clamp-2">{{ video.title }}</h3>
-                        <p class="text-slate-500 text-sm mb-6 line-clamp-2 leading-relaxed">{{ video.description }}</p>
-                        
-                        <a href="{{ url_for('user.edukasi_detail', id=video._id) }}"
-                           class="inline-block w-full text-center py-4 rounded-2xl bg-slate-50 text-slate-700 font-bold hover:bg-teal-500 hover:text-white transition duration-300 shadow-sm">
-                            Tonton Sekarang
-                        </a>
-                    </div>
-                </div>
-                {% endfor %}
-            {% else %}
-                <div class="col-span-full py-24 text-center text-slate-400 bg-white rounded-[40px] border border-dashed border-slate-200">
-                    <i class="fas fa-video-slash text-5xl mb-4 opacity-20"></i>
-                    <p class="font-bold">Belum ada video edukasi yang tersedia.</p>
+                        {% endfor %}
+                    {% else %}
+                        <div class="col-span-full py-24 text-center text-slate-400 bg-white rounded-[40px] border border-dashed border-slate-200">
+                            <i class="fas fa-video-slash text-5xl mb-4 opacity-20"></i>
+                            <p class="font-black text-slate-500 uppercase tracking-widest text-xs">Materi Tidak Ditemukan</p>
+                            <p class="text-sm mt-1">Coba pilih kategori edukasi lainnya.</p>
+                        </div>
+                    {% endif %}
                 </div>
             {% endif %}
+
         </div>
     </div>
 </div>
-
-<script>
-    // Logic filter kategori sederhana
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const filter = btn.getAttribute('data-filter');
-            
-            // Update UI Button
-            document.querySelectorAll('.filter-btn').forEach(b => {
-                b.classList.remove('bg-teal-500', 'text-white', 'shadow-lg', 'shadow-teal-100');
-                b.classList.add('bg-white', 'text-slate-600', 'border', 'border-slate-200');
-            });
-            btn.classList.remove('bg-white', 'text-slate-600', 'border', 'border-slate-200');
-            btn.classList.add('bg-teal-500', 'text-white', 'shadow-lg', 'shadow-teal-100');
-
-            // Filter Cards
-            document.querySelectorAll('.edukasi-card').forEach(card => {
-                if (filter === 'all' || card.getAttribute('data-category') === filter) {
-                    card.style.display = 'block';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-        });
-    });
-</script>
 {% endblock %}

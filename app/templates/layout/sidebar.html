@@ -1,10 +1,10 @@
-<!-- templates/layout/sidebar.html -->
-<!-- Sidebar dengan warna Slate 950 dan teks putih murni -->
-<aside class="fixed left-0 top-0 h-screen w-72 bg-slate-950 border-r border-white/10 flex flex-col z-[1050] transition-all duration-300 shadow-2xl transform lg:translate-x-0" id="sidebar">
-    
+<aside
+    class="fixed left-0 top-0 h-screen w-72 bg-slate-950 border-r border-white/10 flex flex-col z-[1050] transition-all duration-300 shadow-2xl transform lg:translate-x-0"
+    id="sidebar">
+
     <!-- SIDEBAR HEADER: LOGO & HAMBURGER -->
     <div class="p-8 flex items-center justify-between border-b border-white/5">
-        <a href="{{ url_for('user.index') }}" class="flex items-center gap-3 group">
+        <a href="/" class="flex items-center gap-3 group">
             <div class="w-10 h-10 rounded-2xl bg-teal-500 flex items-center justify-center text-white shadow-lg shadow-teal-500/20 group-hover:rotate-12 transition-transform duration-300">
                 <i class="fas fa-heart-pulse text-lg"></i>
             </div>
@@ -12,7 +12,6 @@
                 Kids<span class="text-teal-500">Care</span>
             </span>
         </a>
-        <!-- TANDA HAMBURGER: Hanya muncul di mobile -->
         <button onclick="toggleSidebar()" class="text-white/70 hover:text-white transition-colors p-2 lg:hidden">
             <i class="fas fa-bars-staggered text-xl"></i>
         </button>
@@ -20,144 +19,172 @@
 
     <!-- MAIN NAVIGATION -->
     <nav class="flex-1 px-4 space-y-2 mt-8 overflow-y-auto custom-scrollbar">
-        <p class="px-4 text-[10px] font-black uppercase tracking-[0.2em] text-white mb-4 opacity-80">Menu Utama</p>
-        
-        <!-- Beranda -->
-        <a href="{{ url_for('user.index') }}"
-           class="flex items-center gap-4 px-4 py-3.5 rounded-2xl font-bold transition-all duration-300 group
-           {% if request.endpoint == 'user.index' %}
-           bg-teal-500 text-white shadow-lg shadow-teal-500/20
-           {% else %}
-           text-white hover:bg-white/10
-           {% endif %}">
-            <div class="w-5 flex justify-center">
-                <i class="fas fa-house text-lg transition-transform group-hover:scale-110 text-white"></i>
-            </div>
-            <span class="text-sm tracking-wide text-white">Beranda</span>
-        </a>
 
-        <!-- Test Skrining -->
-        <a href="{{ url_for('user.test_skrining') }}"
-           class="flex items-center gap-4 px-4 py-3.5 rounded-2xl font-bold transition-all duration-300 group
-           {% if request.endpoint == 'user.test_skrining' %}
-           bg-teal-500 text-white shadow-lg shadow-teal-500/20
-           {% else %}
-           text-white hover:bg-white/10
-           {% endif %}">
-            <div class="w-5 flex justify-center">
-                <i class="fas fa-clipboard-check text-lg transition-transform group-hover:scale-110 text-white"></i>
-            </div>
-            <span class="text-sm tracking-wide text-white">Test Skrining</span>
-        </a>
+        {% if session['role'] == 'psychologist' %}
+            <p class="px-4 text-[10px] font-black uppercase tracking-[0.2em] text-teal-500 mb-4">Aktivitas Utama</p>
+            
+            <a href="{{ url_for('psychologist.dashboard') }}" class="flex items-center gap-4 px-4 py-3.5 rounded-2xl font-bold transition-all duration-300 group {% if request.endpoint == 'psychologist.dashboard' %} bg-teal-500 text-white shadow-lg shadow-teal-500/20 {% else %} text-white hover:bg-white/10 {% endif %}">
+                <div class="w-5 flex justify-center"><i class="fas fa-chart-line text-lg group-hover:scale-110"></i></div>
+                <span class="text-sm tracking-wide">Ringkasan Utama</span>
+            </a>
+            
+            <a href="{{ url_for('psychologist.schedule_management') }}" class="flex items-center gap-4 px-4 py-3.5 rounded-2xl font-bold transition-all duration-300 group {% if request.endpoint == 'psychologist.schedule_management' %} bg-teal-500 text-white shadow-lg shadow-teal-500/20 {% else %} text-white hover:bg-white/10 {% endif %}">
+                <div class="w-5 flex justify-center"><i class="fas fa-calendar-day text-lg group-hover:scale-110"></i></div>
+                <span class="text-sm tracking-wide">Jadwal Praktik</span>
+            </a>
+            
+            <a href="{{ url_for('psychologist.consultation_list') }}" class="flex items-center gap-4 px-4 py-3.5 rounded-2xl font-bold transition-all duration-300 group {% if request.endpoint == 'psychologist.consultation_list' %} bg-teal-500 text-white shadow-lg shadow-teal-500/20 {% else %} text-white hover:bg-white/10 {% endif %}">
+                <div class="w-5 flex justify-center"><i class="fas fa-comments text-lg group-hover:scale-110"></i></div>
+                <span class="text-sm tracking-wide">Daftar Konsultasi</span>
+            </a>
 
-        <!-- Riwayat -->
-        <a href="{{ url_for('user.riwayat_skrining') }}"
-           class="flex items-center gap-4 px-4 py-3.5 rounded-2xl font-bold transition-all duration-300 group
-           {% if request.endpoint == 'user.riwayat_skrining' %}
-           bg-teal-500 text-white shadow-lg shadow-teal-500/20
-           {% else %}
-           text-white hover:bg-white/10
-           {% endif %}">
-            <div class="w-5 flex justify-center">
-                <i class="fas fa-clock-rotate-left text-lg transition-transform group-hover:scale-110 text-white"></i>
+            <div class="pt-6 pb-2 border-t border-white/5 mt-6 mx-4">
+                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-teal-500">Manajemen & Profil</p>
             </div>
-            <span class="text-sm tracking-wide text-white">Riwayat</span>
-        </a>
 
-        <div class="pt-6 pb-2 border-t border-white/5 mt-6 mx-4">
-             <p class="text-[10px] font-black uppercase tracking-[0.2em] text-white opacity-80">Layanan & Akun</p>
-        </div>
+             <a href="{{ url_for('psychologist.log_aktivitas') }}" class="flex items-center gap-4 px-4 py-3.5 rounded-2xl font-bold transition-all duration-300 group {% if request.endpoint == 'psychologist.log_aktivitas' %} bg-teal-500 text-white shadow-lg shadow-teal-500/20 {% else %} text-white hover:bg-white/10 {% endif %}">
+                <div class="w-5 flex justify-center"><i class="fas fa-file-signature text-lg group-hover:scale-110"></i></div>
+                <span class="text-sm tracking-wide">Log Aktivitas</span>
+            </a>
+            
+            <a href="{{ url_for('psychologist.event_management') }}" class="flex items-center gap-4 px-4 py-3.5 rounded-2xl font-bold transition-all duration-300 group {% if request.endpoint == 'psychologist.event_management' %} bg-teal-500 text-white shadow-lg shadow-teal-500/20 {% else %} text-white hover:bg-white/10 {% endif %}">
+                <div class="w-5 flex justify-center"><i class="fas fa-bullhorn text-lg group-hover:scale-110"></i></div>
+                <span class="text-sm tracking-wide">Info Kegiatan</span>
+            </a>
+            
+            <a href="{{ url_for('psychologist.profile') }}" class="flex items-center gap-4 px-4 py-3.5 rounded-2xl font-bold transition-all duration-300 group {% if request.endpoint == 'psychologist.profile' %} bg-teal-500 text-white shadow-lg shadow-teal-500/20 {% else %} text-white hover:bg-white/10 {% endif %}">
+                <div class="w-5 flex justify-center"><i class="fas fa-user-circle text-lg group-hover:scale-110"></i></div>
+                <span class="text-sm tracking-wide">Profil</span>
+            </a>
 
-        <!-- Konsultasi -->
-        <a href="{{ url_for('user.konsultasi_psikolog') }}"
-           class="flex items-center gap-4 px-4 py-3.5 rounded-2xl font-bold transition-all duration-300 group
-           {% if request.endpoint == 'user.konsultasi_psikolog' %}
-           bg-teal-500 text-white shadow-lg shadow-teal-500/20
-           {% else %}
-           text-white hover:bg-white/10
-           {% endif %}">
-            <div class="w-5 flex justify-center">
-                <i class="fas fa-user-doctor text-lg transition-transform group-hover:scale-110 text-white"></i>
+        {% elif session['role'] == 'admin' %}
+            <!-- MENU KHUSUS ADMIN -->
+            <p class="px-4 text-[10px] font-black uppercase tracking-[0.2em] text-rose-500 mb-4 mt-6">Manajemen User</p>
+
+            <a href="{{ url_for('admin.dashboard') }}" class="flex items-center gap-4 px-4 py-3.5 rounded-2xl font-bold transition-all duration-300 group {% if request.endpoint == 'admin.dashboard' %} bg-rose-500 text-white shadow-lg shadow-rose-500/20 {% else %} text-white hover:bg-white/10 {% endif %}">
+                <div class="w-5 flex justify-center"><i class="fas fa-shield-alt text-lg group-hover:scale-110"></i></div>
+                <span class="text-sm tracking-wide">Dashboard Admin</span>
+            </a>
+
+            <a href="{{ url_for('admin.manage_users') }}" class="flex items-center gap-4 px-4 py-3.5 rounded-2xl font-bold transition-all duration-300 group {% if request.endpoint == 'admin.manage_users' %} bg-rose-500 text-white shadow-lg shadow-rose-500/20 {% else %} text-white hover:bg-white/10 {% endif %}">
+                <div class="w-5 flex justify-center"><i class="fas fa-users-cog text-lg group-hover:scale-110"></i></div>
+                <span class="text-sm tracking-wide">Manajemen Wali/Ortu</span>
+            </a>
+
+            <a href="{{ url_for('admin.manage_psychologists') }}" class="flex items-center gap-4 px-4 py-3.5 rounded-2xl font-bold transition-all duration-300 group {% if request.endpoint == 'admin.manage_psychologists' %} bg-rose-500 text-white shadow-lg shadow-rose-500/20 {% else %} text-white hover:bg-white/10 {% endif %}">
+                <div class="w-5 flex justify-center"><i class="fas fa-user-doctor text-lg group-hover:scale-110"></i></div>
+                <span class="text-sm tracking-wide">Manajemen Psikolog</span>
+            </a>
+            
+            <div class="pt-6 pb-2 border-t border-white/5 mt-6 mx-4">
+                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-rose-500">Konfigurasi Sistem</p>
             </div>
-            <span class="text-sm tracking-wide text-white">Konsultasi Ahli</span>
-        </a>
+           
+            <a href="{{ url_for('admin.manage_questions') }}" class="flex items-center gap-4 px-4 py-3.5 rounded-2xl font-bold transition-all duration-300 group {% if request.endpoint == 'admin.manage_questions' %} bg-rose-500 text-white shadow-lg shadow-rose-500/20 {% else %} text-white hover:bg-white/10 {% endif %}">
+                <div class="w-5 flex justify-center"><i class="fas fa-question-circle text-lg group-hover:scale-110"></i></div>
+                <span class="text-sm tracking-wide">Manajemen Pertanyaan</span>
+            </a>
 
-        <!-- Edukasi -->
-        <a href="{{ url_for('user.edukasi_user') }}"
-           class="flex items-center gap-4 px-4 py-3.5 rounded-2xl font-bold transition-all duration-300 group
-           {% if request.endpoint == 'user.edukasi_user' %}
-           bg-teal-500 text-white shadow-lg shadow-teal-500/20
-           {% else %}
-           text-white hover:bg-white/10
-           {% endif %}">
-            <div class="w-5 flex justify-center">
-                <i class="fas fa-book-open-reader text-lg transition-transform group-hover:scale-110 text-white"></i>
-            </div>
-            <span class="text-sm tracking-wide text-white">Pusat Edukasi</span>
-        </a>
+            <a href="{{ url_for('admin.manage_agenda') }}" class="flex items-center gap-4 px-4 py-3.5 rounded-2xl font-bold transition-all duration-300 group {% if request.endpoint == 'admin.manage_agenda' %} bg-rose-500 text-white shadow-lg shadow-rose-500/20 {% else %} text-white hover:bg-white/10 {% endif %}">
+                <div class="w-5 flex justify-center"><i class="fas fa-calendar-alt text-lg group-hover:scale-110"></i></div>
+                <span class="text-sm tracking-wide">Manajemen Agenda</span>
+            </a>
 
-        <!-- Profil -->
-        <a href="{{ url_for('user.profil_user') }}"
-           class="flex items-center gap-4 px-4 py-3.5 rounded-2xl font-bold transition-all duration-300 group
-           {% if request.endpoint == 'user.profil_user' %}
-           bg-teal-500 text-white shadow-lg shadow-teal-500/20
-           {% else %}
-           text-white hover:bg-white/10
-           {% endif %}">
-            <div class="w-5 flex justify-center">
-                <i class="fas fa-user-gear text-lg transition-transform group-hover:scale-110 text-white"></i>
+            <div class="border-t border-white/10 my-2"></div> <a href="{{ url_for('admin.reports') }}" class="flex items-center gap-4 px-4 py-3.5 rounded-2xl font-bold transition-all duration-300 group {% if request.endpoint == 'admin.reports' %} bg-rose-500 text-white shadow-lg shadow-rose-500/20 {% else %} text-white hover:bg-white/10 {% endif %}">
+                <div class="w-5 flex justify-center"><i class="fas fa-file-alt text-lg group-hover:scale-110"></i></div>
+                <span class="text-sm tracking-wide">Laporan Sistem</span>
+            </a>
+
+        {% else %}
+            <!-- MENU KHUSUS PARENT -->
+            <p class="px-4 text-[10px] font-black uppercase tracking-[0.2em] text-teal-500 mb-4">Menu Utama</p>
+            <a href="{{ url_for('user.index') }}" class="flex items-center gap-4 px-4 py-3.5 rounded-2xl font-bold transition-all duration-300 group {% if request.endpoint == 'user.index' %} bg-teal-500 text-white shadow-lg shadow-teal-500/20 {% else %} text-white hover:bg-white/10 {% endif %}">
+                <div class="w-5 flex justify-center"><i class="fas fa-house text-lg group-hover:scale-110"></i></div>
+                <span class="text-sm tracking-wide">Beranda</span>
+            </a>
+            <a href="{{ url_for('user.test_skrining') }}" class="flex items-center gap-4 px-4 py-3.5 rounded-2xl font-bold transition-all duration-300 group {% if request.endpoint == 'user.test_skrining' %} bg-teal-500 text-white shadow-lg shadow-teal-500/20 {% else %} text-white hover:bg-white/10 {% endif %}">
+                <div class="w-5 flex justify-center"><i class="fas fa-clipboard-check text-lg group-hover:scale-110"></i></div>
+                <span class="text-sm tracking-wide">Test Skrining</span>
+            </a>
+            <a href="{{ url_for('user.riwayat_skrining') }}" class="flex items-center gap-4 px-4 py-3.5 rounded-2xl font-bold transition-all duration-300 group {% if request.endpoint == 'user.riwayat_skrining' %} bg-teal-500 text-white shadow-lg shadow-teal-500/20 {% else %} text-white hover:bg-white/10 {% endif %}">
+                <div class="w-5 flex justify-center"><i class="fas fa-clock-rotate-left text-lg group-hover:scale-110"></i></div>
+                <span class="text-sm tracking-wide">Riwayat</span>
+            </a>
+            <div class="pt-6 pb-2 border-t border-white/5 mt-6 mx-4">
+                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-teal-500">Layanan Ahli</p>
             </div>
-            <span class="text-sm tracking-wide text-white">Pengaturan Profil</span>
-        </a>
+            <a href="{{ url_for('user.konsultasi_psikolog') }}" class="flex items-center gap-4 px-4 py-3.5 rounded-2xl font-bold transition-all duration-300 group {% if request.endpoint in ['user.konsultasi_psikolog', 'consult.chat_room'] %} bg-teal-500 text-white shadow-lg shadow-teal-500/20 {% else %} text-white hover:bg-white/10 {% endif %}">
+                <div class="w-5 flex justify-center"><i class="fas fa-user-doctor text-lg group-hover:scale-110"></i></div>
+                <span class="text-sm tracking-wide">Konsultasi Ahli</span>
+            </a>
+            <a href="{{ url_for('user.riwayat_rekomendasi') }}" class="flex items-center gap-4 px-4 py-3.5 rounded-2xl font-bold transition-all duration-300 group {% if request.endpoint == 'user.riwayat_rekomendasi' %} bg-teal-500 text-white shadow-lg shadow-teal-500/20 {% else %} text-white hover:bg-white/10 {% endif %}">
+                <div class="w-5 flex justify-center"><i class="fas fa-receipt text-lg group-hover:scale-110"></i></div>
+                <span class="text-sm tracking-wide">Rekomendasi Ahli</span>
+            </a>
+            <a href="{{ url_for('user.edukasi_user') }}" class="flex items-center gap-4 px-4 py-3.5 rounded-2xl font-bold transition-all duration-300 group {% if request.endpoint == 'user.edukasi_user' %} bg-teal-500 text-white shadow-lg shadow-teal-500/20 {% else %} text-white hover:bg-white/10 {% endif %}">
+                <div class="w-5 flex justify-center"><i class="fas fa-book-open-reader text-lg group-hover:scale-110"></i></div>
+                <span class="text-sm tracking-wide">Pusat Edukasi</span>
+            </a>
+            <a href="{{ url_for('user.profil_user') }}" class="flex items-center gap-4 px-4 py-3.5 rounded-2xl font-bold transition-all duration-300 group {% if request.endpoint == 'user.profil_user' %} bg-teal-500 text-white shadow-lg shadow-teal-500/20 {% else %} text-white hover:bg-white/10 {% endif %}">
+                <div class="w-5 flex justify-center"><i class="fas fa-user-gear text-lg group-hover:scale-110"></i></div>
+                <span class="text-sm tracking-wide">Pengaturan Profil</span>
+            </a>
+        {% endif %}
     </nav>
 
-    <!-- SIDEBAR FOOTER: LOGOUT -->
-    <!-- <div class="p-6 border-t border-white/5">
-        <a href="{{ url_for('main.logout') }}" 
-           class="flex items-center gap-4 px-4 py-4 rounded-2xl font-black text-white bg-white/5 hover:bg-rose-500 transition-all duration-300 group">
-            <div class="w-5 flex justify-center">
-                <i class="fas fa-power-off transition-transform group-hover:rotate-12 text-white"></i>
-            </div>
-            <span class="text-xs uppercase tracking-widest text-white">Keluar Aplikasi</span>
-        </a>
-    </div> -->
+    <div class="p-6 border-t border-white/5">
+        <button type="button" onclick="toggleModal('logoutModal')" 
+            class="w-full flex items-center gap-4 px-4 py-4 rounded-2xl font-black text-white bg-white/5 hover:bg-rose-500 transition-all duration-300 group">
+            <div class="w-5 flex justify-center"><i class="fas fa-power-off transition-transform group-hover:rotate-12 text-white"></i></div>
+            <span class="text-[10px] uppercase tracking-widest text-white">Keluar Aplikasi</span>
+        </button>
+    </div>
 </aside>
 
-<script>
-    /**
-     * Logic Sidebar Toggle
-     */
-    function toggleSidebar() {
-        const sidebar = document.getElementById('sidebar');
-        const body = document.body;
-        const isDesktop = window.innerWidth >= 1024;
+<!-- MODAL KONFIRMASI LOGOUT (Harus ditaruh di sini agar bisa diakses dari mana saja) -->
+<div id="logoutModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[2000] flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+    <div id="modalBox" class="bg-white w-full max-w-sm p-8 rounded-[32px] shadow-2xl mx-4 transform scale-95 transition-transform duration-300">
+        <div class="text-center">
+            <div class="w-20 h-20 bg-rose-50 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl">
+                <i class="fas fa-right-from-bracket"></i>
+            </div>
+            <h3 class="text-xl font-black text-slate-800 mb-2">Konfirmasi Keluar</h3>
+            <p class="text-sm text-slate-500 mb-8 leading-relaxed">Apakah Anda yakin ingin keluar dari aplikasi?</p>
+            <div class="flex gap-3">
+                <button type="button" onclick="toggleModal('logoutModal')" class="flex-1 py-4 bg-slate-100 text-slate-600 rounded-2xl font-bold hover:bg-slate-200 transition-all text-[10px] uppercase tracking-widest">Batal</button>
+                <a href="{{ url_for('main.logout') }}" class="flex-1 py-4 bg-rose-500 text-white rounded-2xl font-bold hover:bg-rose-600 shadow-lg shadow-rose-100 transition-all text-center text-[10px] uppercase tracking-widest flex items-center justify-center">Ya, Keluar</a>
+            </div>
+        </div>
+    </div>
+</div>
 
-        if (isDesktop) {
-            sidebar.classList.toggle('sidebar-closed');
-            if (sidebar.classList.contains('sidebar-closed')) {
-                body.classList.add('sidebar-is-closed');
-            } else {
-                body.classList.remove('sidebar-is-closed');
-            }
+<script>
+    function toggleModal(id) {
+        const modal = document.getElementById(id);
+        const modalBox = modal.querySelector('#modalBox');
+        if (modal.classList.contains('hidden')) {
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.replace('opacity-0', 'opacity-100');
+                if(modalBox) modalBox.classList.replace('scale-95', 'scale-100');
+            }, 10);
         } else {
-            if (sidebar.style.transform === 'translateX(0px)' || sidebar.style.transform === 'none' || !sidebar.style.transform) {
-                sidebar.style.transform = 'translateX(-100%)';
-            } else {
-                sidebar.style.transform = 'translateX(0px)';
-            }
+            modal.classList.replace('opacity-100', 'opacity-0');
+            if(modalBox) modalBox.classList.replace('scale-100', 'scale-95');
+            setTimeout(() => { modal.classList.add('hidden'); }, 300);
         }
     }
 </script>
 
 <style>
-    /* Scrollbar minimalis untuk tema gelap */
     .custom-scrollbar::-webkit-scrollbar { width: 4px; }
     .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-    .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 10px; }
-    
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
+
     @media (max-width: 1023px) {
         #sidebar { transform: translateX(-100%); }
     }
-    
+
     #sidebar.sidebar-closed { transform: translateX(-100%) !important; }
 </style>

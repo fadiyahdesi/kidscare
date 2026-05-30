@@ -1,161 +1,392 @@
 {% extends 'layout/dashboard.html' %}
 
-{% block title %}Konsultasi Psikolog | KidsCare{% endblock %}
+{% block title %}Konsultasi Ahli | KidsCare{% endblock %}
 
 {% block content %}
-<!-- CSS KHUSUS UNTUK MENCEGAH SIDEBAR MENUTUPI KONTEN -->
 <style>
-    /* Transisi halus agar pergeseran konten terasa premium */
+    /* KONFIGURASI LAYOUT STABIL (Sesuai dengan Beranda) */
     .dashboard-main-content {
         transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         min-height: 100vh;
+        /* Dihapus: min-width: 1200px; agar tidak terpotong di layar kecil/menengah */
     }
 
     @media (min-width: 1024px) {
-        /* Secara default, berikan ruang di kiri sebesar lebar sidebar (18rem) */
         .dashboard-main-content {
             margin-left: 18rem;
         }
 
-        /* Jika sidebar ditutup (Class dipasang pada body melalui script toggle) */
         body.sidebar-is-closed .dashboard-main-content {
             margin-left: 0;
         }
     }
 
     @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(-10px); }
-        to { opacity: 1; transform: translateY(0); }
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
-    .animate-fade-in { 
-        animation: fadeIn 0.3s ease-out forwards; 
+
+    .animate-fade-in {
+        animation: fadeIn 0.5s ease-out forwards;
+    }
+
+    /* CARD & INTERACTION (Tetap dipertahankan) */
+    .psych-card-active {
+        border-color: #14b8a6 !important;
+        background-color: #f0fdfa !important;
+        box-shadow: 0 10px 15px -3px rgba(20, 184, 166, 0.1);
+    }
+
+    .status-pulse {
+        position: relative;
+    }
+
+    .status-pulse::after {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: inherit;
+        border-radius: inherit;
+        opacity: 0.6;
+        animation: pulse-ring 1.5s infinite;
+    }
+
+    @keyframes pulse-ring {
+        0% { transform: scale(.33); }
+        80%, 100% { opacity: 0; }
+    }
+
+    /* CHECKBOX CUSTOM PREMIUM & ANTI-TERPOTONG */
+    .child-checkbox:checked + .child-card {
+        background-color: #f0fdfa; /* Soft Teal */
+        border-color: #14b8a6;
+    }
+    
+    .child-checkbox:checked + .child-card .check-circle {
+        background-color: #14b8a6;
+        border-color: #14b8a6;
+    }
+
+    .child-checkbox:checked + .child-card .check-icon {
+        opacity: 1 !important;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 5px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #e2e8f0;
+        border-radius: 10px;
     }
 </style>
 
-<!-- WRAPPER UTAMA DASHBOARD -->
-<div class="dashboard-main-content bg-slate-50/30">
+<div class="dashboard-main-content bg-slate-50/50">
+    <!-- Menggunakan px-8 py-8 seperti beranda agar padding proporsional -->
     <div class="px-8 py-8">
-        
-        <!-- HEADER (Identik dengan Profil, Skrining & Riwayat) -->
+
+        <!-- HEADER HALAMAN -->
         <div class="flex items-center justify-between mb-10 animate-fade-in">
             <div>
-                <h1 class="text-3xl font-black text-slate-800">Konsultasi Profesional</h1>
-                <p class="text-slate-500">Dapatkan pendampingan ahli untuk tumbuh kembang buah hati Anda.</p>
+                <span class="inline-block px-3 py-1 bg-teal-50 text-teal-600 rounded-full text-[9px] font-black uppercase tracking-[0.2em] mb-2 border border-teal-100">Portal Layanan Ahli</span>
+                <h1 class="text-3xl font-black text-slate-800 tracking-tight">Konsultasi Profesional</h1>
+                <p class="text-slate-500 text-sm font-medium mt-1">Dapatkan bimbingan intensif dari tenaga ahli pilihan KidsCare.</p>
             </div>
             <div class="w-20 h-20 rounded-3xl bg-teal-100 flex items-center justify-center text-teal-600 text-3xl shadow-sm">
                 <i class="fas fa-user-doctor"></i>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-fade-in" style="animation-delay: 0.1s;">
-            
-            <!-- KOLOM KIRI: DAFTAR PSIKOLOG (Sidebar) -->
-            <div class="lg:col-span-1">
-                <div class="bg-white rounded-[32px] p-8 shadow-sm border border-slate-100 sticky top-10">
-                    <h3 class="text-lg font-bold text-slate-800 mb-6 flex items-center">
-                        <i class="fas fa-list-ul mr-2 text-teal-500"></i> Psikolog Tersedia
+        <!-- NOTIFIKASI FLASH -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="mb-8 p-4 rounded-2xl bg-emerald-50 text-emerald-700 border border-emerald-100 font-bold flex items-center gap-3 animate-fade-in shadow-sm">
+            <i class="fas fa-check-circle"></i> {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 animate-fade-in" style="animation-delay: 0.1s;">
+
+            <!-- SIDEBAR KIRI: LIST PSIKOLOG -->
+            <div class="lg:col-span-4">
+                <div class="bg-white rounded-[32px] p-8 shadow-sm border border-slate-100 sticky top-10 h-full lg:h-auto">
+                    <h3 class="text-base font-black text-slate-800 mb-6 flex items-center gap-3 px-2">
+                        <i class="fas fa-list-ul text-teal-500 text-sm"></i> Tenaga Ahli Tersedia
                     </h3>
-                    
-                    <div class="space-y-4">
-                        {% for psycho in psychologists %}
-                        <div class="p-4 rounded-2xl border-2 border-teal-500 bg-teal-50/30 transition-all cursor-pointer">
+                    <div class="space-y-4 max-h-[60vh] overflow-y-auto custom-scrollbar pr-1">
+                        {% for p in psychologists %}
+                        {% set is_active = (selected_psych and selected_psych._id|string == p._id|string) %}
+                        <a href="{{ url_for('user.konsultasi_psikolog', psych_id=p._id|string) }}"
+                            class="w-full text-left block p-5 rounded-3xl border-2 transition-all group {% if is_active %} psych-card-active {% else %} border-slate-50 bg-slate-50/50 hover:border-teal-200 {% endif %}">
                             <div class="flex items-center gap-4">
-                                <div class="w-12 h-12 rounded-full bg-teal-500 text-white flex items-center justify-center text-xl shadow-sm">
+                                <div class="w-12 h-12 rounded-2xl {% if is_active %} bg-teal-500 text-white shadow-lg shadow-teal-200 {% else %} bg-white text-teal-500 shadow-sm border border-slate-100 {% endif %} flex items-center justify-center text-lg shrink-0 transition-transform group-hover:scale-105">
                                     <i class="fas fa-user-tie"></i>
                                 </div>
-                                <div class="overflow-hidden">
-                                    <p class="font-bold text-slate-800 truncate text-sm">{{ psycho.name }}</p>
-                                    <p class="text-[10px] font-black text-teal-600 uppercase tracking-tighter">Psikolog {{ psycho.specialization }}</p>
+                                <div class="flex-1 min-w-0">
+                                    <p class="font-black text-slate-800 text-sm leading-tight truncate">{{ p.username }}</p>
+                                    <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">{{ p.specialization }}</p>
                                 </div>
                             </div>
-                        </div>
+                        </a>
                         {% endfor %}
                     </div>
 
-                    <!-- INFO BOX -->
-                    <div class="mt-8 p-4 bg-amber-50 rounded-2xl border border-amber-100">
-                        <p class="text-[10px] text-amber-700 leading-relaxed italic">
-                            <i class="fas fa-circle-info mr-1"></i>
-                            Bawalah hasil skrining mandiri Anda saat melakukan sesi tatap muka untuk membantu proses observasi.
+                    <!-- NOTE COLOM KIRI -->
+                    <div class="p-4 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-100 mt-6">
+                        <p class="text-[10px] text-slate-400 font-bold leading-relaxed">
+                            <i class="fas fa-info-circle text-teal-500 mr-1"></i>
+                            <span class="text-slate-500 uppercase tracking-tighter">PENTING:</span> Klik nama psikolog untuk meninjau profil dan memilih pembimbing untuk si kecil.
                         </p>
                     </div>
                 </div>
             </div>
 
-            <!-- KOLOM KANAN: DETAIL & INTERAKSI -->
-            <div class="lg:col-span-2 space-y-8">
-                
-                <!-- CARD DETAIL UTAMA -->
-                <div class="bg-white rounded-[32px] p-10 shadow-sm border border-slate-100">
-                    <div class="flex flex-col md:flex-row gap-8 items-start mb-10">
-                        <div class="w-32 h-32 rounded-[40px] bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-200 text-5xl shadow-inner shrink-0">
-                            <i class="fas fa-user-md"></i>
-                        </div>
-                        <div class="flex-1">
-                            <div class="flex items-center gap-3 mb-2">
-                                <h2 class="text-2xl font-black text-slate-800">{{ psychologists[0].name }}</h2>
-                                <span class="px-3 py-1 bg-emerald-100 text-emerald-700 text-[10px] font-bold rounded-full uppercase">Online</span>
+            <!-- KOLOM KANAN: INFORMASI DETAIL & MODAL TRIGGER -->
+            <div class="lg:col-span-8 space-y-8">
+                {% if selected_psych %}
+                <div class="bg-white rounded-[32px] p-8 md:p-10 shadow-sm border border-slate-100 relative overflow-hidden">
+                    <!-- Bio Header -->
+                    <div class="flex flex-col md:flex-row gap-6 items-center md:items-start mb-10">
+                        <div class="relative">
+                            <div class="w-24 h-24 md:w-28 md:h-28 rounded-3xl bg-slate-900 border-4 border-slate-50 flex items-center justify-center text-teal-500 text-4xl shadow-xl shrink-0 overflow-hidden group">
+                                <i class="fas fa-user-md transition-transform duration-500 group-hover:scale-110"></i>
                             </div>
-                            <p class="text-teal-600 font-bold mb-4 uppercase tracking-widest text-xs">Spesialisasi Psikologi {{ psychologists[0].specialization }}</p>
-                            <p class="text-slate-500 text-sm leading-relaxed italic">"Membantu orang tua memahami dunia anak dengan pendekatan yang empatik dan saintifik melalui metode observasi perilaku dini."</p>
+                            <div class="absolute -bottom-1 -right-1 bg-white p-1.5 rounded-xl shadow-lg border border-slate-100">
+                                <div class="w-3.5 h-3.5 rounded-full bg-emerald-500 status-pulse"></div>
+                            </div>
+                        </div>
+
+                        <div class="flex-1 text-center md:text-left pt-2">
+                            <h2 class="text-2xl font-black text-slate-800 tracking-tight mb-2">{{ selected_psych.username }}</h2>
+                            <p class="text-teal-600 font-black mb-4 uppercase tracking-[0.2em] text-[10px] bg-teal-50 inline-block px-3 py-1 rounded-lg border border-teal-100">
+                                Spesialisasi {{ selected_psych.specialization }}
+                            </p>
+                            <p class="text-slate-500 text-sm italic font-medium leading-relaxed max-w-xl mx-auto md:mx-0">
+                                "Mendedikasikan keahlian klinis untuk membantu orang tua memahami bahasa perilaku anak demi masa depan yang lebih baik."
+                            </p>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- JADWAL -->
-                        <div class="p-6 bg-slate-50 rounded-3xl border border-slate-100">
-                            <h4 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
-                                <i class="fas fa-calendar-days text-teal-500"></i> Jadwal Praktik
+                    <!-- GRID PROPORSIONAL: JADWAL & AKSI -->
+                    <div class="grid grid-cols-1 xl:grid-cols-12 gap-8 items-start relative z-10">
+                        
+                        <!-- JADWAL (5 Kolom) -->
+                        <div class="xl:col-span-5 w-full p-6 bg-slate-900 rounded-3xl text-white shadow-2xl shadow-slate-200">
+                            <h4 class="text-[10px] font-black text-teal-400 uppercase tracking-widest mb-5 flex items-center gap-2">
+                                <i class="fas fa-calendar-check"></i> Waktu Praktik Rutin
                             </h4>
-                            <ul class="space-y-3 text-sm font-bold text-slate-700">
-                                <li class="flex justify-between border-b border-slate-200 pb-2"><span>Senin - Jumat</span> <span class="text-teal-600">09:00 - 15:00</span></li>
-                                <li class="flex justify-between border-b border-slate-200 pb-2"><span>Sabtu</span> <span class="text-teal-600">09:00 - 12:00</span></li>
-                                <li class="flex justify-between text-slate-400"><span>Minggu / Libur</span> <span>Tutup</span></li>
-                            </ul>
+                            <div class="space-y-3">
+                                {% if schedules %}
+                                {% for s in schedules %}
+                                <div class="flex justify-between items-center text-xs group border-b border-slate-800 pb-2 last:border-0 last:pb-0">
+                                    <span class="font-bold text-slate-400 group-hover:text-white transition-colors">{{ s.day }}</span>
+                                    <div class="text-right">
+                                        {% if s.status == 'Libur' %}
+                                            <span class="font-black text-rose-400 uppercase text-[9px]">Tutup</span>
+                                        {% else %}
+                                            <span class="font-black text-teal-400">{{ s.start_time }} - {{ s.end_time }}</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% endfor %}
+                                {% else %}
+                                    <p class="text-[10px] text-slate-500 italic text-center py-4">Jadwal belum dikonfigurasi.</p>
+                                {% endif %}
+                            </div>
                         </div>
 
-                        <!-- HUBUNGI -->
-                        <div class="space-y-3">
-                            <h4 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2 px-2">
-                                <i class="fas fa-paper-plane text-teal-500"></i> Hubungi Sekarang
-                            </h4>
-                            <!-- Tombol WhatsApp -->
-                            <a href="https://wa.me/{{ psychologists[0].whatsapp }}?text=Halo%20{{ psychologists[0].name }},%20saya%20ingin%20berkonsultasi%20mengenai%20hasil%20skrining%20ADHD%20anak%20saya%20di%20aplikasi%20KidsCare." 
-                               target="_blank"
-                               class="flex items-center justify-between p-4 bg-emerald-500 text-white rounded-2xl font-bold hover:bg-emerald-600 transition-all shadow-lg shadow-emerald-100">
-                                <span class="flex items-center gap-3"><i class="fab fa-whatsapp text-xl"></i> Konsultasi WhatsApp</span>
-                                <i class="fas fa-arrow-right text-xs"></i>
+                        <!-- SEKSI AKSI (7 Kolom) -->
+                        <div class="xl:col-span-7 flex flex-col gap-4 w-full">
+                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 mb-1 flex items-center gap-2">
+                                <i class="fas fa-user-tie text-teal-500"></i> Kelola Bimbingan
+                            </p>
+
+                            <!-- Sesi yang SUDAH AKTIF -->
+                            {% if this_psych_sessions %}
+                            {% for session in this_psych_sessions %}
+                            <a href="{{ url_for('consult.room_chat', consult_id=session.consult_id) }}"
+                                class="flex items-center justify-between p-4 bg-white border-2 border-slate-100 text-slate-700 rounded-3xl font-black text-[10px] uppercase tracking-widest hover:border-teal-400 hover:text-teal-600 transition-all shadow-sm group">
+                                <span class="flex items-center gap-3">
+                                    <i class="fas fa-comment-dots text-lg text-teal-400 group-hover:scale-110 transition-transform"></i> 
+                                    Lanjut Chat: {{ session.child_name }}
+                                </span>
+                                <div class="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-teal-50 transition-colors">
+                                    <i class="fas fa-arrow-right text-teal-500"></i>
+                                </div>
                             </a>
-                            <!-- Tombol Chat Internal -->
-                            <a href="#" class="flex items-center justify-between p-4 bg-slate-800 text-white rounded-2xl font-bold hover:bg-slate-700 transition-all shadow-lg shadow-slate-200">
-                                <span class="flex items-center gap-3"><i class="fas fa-comment-dots text-xl"></i> Chat di KidsCare</span>
-                                <i class="fas fa-arrow-right text-xs"></i>
+                            {% endfor %}
+                            {% endif %}
+
+                            <!-- Tombol Mulai (Hanya Jika Ada Anak yang Belum Konsultasi) -->
+                            {% if available_children %}
+                            <button onclick="toggleModal('startConsultModal')"
+                                class="w-full flex items-center justify-between p-5 bg-teal-500 text-white rounded-3xl font-black text-[10px] uppercase tracking-widest hover:bg-teal-600 transition-all shadow-xl shadow-teal-100 active:scale-95 group">
+                                <span class="flex flex-col items-start text-left">
+                                    <span class="text-teal-100 text-[8px] mb-0.5 font-bold">Tersedia {{ available_children|length }} Profil</span>
+                                    <span class="text-sm">Mulai Konsultasi Baru</span>
+                                </span>
+                                <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center group-hover:bg-white/30 transition-colors">
+                                    <i class="fas fa-plus text-white"></i>
+                                </div>
+                            </button>
+                            {% else %}
+                                {% if total_children_count > 0 and not available_children %}
+                                <div class="p-5 bg-slate-50 border border-dashed border-slate-200 rounded-3xl text-center text-slate-400">
+                                    <i class="fas fa-lock text-lg mb-2 opacity-30"></i>
+                                    <p class="text-[9px] font-black uppercase tracking-widest leading-relaxed">Seluruh profil anak Anda sudah terikat bimbingan aktif.</p>
+                                </div>
+                                {% elif total_children_count == 0 %}
+                                <a href="{{ url_for('user.profil_user') }}" class="p-5 bg-white border-2 border-dashed border-slate-200 rounded-3xl text-center text-teal-500 hover:border-teal-500 transition-all group flex flex-col items-center gap-2">
+                                    <i class="fas fa-user-plus text-lg"></i>
+                                    <p class="text-[9px] font-black uppercase tracking-widest">Tambah profil anak untuk memulai</p>
+                                </a>
+                                {% endif %}
+                            {% endif %}
+
+                            <!-- Link WhatsApp -->
+                            <a href="https://wa.me/{{ selected_psych.whatsapp }}" target="_blank"
+                                class="flex items-center justify-between p-4 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-3xl font-black text-[10px] uppercase tracking-widest hover:bg-emerald-500 hover:text-white transition-all shadow-sm group">
+                                <span class="flex items-center gap-3">
+                                    <i class="fab fa-whatsapp text-xl"></i> Hubungi WhatsApp
+                                </span>
+                                <i class="fas fa-external-link-alt text-[10px]"></i>
                             </a>
+                        </div>
+                    </div>
+
+                    <!-- LOKASI -->
+                    <div class="bg-white rounded-[40px] p-8 shadow-sm border border-slate-100 overflow-hidden mt-8">
+                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                            <div class="lg:col-span-7 rounded-[28px] overflow-hidden border-4 border-slate-50 h-[240px] bg-slate-100 relative group shadow-inner">
+                                {% if selected_psych.address %}
+                                <div class="absolute inset-0 bg-teal-500/5 pointer-events-none group-hover:opacity-0 transition-opacity duration-500 z-10"></div>
+                                <iframe
+                                    class="w-full h-full grayscale-[0.2] group-hover:grayscale-0 transition-all duration-700"
+                                    frameborder="0" style="border:0"
+                                    src="https://maps.google.com/maps?q={{ selected_psych.address|urlencode }}&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                                    allowfullscreen>
+                                </iframe>
+                                {% else %}
+                                <div class="w-full h-full flex flex-col items-center justify-center text-slate-400 bg-slate-50">
+                                    <i class="fas fa-map-marked-alt text-4xl mb-3 opacity-20"></i>
+                                    <p class="text-[10px] font-black uppercase tracking-widest">Alamat Belum Diatur</p>
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="lg:col-span-5 lg:pl-4">
+                                <div class="w-12 h-12 rounded-2xl bg-teal-50 text-teal-500 flex items-center justify-center mb-5 shadow-sm border border-teal-100">
+                                    <i class="fas fa-location-dot text-lg"></i>
+                                </div>
+                                <h3 class="text-lg font-black text-slate-800 mb-3 tracking-tight">Lokasi Praktik Mandiri</h3>
+                                <p class="text-sm font-medium text-slate-500 leading-relaxed mb-8">
+                                    {{ selected_psych.address|default('Psikolog ini belum mencantumkan alamat praktik fisik secara lengkap.') }}
+                                </p>
+                                {% if selected_psych.address %}
+                                <a href="https://www.google.com/maps/search/?api=1&query={{ selected_psych.address|urlencode }}"
+                                    target="_blank"
+                                    class="inline-flex items-center justify-center gap-3 px-6 py-3.5 bg-slate-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-teal-500 transition-all shadow-xl shadow-slate-200 active:scale-95 group w-full sm:w-auto">
+                                    Buka di Google Maps <i class="fas fa-location-arrow group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform"></i>
+                                </a>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
                 </div>
-
-                <!-- AREA MAPS (Slawi/Tegal Area) -->
-                <div class="bg-white rounded-[32px] p-8 shadow-sm border border-slate-100 overflow-hidden">
-                    <h3 class="text-lg font-bold text-slate-800 mb-6 flex items-center">
-                        <i class="fas fa-map-location-dot mr-2 text-teal-500"></i> Lokasi Praktik (Area Slawi)
-                    </h3>
-                    <div class="rounded-2xl overflow-hidden border border-slate-100 aspect-video md:aspect-auto md:h-[300px] w-full">
-                        <!-- Google Maps Embed Placeholder -->
-                        <iframe 
-                            class="w-full h-full"
-                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15842.368817929424!2d109.130635!3d-6.9854749!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e6fb9b5d3a5a73d%3A0x401e8f1fc28c1b0!2sSlawi%2C%20Kabupaten%20Tegal%2C%20Jawa%20Tengah!5e0!3m2!1sid!2sid!4v1700000000000!5m2!1sid!2sid" 
-                            style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
-                        </iframe>
-                    </div>
-                    <div class="mt-4 flex items-center gap-3 text-slate-500 text-xs">
-                        <i class="fas fa-location-dot text-rose-500"></i>
-                        <p>Jl. Dr. Soetomo No. 1, Slawi, Kabupaten Tegal (Dekat RSUD dr. Soeselo)</p>
-                    </div>
-                </div>
-
+                {% endif %}
             </div>
         </div>
     </div>
 </div>
+
+<!-- MODAL: PILIH ANAK (MULTI-SELECT CHECKBOX) -->
+<div id="startConsultModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[3000] flex items-center justify-center hidden opacity-0 transition-all duration-300">
+    <div class="bg-white w-full max-w-lg p-8 rounded-[40px] shadow-2xl mx-4 transform scale-95 transition-all modal-box flex flex-col max-h-[90vh]" id="startConsultModalBox">
+
+        <!-- Modal Header -->
+        <div class="text-center mb-6 shrink-0">
+            <div class="w-16 h-16 bg-teal-50 text-teal-500 rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl shadow-sm">
+                <i class="fas fa-user-tie"></i>
+            </div>
+            <h3 class="text-xl font-black text-slate-800 mb-2 leading-tight">Mulai Konsultasi</h3>
+            <p class="text-sm text-slate-500 leading-relaxed font-medium">Pilih anak yang ingin dikonsultasikan dengan <br><span class="text-teal-600 font-bold">{{ selected_psych.username }}</span></p>
+        </div>
+
+        <form action="{{ url_for('consult.start_consultation', psych_id=selected_psych._id|string if selected_psych else '') }}" method="POST" class="flex flex-col overflow-hidden">
+            <!-- Card Anak List -->
+            <div class="space-y-3 overflow-y-auto custom-scrollbar px-1 pb-2 mb-6 shrink-0">
+                {% for child in available_children %}
+                <label class="cursor-pointer group block">
+                    <input type="checkbox" name="child_ids" value="{{ child._id|string }}" class="hidden peer child-checkbox">
+                    <div class="child-card flex items-center justify-between p-4 rounded-2xl bg-slate-50 border-2 border-transparent hover:bg-slate-100 transition-all">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 rounded-full bg-white text-teal-500 flex items-center justify-center shadow-sm border border-slate-100">
+                                <i class="fas fa-child text-sm"></i>
+                            </div>
+                            <div>
+                                <span class="font-black text-slate-800 text-sm block">{{ child.name }}</span>
+                                <span class="text-[9px] text-slate-400 font-bold uppercase tracking-wider">{{ 'Laki-laki' if child.gender == 'L' else 'Perempuan' }}</span>
+                            </div>
+                        </div>
+                        <div class="check-circle w-6 h-6 rounded-full border-2 border-slate-200 flex items-center justify-center transition-colors">
+                            <i class="fas fa-check text-white text-[10px] opacity-0 check-icon transition-opacity"></i>
+                        </div>
+                    </div>
+                </label>
+                {% endfor %}
+            </div>
+
+            <div class="shrink-0 mt-auto">
+                <div class="p-4 bg-amber-50 rounded-2xl border border-amber-100 flex items-start gap-3 mb-6">
+                    <div class="w-6 h-6 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center shrink-0">
+                        <i class="fas fa-info-circle text-[10px]"></i>
+                    </div>
+                    <p class="text-[10px] text-amber-700 font-bold leading-relaxed mt-0.5">Data riwayat percakapan untuk setiap anak akan disimpan terpisah secara permanen.</p>
+                </div>
+
+                <div class="flex gap-3">
+                    <button type="button" onclick="toggleModal('startConsultModal')" class="flex-1 py-4 bg-slate-100 text-slate-500 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-200 transition">Batal</button>
+                    <button type="submit" class="flex-1 py-4 bg-teal-500 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-teal-100 hover:bg-teal-600 transition-all transform active:scale-95">Konfirmasi</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function toggleModal(id) {
+        const modal = document.getElementById(id);
+        const box = document.getElementById(id + 'Box');
+        if (modal && box) {
+            if (modal.classList.contains('hidden')) {
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    modal.classList.replace('opacity-0', 'opacity-100');
+                    box.classList.replace('scale-95', 'scale-100');
+                }, 10);
+            } else {
+                modal.classList.replace('opacity-100', 'opacity-0');
+                box.classList.replace('scale-100', 'scale-95');
+                setTimeout(() => modal.classList.add('hidden'), 300);
+            }
+        }
+    }
+
+    window.onclick = function (event) {
+        if (event.target.id && event.target.id.includes('Modal') && !event.target.id.includes('Box')) {
+            toggleModal(event.target.id);
+        }
+    }
+</script>
 {% endblock %}

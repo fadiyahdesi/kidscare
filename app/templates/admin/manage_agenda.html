@@ -1,0 +1,194 @@
+{% extends 'layout/dashboard.html' %}
+
+{% block title %}Moderasi Agenda | KidsCare Admin{% endblock %}
+
+{% block content %}
+<style>
+    .dashboard-main-content { 
+        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); 
+        min-height: 100vh; 
+        background-color: #fff; 
+    }
+    @media (min-width: 1024px) { 
+        .dashboard-main-content { margin-left: 18rem; } 
+        body.sidebar-is-closed .dashboard-main-content { margin-left: 0; } 
+    }
+    .animate-fade-in { animation: fadeIn 0.5s ease-out forwards; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+
+<div class="dashboard-main-content">
+    <div class="px-8 py-10 w-full max-w-7xl mx-auto animate-fade-in">
+        
+        <!-- HEADER -->
+        <div class="flex items-center justify-between mb-8 animate-fade-in">
+            <div>
+                <span class="inline-block px-3 py-1 bg-indigo-50 text-indigo-600 rounded-full text-[9px] font-black uppercase tracking-[0.2em] mb-3 border border-indigo-100">Moderasi Konten</span>
+                <h1 class="text-3xl font-black text-slate-800">Manajemen Agenda</h1>
+                <p class="text-slate-500 font-medium mt-1">Pantau dan kelola jadwal publikasi dari psikolog mitra.</p>
+            </div>
+            <div class="w-16 h-16 rounded-[24px] bg-indigo-600 text-white flex items-center justify-center text-2xl shadow-xl shadow-indigo-200">
+                <i class="fas fa-calendar-alt"></i>
+            </div>
+        </div>
+
+        <!-- TABEL DATA -->
+        <div class="bg-white p-8 md:p-10 rounded-[40px] shadow-sm border border-slate-100 animate-fade-in" style="animation-delay: 0.2s;">
+            <div class="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
+                <h3 class="text-lg font-black text-slate-800 flex items-center gap-3">
+                    <i class="fas fa-list-check text-indigo-500"></i> Daftar Agenda Aktif
+                </h3>
+                <div class="flex items-center gap-3">
+                    <span id="agendaCounter" class="px-4 py-2 bg-indigo-100 border border-indigo-200 rounded-xl text-[10px] font-black text-indigo-600 uppercase tracking-widest">
+                        Total: {{ agendas|length }}
+                    </span>
+                    <input type="text" id="searchInput" onkeyup="searchTable()" placeholder="Cari agenda..." 
+                           class="bg-white border border-indigo-900 rounded-2xl px-5 py-3 text-sm font-bold text-slate-700 w-48 focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                </div>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-separate border-spacing-y-2">
+                    <thead class="bg-slate-50">
+                        <tr class="text-[10px] uppercase text-slate-400 font-black tracking-widest">
+                            <th class="py-4 px-6 rounded-l-2xl text-center w-12">No</th>
+                            <th class="py-4 px-6">Informasi Agenda</th>
+                            <th class="py-4 px-6 text-center">Jadwal Pelaksanaan</th>
+                            <th class="py-4 px-6">Penyelenggara</th>
+                            <th class="py-4 px-6 text-right rounded-r-2xl w-24">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="agendaTableBody" class="text-sm">
+                        {% if agendas %}
+                            {% for a in agendas %}
+                            <tr class="agenda-row group hover:bg-slate-50/50 transition-all" data-title="{{ a.title|lower }}" data-psych="{{ a.psychologist_name|lower }}">
+                                <td class="py-5 px-6 text-center border-y border-l border-slate-50 rounded-l-2xl">
+                                    <span class="row-number w-8 h-8 rounded-full bg-slate-100 text-slate-400 font-black text-xs flex items-center justify-center mx-auto">{{ loop.index }}</span>
+                                </td>
+                                <td class="py-5 px-6 border-y border-slate-50">
+                                    <div class="flex items-start gap-3">
+                                        <div class="mt-1">
+                                            <span class="inline-flex px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest {% if a.type == 'Webinar' %}bg-orange-100 text-orange-600{% else %}bg-teal-100 text-teal-600{% endif %}">{{ a.type|default('Event') }}</span>
+                                        </div>
+                                        <div>
+                                            <p class="font-bold text-slate-800 leading-tight mb-1">{{ a.title }}</p>
+                                            <p class="text-[10px] text-slate-500 font-medium line-clamp-1">{{ a.description|default('Tidak ada deskripsi.') }}</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-5 px-6 border-y border-slate-50 text-center">
+                                    <div class="inline-flex flex-col items-center bg-white border border-slate-100 px-4 py-2 rounded-xl shadow-sm">
+                                        <span class="text-xs font-black text-slate-700">{{ a.date }}</span>
+                                        <span class="text-[9px] font-bold text-indigo-500 uppercase tracking-widest mt-0.5"><i class="far fa-clock"></i> {{ a.time|default('-') }} WIB</span>
+                                    </div>
+                                </td>
+                                <td class="py-5 px-6 border-y border-slate-50">
+                                    <span class="font-bold text-slate-700 text-xs">{{ a.psychologist_name }}</span>
+                                </td>
+                                <td class="py-5 px-6 border-y border-r border-slate-50 rounded-r-2xl text-right">
+                                    <button type="button" onclick="openDeleteModal('{{ url_for('admin.delete_agenda', agenda_id=a._id) }}')"
+                                       class="inline-flex w-10 h-10 rounded-xl bg-white border border-slate-100 text-rose-400 items-center justify-center hover:bg-rose-500 hover:text-white transition-all shadow-sm">
+                                        <i class="fas fa-trash-can text-sm"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr id="emptyRow">
+                                <td colspan="5" class="py-16 text-center text-slate-400 font-black text-xs uppercase tracking-widest">Tidak ada agenda ditemukan.</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+                
+                <!-- PAGINASI -->
+                <div class="flex justify-between items-center mt-8 pt-4 border-t border-slate-100">
+                    <button onclick="changePage(-1)" class="px-6 py-3 bg-slate-100 text-slate-500 rounded-xl font-black text-[10px] uppercase hover:bg-slate-200">Sebelumnya</button>
+                    <span id="pageInfo" class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Halaman 1</span>
+                    <button onclick="changePage(1)" class="px-6 py-3 bg-slate-900 text-white rounded-xl font-black text-[10px] uppercase hover:bg-indigo-600 transition-all">Selanjutnya</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- DELETE CONFIRMATION MODAL -->
+<div id="deleteModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[2000] flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+    <div id="modalBox" class="bg-white w-full max-w-sm p-8 rounded-[32px] shadow-2xl mx-4 transform scale-95 transition-transform duration-300">
+        <div class="text-center">
+            <div class="w-20 h-20 bg-rose-50 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl">
+                <i class="fas fa-trash-can"></i>
+            </div>
+            <h3 class="text-xl font-black text-slate-800 mb-2">Hapus Agenda</h3>
+            <p class="text-sm text-slate-500 mb-8 leading-relaxed">Apakah Anda yakin ingin menghapus agenda ini secara permanen?</p>
+            <div class="flex gap-3">
+                <button onclick="closeModal('deleteModal')" class="flex-1 py-4 bg-slate-100 text-slate-600 rounded-2xl font-bold hover:bg-slate-200 transition-all text-[10px] uppercase tracking-widest">Batal</button>
+                <a href="#" id="confirmDeleteBtn" class="flex-1 py-4 bg-rose-500 text-white rounded-2xl font-bold hover:bg-rose-600 shadow-lg shadow-rose-100 transition-all text-center text-[10px] uppercase tracking-widest flex items-center justify-center">Ya, Hapus</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentPage = 1;
+    const rowsPerPage = 10;
+    const rows = document.querySelectorAll('.agenda-row');
+
+    function updateTable() {
+        const input = document.getElementById('searchInput').value.toLowerCase();
+        const filteredRows = Array.from(rows).filter(row => 
+            row.getAttribute('data-title').includes(input) || 
+            row.getAttribute('data-psych').includes(input)
+        );
+        
+        rows.forEach(r => r.style.display = 'none');
+        
+        const start = (currentPage - 1) * rowsPerPage;
+        const end = start + rowsPerPage;
+        
+        filteredRows.slice(start, end).forEach((r, idx) => {
+            r.style.display = '';
+            r.querySelector('.row-number').innerText = start + idx + 1;
+        });
+
+        document.getElementById('pageInfo').innerText = `Halaman ${currentPage}`;
+        document.getElementById('agendaCounter').innerText = `Total: ${filteredRows.length} Agenda`;
+        document.getElementById('emptyRow').style.display = filteredRows.length === 0 ? '' : 'none';
+    }
+
+    function changePage(dir) {
+        const input = document.getElementById('searchInput').value.toLowerCase();
+        const filteredCount = Array.from(rows).filter(r => r.getAttribute('data-title').includes(input) || r.getAttribute('data-psych').includes(input)).length;
+        const maxPage = Math.ceil(filteredCount / rowsPerPage);
+        currentPage = Math.max(1, Math.min(maxPage, currentPage + dir));
+        updateTable();
+    }
+
+    function searchTable() {
+        currentPage = 1;
+        updateTable();
+    }
+
+    // Modal Functions
+    function openDeleteModal(url) {
+        document.getElementById('confirmDeleteBtn').href = url;
+        const modal = document.getElementById('deleteModal');
+        const modalBox = document.getElementById('modalBox');
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            modal.classList.replace('opacity-0', 'opacity-100');
+            modalBox.classList.replace('scale-95', 'scale-100');
+        }, 10);
+    }
+
+    function closeModal(id) {
+        const modal = document.getElementById(id);
+        const modalBox = modal.querySelector('#modalBox');
+        modal.classList.replace('opacity-100', 'opacity-0');
+        modalBox.classList.replace('scale-100', 'scale-95');
+        setTimeout(() => { modal.classList.add('hidden'); }, 300);
+    }
+
+    window.onload = updateTable;
+</script>
+{% endblock %}

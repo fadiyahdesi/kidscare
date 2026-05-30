@@ -1,0 +1,307 @@
+{% extends 'layout/dashboard.html' %}
+
+{% block title %}Info Kegiatan | KidsCare Professional{% endblock %}
+
+{% block content %}
+<style>
+    /* Standar transisi dashboard */
+    .dashboard-main-content {
+        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        background-color: #f8fafc;
+    }
+
+    @media (min-width: 1024px) {
+        .dashboard-main-content { 
+            margin-left: 18rem; 
+        }
+        body.sidebar-is-closed .dashboard-main-content { 
+            margin-left: 0; 
+        }
+    }
+
+    @keyframes fadeIn { 
+        from { opacity: 0; transform: translateY(-10px); } 
+        to { opacity: 1; transform: translateY(0); } 
+    }
+    .animate-fade-in { 
+        animation: fadeIn 0.4s ease-out forwards; 
+    }
+
+    .event-card:hover {
+        transform: translateY(-5px);
+        border-color: #14b8a6;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05);
+    }
+</style>
+
+<div class="dashboard-main-content bg-slate-50/50">
+    <!-- Kontainer Luas (px-8 py-10) -->
+    <div class="px-8 py-10 w-full">
+        
+        <!-- HEADER: Identik dengan Dashboard, Profil & Jadwal -->
+        <div class="flex items-center justify-between mb-10 animate-fade-in">
+            <div>
+                <p class="text-[10px] font-black text-teal-600 uppercase tracking-[0.3em] mb-2">Manajemen Konten</p>
+                <h1 class="text-3xl font-black text-slate-800 tracking-tight">Info Kegiatan</h1>
+                <p class="text-slate-500 font-medium mt-1">Publikasikan webinar atau workshop Anda kepada seluruh orang tua.</p>
+            </div>
+            <div class="flex gap-4 items-center">
+                <button onclick="toggleModal('addEventModal')" class="hidden md:block px-6 py-3 bg-teal-500 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-teal-100 hover:bg-teal-600 transition-all active:scale-95">
+                    <i class="fas fa-plus mr-2"></i> Buat Agenda Baru
+                </button>
+                <div class="w-16 h-16 rounded-[24px] bg-teal-500 text-white flex items-center justify-center text-2xl shadow-xl shadow-teal-100 rotate-3 hover:rotate-0 transition-transform duration-300">
+                    <i class="fas fa-bullhorn"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tombol Mobile Only -->
+        <div class="md:hidden mb-8 animate-fade-in">
+            <button onclick="toggleModal('addEventModal')" class="w-full py-4 bg-teal-500 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg shadow-teal-100">
+                + Buat Agenda Baru
+            </button>
+        </div>
+
+        <!-- FLASH MESSAGES -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="mb-8 p-5 rounded-[24px] bg-emerald-50 text-emerald-700 border border-emerald-100 font-bold flex items-center gap-3 shadow-sm animate-fade-in">
+                <i class="fas fa-check-circle"></i> {{ message }}
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <!-- GRID KEGIATAN -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 animate-fade-in" style="animation-delay: 0.1s;">
+            {% if events %}
+                {% for event in events %}
+                <div class="event-card bg-white p-8 rounded-[40px] border border-slate-100 shadow-sm transition-all relative overflow-hidden group flex flex-col h-full">
+                    
+                    <!-- Type Badge -->
+                    <div class="absolute top-0 right-0 p-6">
+                        <span class="px-3 py-1 {% if event.type == 'Webinar' %}bg-orange-100 text-orange-600{% else %}bg-teal-100 text-teal-600{% endif %} text-[9px] font-black uppercase rounded-full">
+                            {{ event.type }}
+                        </span>
+                    </div>
+
+                    <!-- Icon Header Card -->
+                    <div class="w-14 h-14 rounded-2xl {% if event.type == 'Webinar' %}bg-orange-50 text-orange-500{% else %}bg-teal-50 text-teal-500{% endif %} flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform">
+                        <i class="fas {% if event.type == 'Webinar' %}fa-video{% else %}fa-chalkboard-user{% endif %}"></i>
+                    </div>
+
+                    <div class="flex-1">
+                        <h3 class="text-xl font-black text-slate-800 mb-2 leading-tight group-hover:text-teal-600 transition-colors">{{ event.title }}</h3>
+                        <p class="text-slate-500 text-xs mb-6 line-clamp-3 leading-relaxed font-medium">{{ event.description }}</p>
+                    </div>
+                    
+                    <!-- Info Detail -->
+                    <div class="space-y-3 border-t border-slate-50 pt-6 mb-8">
+                        <div class="flex items-center gap-3 text-xs font-bold text-slate-600">
+                            <i class="far fa-calendar text-teal-500 w-4"></i> {{ event.date }}
+                        </div>
+                        <div class="flex items-center gap-3 text-xs font-bold text-slate-600">
+                            <i class="far fa-clock text-teal-500 w-4"></i> {{ event.time }} WIB
+                        </div>
+                    </div>
+
+                    <!-- Tombol Aksi -->
+                    <div class="flex gap-3">
+                        <button type="button" onclick="openEditModal('{{ event._id }}', '{{ event.title }}', '{{ event.raw_date }}', '{{ event.time }}', '{{ event.type }}', '{{ event.registration_link }}', '{{ event.description|replace('\n', '\\n')|replace('\'', '\\\'') }}')" 
+                                class="flex-1 py-4 bg-slate-900 text-white rounded-2xl text-center font-black text-[9px] uppercase tracking-widest hover:bg-teal-500 transition-all shadow-xl shadow-slate-100 active:scale-95">
+                            <i class="fas fa-edit mr-1"></i> Edit Agenda
+                        </button>
+                        
+                        <!-- PERBAIKAN: Diubah menjadi tag button agar modal berfungsi -->
+                        <button type="button" onclick="openDeleteModal('{{ url_for('psychologist.delete_event', id=event._id) }}')" 
+                                class="w-14 h-14 bg-rose-50 text-rose-500 rounded-2xl flex items-center justify-center hover:bg-rose-500 hover:text-white transition-all shadow-sm">
+                            <i class="fas fa-trash-can"></i>
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <!-- Empty State -->
+                <div class="col-span-full py-24 text-center bg-white rounded-[40px] border-2 border-dashed border-slate-100">
+                    <div class="relative inline-block mb-6">
+                        <div class="absolute inset-0 bg-teal-100 rounded-full blur-2xl opacity-30 animate-pulse"></div>
+                        <div class="relative w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto text-slate-200 text-3xl">
+                            <i class="fas fa-bullhorn"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-black text-slate-800 mb-2">Belum Ada Agenda</h3>
+                    <p class="text-slate-400 text-sm max-w-xs mx-auto font-medium leading-relaxed">Klik tombol "Buat Agenda Baru" untuk mulai membagikan info webinar atau workshop Anda.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: TAMBAH KEGIATAN -->
+<div id="addEventModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[2000] flex items-center justify-center hidden opacity-0 transition-all duration-300">
+    <div class="bg-white w-full max-w-lg p-8 md:p-10 rounded-[40px] shadow-2xl mx-4 transform scale-95 transition-all" id="addEventModalBox">
+        <h2 class="text-2xl font-black text-slate-800 mb-2">Buat Agenda Baru</h2>
+        <p class="text-xs text-slate-400 font-bold uppercase tracking-widest mb-8">Muncul otomatis di beranda Orang Tua</p>
+        
+        <form method="POST" action="{{ url_for('psychologist.event_management') }}" class="space-y-6">
+            <div>
+                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-2 ml-1">Judul Kegiatan</label>
+                <input type="text" name="title" placeholder="Contoh: Webinar Pola Asuh ADHD" required class="w-full px-5 py-4 rounded-2xl bg-slate-50 border-none outline-none focus:ring-2 focus:ring-teal-500 font-semibold text-slate-700 shadow-inner transition-all">
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-2 ml-1">Tanggal</label>
+                    <input type="date" name="date" required class="w-full px-5 py-4 rounded-2xl bg-slate-50 border-none outline-none focus:ring-2 focus:ring-teal-500 font-semibold text-slate-700 shadow-inner">
+                </div>
+                <div>
+                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-2 ml-1">Waktu (WIB)</label>
+                    <input type="time" name="time" required value="09:00" class="w-full px-5 py-4 rounded-2xl bg-slate-50 border-none outline-none focus:ring-2 focus:ring-teal-500 font-semibold text-slate-700 shadow-inner">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-2 ml-1">Tipe Kegiatan</label>
+                    <select name="type" class="w-full px-5 py-4 rounded-2xl bg-slate-50 border-none outline-none focus:ring-2 focus:ring-teal-500 font-semibold text-slate-700">
+                        <option value="Webinar">Webinar (Online)</option>
+                        <option value="Workshop">Workshop (Tatap Muka)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-2 ml-1">Link Join/Daftar</label>
+                    <input type="url" name="link" placeholder="https://..." required class="w-full px-5 py-4 rounded-2xl bg-slate-50 border-none outline-none focus:ring-2 focus:ring-teal-500 font-semibold text-slate-700 shadow-inner">
+                </div>
+            </div>
+
+            <div>
+                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-2 ml-1">Deskripsi Singkat</label>
+                <textarea name="description" rows="3" placeholder="Apa yang akan dipelajari orang tua?" required class="w-full px-5 py-4 rounded-2xl bg-slate-50 border-none outline-none focus:ring-2 focus:ring-teal-500 font-semibold text-slate-700 shadow-inner resize-none"></textarea>
+            </div>
+
+            <div class="flex gap-4 pt-4">
+                <button type="button" onclick="toggleModal('addEventModal')" class="flex-1 py-4 bg-slate-100 text-slate-500 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-200 transition">Batal</button>
+                <button type="submit" class="flex-1 py-4 bg-teal-500 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl shadow-teal-100 active:scale-95 transition-all">Publikasikan</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL: EDIT KEGIATAN -->
+<div id="editEventModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[2000] flex items-center justify-center hidden opacity-0 transition-all duration-300">
+    <div class="bg-white w-full max-w-lg p-8 md:p-10 rounded-[40px] shadow-2xl mx-4 transform scale-95 transition-all" id="editEventModalBox">
+        <h2 class="text-2xl font-black text-slate-800 mb-2">Edit Agenda</h2>
+        <p class="text-xs text-teal-600 font-black uppercase tracking-widest mb-8">Perbarui informasi kegiatan Anda</p>
+        
+        <form method="POST" id="editEventForm" class="space-y-6">
+            <div>
+                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-2 ml-1">Judul Kegiatan</label>
+                <input type="text" name="title" id="edit_title" required class="w-full px-5 py-4 rounded-2xl bg-slate-50 border-none outline-none focus:ring-2 focus:ring-teal-500 font-semibold text-slate-700 shadow-inner transition-all">
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-2 ml-1">Tanggal</label>
+                    <input type="date" name="date" id="edit_date" required class="w-full px-5 py-4 rounded-2xl bg-slate-50 border-none outline-none focus:ring-2 focus:ring-teal-500 font-semibold text-slate-700 shadow-inner">
+                </div>
+                <div>
+                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-2 ml-1">Waktu (WIB)</label>
+                    <input type="time" name="time" id="edit_time" required class="w-full px-5 py-4 rounded-2xl bg-slate-50 border-none outline-none focus:ring-2 focus:ring-teal-500 font-semibold text-slate-700 shadow-inner">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-2 ml-1">Tipe</label>
+                    <select name="type" id="edit_type" class="w-full px-5 py-4 rounded-2xl bg-slate-50 border-none outline-none focus:ring-2 focus:ring-teal-500 font-semibold text-slate-700">
+                        <option value="Webinar">Webinar</option>
+                        <option value="Workshop">Workshop</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-2 ml-1">Link Pendaftaran</label>
+                    <input type="url" name="link" id="edit_link" required class="w-full px-5 py-4 rounded-2xl bg-slate-50 border-none outline-none focus:ring-2 focus:ring-teal-500 font-semibold text-slate-700 shadow-inner">
+                </div>
+            </div>
+
+            <div>
+                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-2 ml-1">Deskripsi Singkat</label>
+                <textarea name="description" id="edit_description" rows="3" required class="w-full px-5 py-4 rounded-2xl bg-slate-50 border-none outline-none focus:ring-2 focus:ring-teal-500 font-semibold text-slate-700 shadow-inner resize-none"></textarea>
+            </div>
+
+            <div class="flex gap-4 pt-4">
+                <button type="button" onclick="toggleModal('editEventModal')" class="flex-1 py-4 bg-slate-100 text-slate-500 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-200 transition">Batal</button>
+                <button type="submit" class="flex-1 py-4 bg-slate-900 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl shadow-slate-200 active:scale-95 transition-all">Simpan Perubahan</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ========================================== -->
+<!-- MODAL BARU: KONFIRMASI HAPUS KEGIATAN      -->
+<!-- ========================================== -->
+<div id="deleteEventModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[3000] flex items-center justify-center hidden opacity-0 transition-all duration-300">
+    <div id="deleteEventModalBox" class="bg-white w-full max-w-sm p-8 rounded-[32px] shadow-2xl mx-4 transform scale-95 transition-all duration-300">
+        <div class="text-center">
+            <div class="w-20 h-20 bg-rose-50 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl">
+                <i class="fas fa-trash-can"></i>
+            </div>
+            <h3 class="text-xl font-black text-slate-800 mb-2">Hapus Agenda?</h3>
+            <p class="text-sm text-slate-500 mb-8 leading-relaxed">Agenda ini akan dihapus secara permanen dan tidak akan terlihat lagi oleh orang tua.</p>
+            <div class="flex gap-3">
+                <button type="button" onclick="toggleModal('deleteEventModal')" class="flex-1 py-4 bg-slate-100 text-slate-600 rounded-2xl font-bold hover:bg-slate-200 transition-all text-[10px] uppercase tracking-widest">Batal</button>
+                <a href="#" id="confirmDeleteBtn" class="flex-1 py-4 bg-rose-500 text-white rounded-2xl font-bold hover:bg-rose-600 shadow-lg shadow-rose-100 transition-all text-center text-[10px] uppercase tracking-widest flex items-center justify-center">Ya, Hapus</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleModal(id) {
+        const modal = document.getElementById(id);
+        const box = document.getElementById(id + 'Box');
+        if (modal.classList.contains('hidden')) {
+            modal.classList.remove('hidden');
+            setTimeout(() => { 
+                modal.classList.replace('opacity-0', 'opacity-100'); 
+                box.classList.replace('scale-95', 'scale-100');
+            }, 10);
+        } else {
+            modal.classList.replace('opacity-100', 'opacity-0');
+            box.classList.replace('scale-100', 'scale-95');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+    }
+
+    function openEditModal(id, title, date, time, type, link, description) {
+        const form = document.getElementById('editEventForm');
+        form.action = `/psychologist/events/edit/${id}`;
+        
+        document.getElementById('edit_title').value = title;
+        document.getElementById('edit_date').value = date;
+        document.getElementById('edit_time').value = time;
+        document.getElementById('edit_type').value = type;
+        document.getElementById('edit_link').value = link;
+        document.getElementById('edit_description').value = description;
+        
+        toggleModal('editEventModal');
+    }
+
+    // FUNGSI BARU UNTUK MEMBUKA MODAL HAPUS
+    function openDeleteModal(deleteUrl) {
+        const confirmBtn = document.getElementById('confirmDeleteBtn');
+        confirmBtn.href = deleteUrl; // Set link url penghapusan ke tombol "Ya, Hapus"
+        toggleModal('deleteEventModal');
+    }
+
+    window.onclick = function(event) {
+        if (event.target.id && event.target.id.includes('Modal') && !event.target.id.includes('Box')) {
+            toggleModal(event.target.id);
+        }
+    }
+</script>
+{% endblock %}

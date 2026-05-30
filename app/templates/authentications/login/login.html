@@ -3,108 +3,338 @@
 {% block title %}Masuk | KidsCare{% endblock %}
 
 {% block content %}
-
-<!-- CONTAINER UTAMA: H-SCREEN & FULL WIDTH -->
 <section class="min-h-screen w-full flex flex-col md:flex-row bg-white overflow-hidden">
-    
-    <!-- SISI KIRI: FORM LOGIN (Centered Content) -->
-    <div class="flex-1 h-screen overflow-y-auto bg-white flex flex-col items-center justify-center">
-        
-        <!-- Wrapper Form (Max Width agar tidak melar) -->
-        <div class="w-full max-w-md py-12 px-8 md:px-12">
-            
-            <div class="mb-10 text-center md:text-left">
-                <h1 class="text-4xl font-black text-slate-900 mb-3">Selamat Datang!</h1>
+
+    <!-- SISI KIRI: FORM LOGIN -->
+    <!-- Diberikan struktur baru agar tidak terpotong navbar dan pas di tengah -->
+    <div class="flex-1 h-screen overflow-y-auto bg-white">
+        <div
+            class="min-h-full flex flex-col justify-center pt-20 pb-12 px-8 md:px-12 w-full max-w-md mx-auto animate-fade-in">
+
+            <div class="mb-12">
+                <h1 class="text-4xl font-black text-slate-900 mb-4">Selamat Datang!</h1>
                 <p class="text-slate-500 font-medium">Silakan masuk untuk melanjutkan pemantauan buah hati.</p>
             </div>
 
             <!-- FLASH MESSAGES -->
             {% with messages = get_flashed_messages(with_categories=true) %}
-              {% if messages %}
-                {% for category, message in messages %}
-                <div class="mb-8 p-4 rounded-2xl bg-rose-50 text-rose-700 border border-rose-100 font-bold flex items-center gap-3 animate-fade-in shadow-sm">
-                    <i class="fas fa-circle-exclamation text-lg"></i>
-                    <span class="text-sm">{{ message }}</span>
-                </div>
-                {% endfor %}
-              {% endif %}
+            {% if messages %}
+            {% for category, message in messages %}
+            <div
+                class="mb-10 p-5 rounded-[24px] {% if category == 'success' %}bg-emerald-50 text-emerald-700 border-emerald-100{% elif category == 'warning' %}bg-amber-50 text-amber-700 border-amber-100{% else %}bg-rose-50 text-rose-700 border-rose-100{% endif %} border font-bold flex items-center gap-4 shadow-sm">
+                <i
+                    class="fas {% if category == 'success' %}fa-check-circle{% elif category == 'warning' %}fa-triangle-exclamation{% else %}fa-circle-exclamation{% endif %} text-xl"></i>
+                {{ message }}
+            </div>
+            {% endfor %}
+            {% endif %}
             {% endwith %}
 
             <form method="POST" action="{{ url_for('main.login') }}" class="space-y-6">
-                
+
                 <!-- INPUT USERNAME/EMAIL -->
                 <div class="space-y-2">
-                    <label class="text-[11px] font-black text-slate-500 uppercase tracking-widest ml-1 block">Email / Username</label>
+                    <label class="text-[11px] font-black text-slate-500 uppercase tracking-widest ml-1 block">Email /
+                        Username</label>
                     <div class="relative group">
-                        <input type="text" name="username" placeholder="budi@email.com atau username" required
-                            class="w-full px-6 py-4 pr-12 rounded-2xl bg-slate-50 border-2 border-transparent focus:bg-white focus:border-teal-500 outline-none transition-all font-semibold text-slate-700">
-                        <i class="fas fa-user absolute right-5 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-teal-500 transition-colors"></i>
+                        <input type="text" name="username" placeholder="nama@email.com atau username" required
+                            class="w-full px-6 py-4 pr-12 rounded-2xl bg-white border-2 border-teal-300 focus:border-teal-500 outline-none transition-all font-semibold text-slate-700 shadow-sm">
+                        <i
+                            class="fas fa-user absolute right-6 top-1/2 -translate-y-1/2 text-slate-70 group-focus-within:text-teal-500 transition-colors"></i>
                     </div>
                 </div>
 
                 <!-- INPUT PASSWORD -->
                 <div class="space-y-2">
                     <div class="flex justify-between items-center px-1">
-                        <label class="text-[11px] font-black text-slate-500 uppercase tracking-widest block">Kata Sandi</label>
-                        <a href="#" class="text-[10px] font-bold text-teal-600 hover:text-teal-700 uppercase tracking-tighter transition-all">Lupa Sandi?</a>
+                        <label class="text-[11px] font-black text-slate-900 uppercase tracking-widest block">Kata
+                            Sandi</label>
+                        <!-- UBAH BAGIAN INI -->
+                        <button type="button" onclick="toggleModal('forgotPasswordModal')"
+                            class="text-[10px] font-bold text-teal-600 hover:text-teal-700 uppercase tracking-tighter transition-all">Lupa
+                            Sandi?</button>
                     </div>
                     <div class="relative group">
-                        <input type="password" id="loginPassword" name="password" placeholder="Masukkan kata sandi" required
-                            class="w-full px-6 py-4 pr-12 rounded-2xl bg-slate-50 border-2 border-transparent focus:bg-white focus:border-teal-500 outline-none transition-all font-semibold text-slate-700">
-                        <button type="button" onclick="toggleLoginPassword()" class="absolute right-5 top-1/2 -translate-y-1/2 text-slate-300 hover:text-teal-500 transition-colors">
+                        <input type="password" id="loginPassword" name="password" placeholder="••••••••" required
+                            class="w-full px-6 py-4 pr-12 rounded-2xl bg-white border-2 border-teal-300 focus:border-teal-500 outline-none transition-all font-semibold text-slate-700 shadow-sm">
+                        <button type="button" onclick="toggleLoginPassword()"
+                            class="absolute right-6 top-1/2 -translate-y-1/2 text-slate-900 hover:text-teal-500 transition-colors">
                             <i class="fas fa-eye" id="loginEye"></i>
                         </button>
                     </div>
                 </div>
 
-                <!-- TOMBOL MASUK -->
                 <div class="pt-4">
-                    <button type="submit" class="w-full py-5 bg-slate-900 text-white rounded-[24px] font-black text-lg hover:bg-teal-600 shadow-2xl shadow-slate-200 transition-all active:scale-[0.98] transform">
+                    <button type="submit"
+                        class="w-full py-5 bg-slate-900 text-white rounded-[24px] font-black text-xl hover:bg-teal-600 shadow-2xl shadow-slate-200 transition-all active:scale-[0.98]">
                         Masuk Sekarang <i class="fas fa-arrow-right-to-bracket ml-2 text-sm"></i>
                     </button>
                 </div>
-
-                <!-- LINK DAFTAR -->
-                <div class="text-center pt-8">
-                    <p class="text-slate-500 font-medium">
-                        Belum punya akun? 
-                        <a href="{{ url_for('main.register') }}" class="text-teal-600 font-black hover:underline decoration-2 underline-offset-8 transition-all ml-1">Buat Akun Baru</a>
-                    </p>
-                </div>
             </form>
+
+            <!-- DIVIDER -->
+            <div class="flex items-center gap-4 my-10">
+                <div class="h-[1px] flex-1 bg-slate-200"></div>
+                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">atau masuk dengan</span>
+                <div class="h-[1px] flex-1 bg-slate-200"></div>
+            </div>
+
+            <!-- LOGIN GOOGLE -->
+            <div class="flex justify-center mb-10">
+                <a href="{{ url_for('main.login_google') }}"
+                    class="flex items-center justify-center gap-3 w-full py-4 border-2 border-slate-200 rounded-2xl hover:border-teal-500 hover:bg-white transition-all font-bold text-slate-700 shadow-sm">
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5"
+                        alt="Google">
+                    Lanjutkan dengan Google
+                </a>
+            </div>
+
+            <!-- LINK DAFTAR -->
+            <div class="mt-6 text-center">
+                <span class="text-slate-500 font-medium">Belum punya akun?</span>
+                <a href="{{ url_for('main.register') }}"
+                    class="ml-1 text-teal-600 font-black hover:underline decoration-2 underline-offset-8">Daftar
+                    Sekarang</a>
+            </div>
+
         </div>
     </div>
 
-    <!-- SISI KANAN: BRANDING & VISUAL (Fixed on Desktop) -->
-    <div class="hidden md:flex md:w-[40%] lg:w-[35%] bg-teal-600 p-16 flex-col justify-between text-white relative overflow-hidden shrink-0 shadow-2xl z-10">
-        <!-- Background Ornamen -->
-        <div class="absolute top-[-10%] -right-10 w-80 h-80 bg-teal-500 rounded-full opacity-30 blur-3xl"></div>
-        <div class="absolute bottom-[-10%] -left-10 w-64 h-64 bg-white/10 rounded-full opacity-20 blur-3xl"></div>
-        
+    <!-- SISI KANAN: BRANDING -->
+    <!-- pt-32 ditambahkan untuk memberi jarak aman dari Navbar -->
+    <div
+        class="hidden md:flex md:w-[40%] lg:w-[35%] bg-teal-600 p-16 flex-col justify-between text-white relative overflow-hidden shrink-0 shadow-2xl z-10">
+        <div
+            class="absolute top-[-10%] -left-10 w-64 h-64 bg-teal-500 rounded-full opacity-30 blur-3xl pointer-events-none">
+        </div>
+        <div
+            class="absolute bottom-[-10%] -right-10 w-80 h-80 bg-white/10 rounded-full opacity-20 blur-3xl pointer-events-none">
+        </div>
+
         <div class="relative z-10">
-            <div class="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/10 mb-12">
+            <div
+                class="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/10 mb-12 shadow-sm">
                 <i class="fas fa-heart-pulse text-teal-200"></i>
-                <span class="text-xs font-black uppercase tracking-[0.2em] text-white">KidsCare Health</span>
+                <span class="text-[10px] font-black uppercase tracking-[0.2em] text-white">KidsCare Access</span>
             </div>
-            
-            <h2 class="text-5xl font-black mb-8 leading-[1.1] tracking-tight">Pantau Tumbuh Kembang, Dari Mana Saja.</h2>
-            <p class="text-teal-50 text-lg leading-relaxed opacity-80 font-medium italic">"Mendeteksi lebih dini berarti memberikan kesempatan lebih besar bagi mereka untuk bersinar."</p>
+            <h2 class="text-4xl lg:text-5xl font-black mb-6 leading-tight tracking-tight">Pantau Tumbuh Kembang.</h2>
+            <p class="text-teal-50 text-base leading-relaxed opacity-90 font-medium italic pr-4">"Mendeteksi lebih dini
+                berarti memberikan kesempatan lebih besar bagi mereka."</p>
+        </div>
+
+        <div class="relative z-10 animate-fade-in" style="animation-delay: 0.2s;">
+            <div
+                class="p-6 bg-white/5 backdrop-blur-sm rounded-[24px] border border-white/10 flex flex-col gap-3 hover:bg-white/10 transition-colors">
+                <div
+                    class="w-10 h-10 rounded-xl bg-teal-500 flex items-center justify-center text-white text-lg shadow-inner border border-white/10">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <div>
+                    <p class="text-[11px] font-black text-white uppercase tracking-widest mb-1">Privasi Terjaga</p>
+                    <p class="text-[10px] text-teal-100 opacity-80 leading-relaxed">Data hasil skrining bersifat rahasia
+                        dan hanya dapat diakses oleh Anda secara eksklusif.</p>
+                </div>
+            </div>
         </div>
     </div>
 </section>
 
+<!-- ========================================== -->
+<!-- MODAL 1: MINTA OTP KE EMAIL                -->
+<!-- ========================================== -->
+<div id="forgotPasswordModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[2000] flex items-center justify-center hidden opacity-0 transition-all duration-300">
+    <div id="forgotPasswordModalBox" class="bg-white w-full max-w-md p-8 rounded-[40px] shadow-2xl mx-4 transform scale-95 transition-all duration-300">
+        
+        <div class="w-16 h-16 bg-teal-50 text-teal-500 rounded-2xl flex items-center justify-center text-2xl mb-6 shadow-sm mx-auto">
+            <i class="fas fa-envelope-open-text"></i>
+        </div>
+        
+        <div class="text-center">
+            <h2 class="text-2xl font-black text-slate-800 mb-2">Lupa Kata Sandi?</h2>
+            <p class="text-sm text-slate-500 mb-8 leading-relaxed">Jangan khawatir! Masukkan alamat email yang terdaftar, dan kami akan mengirimkan kode OTP untuk mereset sandi Anda.</p>
+        </div>
+        
+        <form id="requestOtpForm" onsubmit="handleRequestOTP(event)" class="space-y-6">
+            <div>
+                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-2 ml-1">Email Terdaftar</label>
+                <input type="email" id="resetEmail" name="email" placeholder="contoh@gmail.com" required 
+                       class="w-full px-5 py-4 rounded-2xl bg-slate-50 border-none outline-none focus:ring-2 focus:ring-teal-500 font-semibold text-slate-700 shadow-inner transition-all">
+            </div>
+
+            <div class="flex gap-3">
+                <button type="button" onclick="toggleModal('forgotPasswordModal')" class="flex-1 py-4 bg-slate-100 text-slate-500 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-200 transition">Batal</button>
+                <button type="submit" id="btnSendOtp" class="flex-1 py-4 bg-teal-500 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl shadow-teal-100 active:scale-95 transition-all">Kirim OTP</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="verifyOtpModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[2000] flex items-center justify-center hidden opacity-0 transition-all duration-300">
+    <div id="verifyOtpModalBox" class="bg-white w-full max-w-md p-8 rounded-[40px] shadow-2xl mx-4 transform scale-95 transition-all duration-300">
+        
+        <div class="w-16 h-16 bg-indigo-50 text-indigo-500 rounded-2xl flex items-center justify-center text-2xl mb-6 shadow-sm mx-auto">
+            <i class="fas fa-key"></i>
+        </div>
+        
+        <div class="text-center">
+            <h2 class="text-2xl font-black text-slate-800 mb-2">Verifikasi OTP</h2>
+            <p class="text-sm text-slate-500 mb-8 leading-relaxed">Masukkan 6 digit kode OTP yang telah dikirimkan ke email Anda beserta kata sandi yang baru.</p>
+        </div>
+        
+        <form method="POST" action="{{ url_for('main.reset_password') }}" class="space-y-5">
+            <input type="hidden" id="verifiedEmail" name="email">
+            
+            <div>
+                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-2 ml-1">Kode OTP</label>
+                <input type="text" name="otp" placeholder="6 kODE OTP" required maxlength="6"
+                       class="w-full px-5 py-4 rounded-2xl bg-slate-50 border-none outline-none focus:ring-2 focus:ring-indigo-500 font-black text-center text-slate-700 shadow-inner transition-all tracking-[0.5em] text-lg">
+            </div>
+
+            <div>
+                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-2 ml-1">Sandi Baru</label>
+                
+                <div class="relative group">
+                    <input type="password" id="newPasswordInput" name="new_password" placeholder="Min. 8 karakter (Huruf & Angka)" 
+                           required minlength="8" 
+                           pattern="(?=.*[a-zA-Z])(?=.*[0-9]).{8,}"
+                           title="Sandi harus terdiri dari minimal 8 karakter, mengandung setidaknya 1 huruf dan 1 angka"
+                           class="w-full px-5 py-4 pr-12 rounded-2xl bg-slate-50 border-none outline-none focus:ring-2 focus:ring-indigo-500 font-semibold text-slate-700 shadow-inner transition-all">
+                    
+                    <button type="button" onclick="toggleNewPassword()" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-indigo-500 transition-colors">
+                        <i class="fas fa-eye" id="newPasswordEye"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="pt-4">
+                <button type="submit" class="w-full py-4 bg-indigo-500 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl shadow-indigo-100 active:scale-95 transition-all">Ubah Kata Sandi</button>
+            </div>
+            
+            <p class="text-center text-[10px] text-slate-400 font-bold mt-4">Tidak menerima email? <a href="#" onclick="toggleModal('verifyOtpModal'); toggleModal('forgotPasswordModal');" class="text-indigo-500 hover:underline">Kirim ulang</a></p>
+        </form>
+    </div>
+</div>
+
 <script>
-function toggleLoginPassword() {
-    const input = document.getElementById('loginPassword');
-    const icon = document.getElementById('loginEye');
-    if (input.type === "password") {
-        input.type = "text";
-        icon.classList.replace('fa-eye', 'fa-eye-slash');
-    } else {
-        input.type = "password";
-        icon.classList.replace('fa-eye-slash', 'fa-eye');
+    function toggleLoginPassword() {
+        const input = document.getElementById('loginPassword');
+        const icon = document.getElementById('loginEye');
+        if (input.type === "password") {
+            input.type = "text";
+            icon.classList.replace('fa-eye', 'fa-eye-slash');
+        } else {
+            input.type = "password";
+            icon.classList.replace('fa-eye-slash', 'fa-eye');
+        }
     }
-}
+    // Fungsi buka/tutup modal
+    function toggleModal(id) {
+        const modal = document.getElementById(id);
+        const box = document.getElementById(id + 'Box');
+
+        if (modal.classList.contains('hidden')) {
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.replace('opacity-0', 'opacity-100');
+                box.classList.replace('scale-95', 'scale-100');
+            }, 10);
+        } else {
+            modal.classList.replace('opacity-100', 'opacity-0');
+            box.classList.replace('scale-100', 'scale-95');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+    }
+
+    // Fungsi untuk toggle (buka/tutup) mata pada input password baru
+    function toggleNewPassword() {
+        const passwordInput = document.getElementById('newPasswordInput');
+        const eyeIcon = document.getElementById('newPasswordEye');
+        
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            eyeIcon.classList.remove('fa-eye');
+            eyeIcon.classList.add('fa-eye-slash');
+        } else {
+            passwordInput.type = 'password';
+            eyeIcon.classList.remove('fa-eye-slash');
+            eyeIcon.classList.add('fa-eye');
+        }
+    }
+
+    // Fungsi menangani klik tombol "Kirim OTP"
+    async function handleRequestOTP(event) {
+        event.preventDefault(); // Cegah reload halaman
+
+        const emailInput = document.getElementById('resetEmail').value;
+        const btnSubmit = document.getElementById('btnSendOtp');
+
+        // Ubah tombol jadi loading
+        btnSubmit.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mengirim...';
+        btnSubmit.disabled = true;
+
+        /* 
+         * ==========================================
+         * LOGIKA FETCH KE BACKEND FLASK
+         * ==========================================
+         */
+        try {
+            // Sesuaikan URL ini dengan rute Flask Anda nantinya
+            const response = await fetch('/request_otp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: emailInput })
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                // Jika sukses kirim email
+                document.getElementById('verifiedEmail').value = emailInput; // Oper email ke form kedua
+                toggleModal('forgotPasswordModal'); // Tutup modal 1
+                toggleModal('verifyOtpModal');      // Buka modal 2
+            } else {
+                // Jika email tidak terdaftar
+                alert(result.message || 'Gagal mengirim OTP. Pastikan email terdaftar.');
+            }
+        } catch (error) {
+            alert('Terjadi kesalahan jaringan.');
+        } finally {
+            // Kembalikan tombol ke kondisi semula
+            btnSubmit.innerHTML = 'Kirim OTP';
+            btnSubmit.disabled = false;
+        }
+    }
 </script>
 
+<style>
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(15px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-fade-in {
+        animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 10px;
+    }
+</style>
 {% endblock %}

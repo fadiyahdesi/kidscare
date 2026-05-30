@@ -34,15 +34,16 @@
 
 <!-- WRAPPER UTAMA DASHBOARD -->
 <div class="dashboard-main-content bg-slate-50/30">
-    <div class="px-8 py-8">
+    <div class="px-4 md:px-8 py-8 w-full max-w-7xl mx-auto">
         
         <!-- HEADER -->
-        <div class="flex items-center justify-between mb-10">
+        <div class="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-6">
             <div>
+                <span class="inline-block px-3 py-1 bg-teal-50 text-teal-600 rounded-full text-[9px] font-black uppercase tracking-[0.2em] mb-2 border border-teal-100">Layanan Skrining</span>
                 <h1 class="text-3xl font-black text-slate-800">Test Skrining ADHD</h1>
-                <p class="text-slate-500">Pilih profil anak untuk memulai evaluasi perkembangan mandiri.</p>
+                <p class="text-slate-500 mt-1">Pilih profil anak untuk memulai evaluasi perkembangan mandiri.</p>
             </div>
-            <div class="w-20 h-20 rounded-3xl bg-teal-100 flex items-center justify-center text-teal-600 text-3xl shadow-sm">
+            <div class="w-16 h-16 md:w-20 md:h-20 rounded-3xl bg-teal-100 flex items-center justify-center text-teal-600 text-2xl md:text-3xl shadow-sm shrink-0">
                 <i class="fas fa-clipboard-check"></i>
             </div>
         </div>
@@ -60,11 +61,12 @@
         {% endwith %}
 
         <!-- GRID UTAMA -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
             
-            <!-- KOLOM KIRI: PETUNJUK -->
-            <div class="lg:col-span-1">
-                <div class="bg-white rounded-[32px] p-8 shadow-sm border border-slate-100 h-full">
+            <!-- KOLOM KIRI: PETUNJUK & EDUKASI (Span 4) -->
+            <div class="lg:col-span-4 flex flex-col gap-6">
+                <!-- Petunjuk Pengisian -->
+                <div class="bg-white rounded-[32px] p-8 shadow-sm border border-slate-100">
                     <h3 class="text-lg font-bold text-slate-800 mb-6 flex items-center">
                         <i class="fas fa-info-circle mr-2 text-teal-500"></i> Petunjuk Pengisian
                     </h3>
@@ -81,7 +83,7 @@
                                 </div>
                                 <div>
                                     <p class="font-bold text-slate-800 text-xs uppercase tracking-widest">Target Usia</p>
-                                    <p class="text-xs text-slate-500">Optimasi untuk usia 4–6 tahun</p>
+                                    <p class="text-xs text-slate-500 mt-0.5">Optimasi untuk usia 4–6 tahun</p>
                                 </div>
                             </div>
                             <div class="flex items-start gap-3">
@@ -90,88 +92,122 @@
                                 </div>
                                 <div>
                                     <p class="font-bold text-slate-800 text-xs uppercase tracking-widest">Pelapor</p>
-                                    <p class="text-xs text-slate-500">Diisi oleh Orang Tua atau Wali</p>
+                                    <p class="text-xs text-slate-500 mt-0.5">Diisi oleh Orang Tua atau Wali Anak</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                <!-- INFO TIPE ADHD (BARU) -->
+                <div class="bg-teal-900 rounded-[32px] p-8 shadow-xl shadow-teal-700/10 border border-teal-800 relative overflow-hidden group">
+                    <div class="absolute -right-10 -top-10 w-40 h-40 bg-teal-500 rounded-full blur-3xl opacity-30"></div>
+                    
+                    <h3 class="text-lg font-black text-white mb-6 flex items-center relative z-10">
+                        <i class="fas fa-brain mr-3 text-teal-400"></i> Mengenal Tipe ADHD
+                    </h3>
+                    
+                    <div class="space-y-3 relative z-10">
+                        <div class="bg-white/10 backdrop-blur-sm p-4 rounded-2xl border border-white/5 hover:bg-white/15 transition-colors">
+                            <h4 class="text-xs font-black text-teal-200 uppercase tracking-widest mb-1.5 flex items-center gap-2">
+                                <i class="fas fa-eye-slash text-[10px]"></i> Inatensi
+                            </h4>
+                            <p class="text-[11px] text-teal-50/70 leading-relaxed">Gejala utama berupa kesulitan mempertahankan fokus, mudah teralih perhatiannya, dan sering terlihat tidak mendengarkan.</p>
+                        </div>
+                        
+                        <div class="bg-white/10 backdrop-blur-sm p-4 rounded-2xl border border-white/5 hover:bg-white/15 transition-colors">
+                            <h4 class="text-xs font-black text-teal-200 uppercase tracking-widest mb-1.5 flex items-center gap-2">
+                                <i class="fas fa-bolt text-[10px]"></i> Hiperaktif-Impulsif
+                            </h4>
+                            <p class="text-[11px] text-teal-50/70 leading-relaxed">Cenderung terus bergerak (tidak bisa diam), sulit menunggu giliran, dan sering bertindak tanpa berpikir panjang.</p>
+                        </div>
+                        
+                        <div class="bg-white/10 backdrop-blur-sm p-4 rounded-2xl border border-white/5 hover:bg-white/15 transition-colors">
+                            <h4 class="text-xs font-black text-teal-200 uppercase tracking-widest mb-1.5 flex items-center gap-2">
+                                <i class="fas fa-layer-group text-[10px]"></i> Campuran (Kombinasi)
+                            </h4>
+                            <p class="text-[11px] text-teal-50/70 leading-relaxed">Menunjukkan kombinasi gejala yang kuat baik dari sisi inatensi maupun hiperaktivitas-impulsivitas.</p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <!-- KOLOM KANAN: DAFTAR ANAK -->
-            <div class="lg:col-span-2">
+            <!-- KOLOM KANAN: DAFTAR ANAK (Span 8) -->
+            <div class="lg:col-span-8">
                 <div class="bg-white rounded-[32px] p-8 shadow-sm border border-slate-100 h-full">
-                    <div class="flex items-center justify-between mb-8">
+                    <div class="flex items-center justify-between mb-8 border-b border-slate-100 pb-6">
                         <h3 class="text-lg font-bold text-slate-800 flex items-center">
                             <i class="fas fa-children mr-2 text-teal-500"></i> Pilih Profil Anak
                         </h3>
                         {% if children %}
-                        <span class="text-[10px] font-black text-teal-600 bg-teal-50 px-3 py-1 rounded-full border border-teal-100 uppercase tracking-widest shadow-sm">{{ children|length }} Profil</span>
+                        <span class="text-[10px] font-black text-teal-600 bg-teal-50 px-3 py-1 rounded-full border border-teal-100 uppercase tracking-widest shadow-sm">{{ children|length }} Profil Tersimpan</span>
                         {% endif %}
                     </div>
 
                     <div class="space-y-4">
                         {% if children %}
                             {% for child in children %}
-                            <div class="flex items-center justify-between p-5 rounded-2xl border {% if loop.first %}bg-teal-50/30 border-teal-200 shadow-sm{% else %}bg-slate-50 border-slate-100 opacity-70{% endif %} group transition-all">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between p-5 rounded-2xl border {% if loop.first %}bg-teal-50/30 border-teal-200 shadow-sm{% else %}bg-slate-50 border-slate-100 opacity-70 hover:opacity-100{% endif %} group transition-all gap-4">
                                 
                                 <div class="flex items-center gap-4">
-                                    <div class="w-12 h-12 rounded-full {% if loop.first %}bg-teal-500 text-white shadow-teal-200{% else %}bg-white text-teal-500 shadow-sm{% endif %} flex items-center justify-center text-lg">
+                                    <div class="w-12 h-12 rounded-full {% if loop.first %}bg-teal-500 text-white shadow-lg shadow-teal-200{% else %}bg-white text-teal-500 shadow-sm border border-slate-200{% endif %} flex items-center justify-center text-lg shrink-0">
                                         <i class="fas fa-child"></i>
                                     </div>
                                     
                                     <div>
-                                        <div class="flex items-center gap-2">
-                                            <h4 class="font-bold text-slate-800">{{ child.name }}</h4>
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <h4 class="font-bold text-slate-800 text-sm sm:text-base">{{ child.name }}</h4>
                                             {% if loop.first %}
                                             <span class="px-2 py-0.5 rounded-full bg-teal-500 text-[9px] font-black text-white uppercase tracking-tighter">Utama</span>
                                             {% endif %}
                                         </div>
-                                        <p class="text-xs text-slate-500">
-                                            Lahir: {{ child.birth_date.strftime('%d %b %Y') }} • 
-                                            <span>{{ 'Laki-laki' if child.gender == 'L' else 'Perempuan' }}</span>
+                                        <p class="text-xs text-slate-500 font-medium">
+                                            Lahir: {{ child.birth_date.strftime('%d %b %Y') }} <span class="mx-1">•</span> 
+                                            {{ 'Laki-laki' if child.gender == 'L' else 'Perempuan' }}
                                         </p>
                                     </div>
                                 </div>
                                 
-                                <div class="flex items-center">
+                                <div class="flex items-center sm:justify-end">
                                     {% if loop.first %}
                                         <a href="{{ url_for('user.skrining_form', child_id=child._id) }}" 
-                                           class="px-6 py-2.5 bg-teal-500 text-white rounded-xl font-bold text-xs hover:bg-teal-600 shadow-lg shadow-teal-100 transition-all active:scale-95">
-                                            Mulai Skrining
+                                           class="w-full sm:w-auto px-6 py-3 bg-teal-500 text-white rounded-xl font-bold text-xs hover:bg-teal-600 shadow-lg shadow-teal-100 transition-all active:scale-95 text-center flex items-center justify-center gap-2">
+                                            <i class="fas fa-play text-[10px]"></i> Mulai Skrining
                                         </a>
                                     {% else %}
                                         <a href="{{ url_for('user.profil_user') }}" 
-                                           class="px-4 py-2 bg-white border border-slate-200 text-slate-500 rounded-xl font-bold text-[10px] hover:bg-teal-500 hover:text-white hover:border-teal-500 transition-all shadow-sm flex items-center gap-2">
-                                            <i class="fas fa-exchange-alt"></i> Ganti ke Utama
+                                           class="w-full sm:w-auto px-4 py-2 bg-white border border-slate-200 text-slate-500 rounded-xl font-bold text-[10px] hover:bg-teal-500 hover:text-white hover:border-teal-500 transition-all shadow-sm flex items-center justify-center gap-2">
+                                            <i class="fas fa-exchange-alt"></i> Jadikan Utama
                                         </a>
                                     {% endif %}
                                 </div>
                             </div>
                             {% endfor %}
                         {% else %}
-                            <div class="py-16 text-center text-slate-400">
-                                <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <div class="py-20 text-center text-slate-400 bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200">
+                                <div class="w-16 h-16 bg-white shadow-sm rounded-full flex items-center justify-center mx-auto mb-4">
                                     <i class="fas fa-users-slash text-xl"></i>
                                 </div>
-                                <p class="font-medium text-sm">Belum ada data anak.</p>
-                                <a href="{{ url_for('user.profil_user') }}" class="mt-4 inline-block text-teal-500 font-bold text-xs hover:underline">
-                                    + Tambah Profil Sekarang
+                                <p class="font-medium text-sm text-slate-500 mb-4">Belum ada data anak yang ditambahkan.</p>
+                                <a href="{{ url_for('user.profil_user') }}" class="inline-flex items-center gap-2 px-6 py-3 bg-slate-800 text-white rounded-xl font-bold text-xs hover:bg-slate-700 transition-all shadow-lg active:scale-95">
+                                    <i class="fas fa-plus"></i> Tambah Profil Sekarang
                                 </a>
                             </div>
                         {% endif %}
                     </div>
 
                     {% if children %}
-                    <p class="mt-8 text-[10px] text-slate-400 italic bg-slate-50 p-4 rounded-2xl border border-dashed border-slate-200 leading-relaxed">
-                        <i class="fas fa-info-circle mr-1 text-teal-500"></i>
-                        Hanya <strong>Profil Utama</strong> yang diizinkan untuk melakukan skrining. Untuk mengganti, silakan masuk ke menu profil dan pilih anak yang ingin dijadikan utama.
-                    </p>
+                    <div class="mt-8 flex items-start gap-3 bg-amber-50 p-4 rounded-2xl border border-amber-100">
+                        <i class="fas fa-triangle-exclamation text-amber-500 mt-0.5"></i>
+                        <p class="text-[11px] text-amber-800 leading-relaxed font-medium">
+                            Sistem hanya mengizinkan <strong>Profil Utama</strong> untuk melakukan skrining. Untuk mengganti anak yang akan diskrining, silakan masuk ke <a href="{{ url_for('user.profil_user') }}" class="font-bold underline hover:text-amber-900">Menu Pengaturan Profil</a> dan ubah status utama.
+                        </p>
+                    </div>
                     {% endif %}
                 </div>
                 
-                <p class="text-center text-[10px] text-slate-400 mt-8">
-                    <i class="fas fa-shield-halved mr-1"></i> Data keluarga Anda terlindungi & diproses sesuai standar DSM-5.
+                <p class="text-center text-[10px] text-slate-400 mt-8 font-medium uppercase tracking-widest">
+                    <i class="fas fa-shield-halved mr-1 text-slate-300"></i> Data keluarga Anda diproses sesuai standar instrumen DSM-5
                 </p>
             </div>
         </div>

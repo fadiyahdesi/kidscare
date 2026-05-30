@@ -3,12 +3,9 @@
 {% block title %}Daftar Akun Baru | KidsCare{% endblock %}
 
 {% block content %}
-<!-- CONTAINER UTAMA: H-SCREEN & FULL WIDTH -->
 <section class="min-h-screen w-full flex flex-col md:flex-row bg-white overflow-hidden">
     
-    <!-- SISI KIRI: BRANDING & VISUAL (Fixed on Desktop) -->
     <div class="hidden md:flex md:w-[40%] lg:w-[35%] bg-teal-600 p-16 flex-col justify-between text-white relative overflow-hidden shrink-0 shadow-2xl z-10">
-        <!-- Background Ornamen -->
         <div class="absolute top-[-10%] -left-10 w-64 h-64 bg-teal-500 rounded-full opacity-30 blur-3xl"></div>
         <div class="absolute bottom-[-10%] -right-10 w-80 h-80 bg-white/10 rounded-full opacity-20 blur-3xl"></div>
         
@@ -17,43 +14,52 @@
                 <i class="fas fa-heart-pulse text-teal-200"></i>
                 <span class="text-xs font-black uppercase tracking-[0.2em] text-white">KidsCare Health</span>
             </div>
-            
             <h2 class="text-5xl font-black mb-8 leading-[1.1] tracking-tight">Setiap Detik Berarti untuk Buah Hati.</h2>
             <p class="text-teal-50 text-lg leading-relaxed opacity-80 font-medium">Platform deteksi dini ADHD berbasis DSM-5 untuk membantu orang tua memantau perkembangan anak secara akurat dan mandiri.</p>
         </div>
 
-        <!-- <div class="relative z-10">
-            <div class="p-6 bg-white/5 backdrop-blur-sm rounded-[32px] border border-white/10 mb-8">
-                <div class="flex items-center gap-4 mb-4">
-                    <div class="flex -space-x-3">
-                        <img src="https://ui-avatars.com/api/?name=User+1&background=random" class="w-10 h-10 rounded-full border-2 border-teal-600">
-                        <img src="https://ui-avatars.com/api/?name=User+2&background=random" class="w-10 h-10 rounded-full border-2 border-teal-600">
-                        <img src="https://ui-avatars.com/api/?name=User+3&background=random" class="w-10 h-10 rounded-full border-2 border-teal-600">
-                    </div>
-                    <span class="text-xs font-bold text-teal-100">+2k Orang Tua Terdaftar</span>
+        <div class="relative z-10 animate-fade-in mt-20" style="animation-delay: 0.2s;">
+            <div class="p-6 bg-slate-900 rounded-[24px] border border-white/10 flex flex-col gap-3 hover:bg-white/10 transition-colors">
+                <div class="w-10 h-10 rounded-xl bg-teal-500 flex items-center justify-center text-white text-lg shadow-inner border border-white/10">
+                    <i class="fas fa-shield-alt"></i>
                 </div>
-                <p class="text-sm italic text-teal-50 opacity-70">"Aplikasi ini sangat membantu saya mendeteksi perilaku hiperaktif anak sejak dini."</p>
+                <div>
+                    <p class="text-[11px] font-black text-white uppercase tracking-widest mb-1">Privasi Terjaga</p>
+                    <p class="text-[10px] text-teal-100 opacity-80 leading-relaxed">Data hasil skrining bersifat rahasia dan hanya dapat diakses oleh Anda secara eksklusif.</p>
+                </div>
             </div>
-            <p class="text-[10px] font-bold uppercase tracking-widest opacity-40">System Version 2.5.0</p>
-        </div> -->
+        </div>
     </div>
 
-    <!-- SISI KANAN: FORM REGISTRASI (Scrollable & Centered Content) -->
     <div class="flex-1 h-screen overflow-y-auto bg-slate-50/50 flex flex-col items-center">
-        
-        <!-- Wrapper agar Form tidak melar terlalu lebar (Max Width 800px) -->
-        <div class="w-full max-w-3xl py-20 px-8 md:px-12">
+        <div class="w-full max-w-3xl py-16 px-8 md:px-12">
             
-            <div class="mb-12">
-                <h1 class="text-4xl font-black text-slate-900 mb-4">Ayo Mulai!</h1>
-                <p class="text-slate-500 font-medium">Buat akun untuk memantau tumbuh kembang si kecil.</p>
+            <div class="flex p-1 bg-slate-200 rounded-2xl mb-12 w-full max-w-sm">
+                <a href="{{ url_for('main.register') }}" 
+                   class="flex-1 py-3 text-center text-[10px] font-black uppercase tracking-widest rounded-xl transition-all 
+                   {{ 'bg-white text-teal-600 shadow-sm' if request.endpoint == 'main.register' else 'text-slate-500 hover:text-slate-700' }}">
+                   Wali / Orang Tua
+                </a>
+                <a href="{{ url_for('main.register_psychologist') }}" 
+                   class="flex-1 py-3 text-center text-[10px] font-black uppercase tracking-widest rounded-xl transition-all 
+                   {{ 'bg-white text-indigo-600 shadow-sm' if request.endpoint == 'main.register_psychologist' else 'text-slate-500 hover:text-slate-700' }}">
+                   Mitra Psikolog
+                </a>
             </div>
 
-            <!-- FLASH MESSAGES -->
+            <div class="mb-10">
+                <h1 class="text-4xl font-black text-slate-900 mb-4">
+                    {% if request.endpoint == 'main.register_psychologist' %}Daftar Mitra Psikolog{% else %}Ayo Mulai!{% endif %}
+                </h1>
+                <p class="text-slate-500 font-medium">
+                    {% if request.endpoint == 'main.register_psychologist' %}Lengkapi profil profesional untuk bergabung di KidsCare.{% else %}Buat akun untuk memantau tumbuh kembang si kecil.{% endif %}
+                </p>
+            </div>
+
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
                     {% for category, message in messages %}
-                    <div class="mb-10 p-5 rounded-[24px] bg-rose-50 text-rose-700 border border-rose-100 font-bold flex items-center gap-4 animate-fade-in">
+                    <div class="mb-10 p-5 rounded-[24px] bg-rose-50 text-rose-700 border border-rose-100 font-bold flex items-center gap-4 animate-fade-in shadow-sm">
                         <i class="fas fa-circle-exclamation text-xl"></i>
                         {{ message }}
                     </div>
@@ -61,90 +67,172 @@
                 {% endif %}
             {% endwith %}
 
-            <form method="POST" action="{{ url_for('main.register') }}" class="space-y-12">
+            <form method="POST" action="{% if request.endpoint == 'main.register_psychologist' %}{{ url_for('main.register_psychologist') }}{% else %}{{ url_for('main.register') }}{% endif %}" class="space-y-10" {% if request.endpoint == 'main.register_psychologist' %}enctype="multipart/form-data"{% endif %}>
                 
-                <!-- BAGIAN 1: ORANG TUA -->
+                {% if request.endpoint == 'main.register' %}
                 <section>
                     <div class="flex items-center gap-3 mb-8">
                         <div class="w-8 h-8 rounded-xl bg-teal-500 text-white flex items-center justify-center text-xs font-black shadow-lg shadow-teal-100">1</div>
                         <h3 class="text-sm font-black text-slate-400 uppercase tracking-widest">Informasi Wali</h3>
                     </div>
-
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="space-y-2">
-                            <label class="text-[11px] font-black text-slate-500 uppercase tracking-widest ml-1 block">Nama Lengkap</label>
-                            <input type="text" name="parent_name" placeholder="Sesuai KTP" required
-                                class="w-full px-6 py-4 rounded-2xl bg-white border-2 border-slate-100 focus:border-teal-500 outline-none transition-all font-semibold text-slate-700 shadow-sm">
+                            <label class="text-[11px] font-black text-slate-500 uppercase tracking-widest ml-1 block">Nama Lengkap <span class="text-rose-500 text-sm leading-none">*</span></label>
+                            <input type="text" name="parent_name" placeholder="Sesuai KTP" required class="w-full px-6 py-4 rounded-2xl bg-white border-2 border-slate-100 focus:border-teal-500 outline-none transition-all font-semibold text-slate-700 shadow-sm">
                         </div>
                         <div class="space-y-2">
-                            <label class="text-[11px] font-black text-slate-500 uppercase tracking-widest ml-1 block">Email</label>
-                            <input type="email" name="contact" placeholder="budi@email.com" required
-                                class="w-full px-6 py-4 rounded-2xl bg-white border-2 border-slate-100 focus:border-teal-500 outline-none transition-all font-semibold text-slate-700 shadow-sm">
+                            <label class="text-[11px] font-black text-slate-500 uppercase tracking-widest ml-1 block">Email <span class="text-rose-500 text-sm leading-none">*</span></label>
+                            <input type="email" name="contact" placeholder="nama@email.com" required class="w-full px-6 py-4 rounded-2xl bg-white border-2 border-slate-100 focus:border-teal-500 outline-none transition-all font-semibold text-slate-700 shadow-sm">
                         </div>
                         <div class="space-y-2">
-                            <label class="text-[11px] font-black text-slate-500 uppercase tracking-widest ml-1 block">Kata Sandi</label>
+                            <label class="text-[11px] font-black text-slate-500 uppercase tracking-widest ml-1 block">Kata Sandi <span class="text-rose-500 text-sm leading-none">*</span></label>
                             <div class="relative">
-                                <input type="password" id="regPassword" name="password" placeholder="Min. 6 Karakter" required
-                                    class="w-full px-6 py-4 rounded-2xl bg-white border-2 border-slate-100 focus:border-teal-500 outline-none transition-all font-semibold text-slate-700 shadow-sm">
+                                <input type="password" id="regPassword" name="password" placeholder="Min. 8 Karakter (Huruf & Angka)" required minlength="8" pattern="(?=.*[a-zA-Z])(?=.*[0-9]).{8,}" title="Kata sandi harus terdiri dari minimal 8 karakter, mengandung setidaknya 1 huruf dan 1 angka" class="w-full px-6 py-4 rounded-2xl bg-white border-2 border-slate-100 focus:border-teal-500 outline-none transition-all font-semibold text-slate-700 shadow-sm">
                                 <button type="button" onclick="toggleRegPassword()" class="absolute right-6 top-1/2 -translate-y-1/2 text-slate-300 hover:text-teal-500 transition-colors">
                                     <i class="fas fa-eye" id="regEye"></i>
                                 </button>
                             </div>
                         </div>
                         <div class="space-y-2">
-                            <label class="text-[11px] font-black text-slate-500 uppercase tracking-widest ml-1 block">Alamat Rumah</label>
-                            <input type="text" name="address" placeholder="Contoh: Slawi, Tegal" required
-                                class="w-full px-6 py-4 rounded-2xl bg-white border-2 border-slate-100 focus:border-teal-500 outline-none transition-all font-semibold text-slate-700 shadow-sm">
+                            <label class="text-[11px] font-black text-slate-500 uppercase tracking-widest ml-1 block">Alamat Rumah <span class="text-rose-500 text-sm leading-none">*</span></label>
+                            <input type="text" name="address" placeholder="Contoh: Slawi, Tegal" required class="w-full px-6 py-4 rounded-2xl bg-white border-2 border-slate-100 focus:border-teal-500 outline-none transition-all font-semibold text-slate-700 shadow-sm">
                         </div>
                     </div>
                 </section>
 
-                <!-- BAGIAN 2: ANAK -->
                 <section>
                     <div class="flex items-center gap-3 mb-8">
                         <div class="w-8 h-8 rounded-xl bg-orange-400 text-white flex items-center justify-center text-xs font-black shadow-lg shadow-orange-100">2</div>
                         <h3 class="text-sm font-black text-slate-400 uppercase tracking-widest">Profil Anak</h3>
                     </div>
-
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="space-y-2">
-                            <label class="text-[11px] font-black text-slate-500 uppercase tracking-widest ml-1 block">Nama Panggilan</label>
-                            <input type="text" name="child_name" placeholder="Nama si kecil" required
-                                class="w-full px-6 py-4 rounded-2xl bg-white border-2 border-slate-100 focus:border-orange-400 outline-none transition-all font-semibold text-slate-700 shadow-sm">
+                            <label class="text-[11px] font-black text-slate-500 uppercase tracking-widest ml-1 block">Nama Anak <span class="text-rose-500 text-sm leading-none">*</span></label>
+                            <input type="text" name="child_name" placeholder="Nama si kecil" required class="w-full px-6 py-4 rounded-2xl bg-white border-2 border-slate-100 focus:border-orange-400 outline-none transition-all font-semibold text-slate-700 shadow-sm">
                         </div>
                         <div class="space-y-2">
-                            <label class="text-[11px] font-black text-slate-500 uppercase tracking-widest ml-1 block">Tanggal Lahir</label>
-                            <input type="date" name="child_birth" required
-                                class="w-full px-6 py-4 rounded-2xl bg-white border-2 border-slate-100 focus:border-orange-400 outline-none transition-all font-semibold text-slate-700 shadow-sm">
+                            <label class="text-[11px] font-black text-slate-500 uppercase tracking-widest ml-1 block">Tanggal Lahir <span class="text-rose-500 text-sm leading-none">*</span></label>
+                            <input type="date" name="child_birth" required class="w-full px-6 py-4 rounded-2xl bg-white border-2 border-slate-100 focus:border-orange-400 outline-none transition-all font-semibold text-slate-700 shadow-sm">
                         </div>
                         <div class="md:col-span-2 space-y-2">
-                            <label class="text-[11px] font-black text-slate-500 uppercase tracking-widest ml-1 block">Jenis Kelamin</label>
+                            <label class="text-[11px] font-black text-slate-500 uppercase tracking-widest ml-1 block">Jenis Kelamin <span class="text-rose-500 text-sm leading-none">*</span></label>
                             <div class="grid grid-cols-2 gap-4">
                                 <label class="cursor-pointer">
                                     <input type="radio" name="gender" value="L" checked class="hidden peer">
-                                    <div class="text-center py-4 rounded-2xl border-2 border-slate-100 bg-white font-bold text-slate-400 peer-checked:border-orange-400 peer-checked:bg-orange-50 peer-checked:text-orange-600 transition-all">Laki-laki</div>
+                                    <div class="text-center py-4 rounded-2xl border-2 border-slate-100 bg-white font-bold text-slate-400 peer-checked:border-orange-400 peer-checked:bg-orange-50 peer-checked:text-orange-600 transition-all shadow-sm">Laki-laki</div>
                                 </label>
                                 <label class="cursor-pointer">
                                     <input type="radio" name="gender" value="P" class="hidden peer">
-                                    <div class="text-center py-4 rounded-2xl border-2 border-slate-100 bg-white font-bold text-slate-400 peer-checked:border-orange-400 peer-checked:bg-orange-50 peer-checked:text-orange-600 transition-all">Perempuan</div>
+                                    <div class="text-center py-4 rounded-2xl border-2 border-slate-100 bg-white font-bold text-slate-400 peer-checked:border-orange-400 peer-checked:bg-orange-50 peer-checked:text-orange-600 transition-all shadow-sm">Perempuan</div>
                                 </label>
                             </div>
                         </div>
                     </div>
                 </section>
+                {% endif %}
 
-                <!-- FOOTER FORM -->
-                <div class="pt-8 border-t border-slate-200">
-                    <button type="submit" class="w-full py-5 bg-slate-900 text-white rounded-[24px] font-black text-xl hover:bg-teal-600 shadow-2xl shadow-slate-200 transition-all active:scale-[0.98] transform">
-                        Daftar & Mulai Skrining <i class="fas fa-arrow-right ml-2 text-sm"></i>
-                    </button>
-
-                    <div class="mt-10 text-center">
-                        <span class="text-slate-500 font-medium">Sudah memiliki akun?</span> 
-                        <a href="{{ url_for('main.login') }}" class="ml-1 text-teal-600 font-black hover:underline decoration-2 underline-offset-8">Masuk Sekarang</a>
+                {% if request.endpoint == 'main.register_psychologist' %}
+                <section>
+                    <div class="flex items-center gap-3 mb-8">
+                        <div class="w-8 h-8 rounded-xl bg-indigo-500 text-white flex items-center justify-center text-xs font-black shadow-lg shadow-indigo-100">
+                            1
+                        </div>
+                        <h3 class="text-sm font-black text-slate-400 uppercase tracking-widest">Data Umum & Kontak</h3>
                     </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label class="text-[11px] font-black text-slate-500 uppercase tracking-widest ml-1 block">Nama Lengkap & Gelar <span class="text-rose-500 text-sm leading-none">*</span></label>
+                            <input type="text" name="username" placeholder="Nama Lengkap" required class="w-full px-6 py-4 rounded-2xl bg-white border-2 border-slate-100 focus:border-indigo-500 outline-none transition-all font-semibold text-slate-700 shadow-sm">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[11px] font-black text-slate-500 uppercase tracking-widest ml-1 block">Email <span class="text-rose-500 text-sm leading-none">*</span></label>
+                            <input type="email" name="email" placeholder="email@profesional.com" required class="w-full px-6 py-4 rounded-2xl bg-white border-2 border-slate-100 focus:border-indigo-500 outline-none transition-all font-semibold text-slate-700 shadow-sm">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[11px] font-black text-slate-500 uppercase tracking-widest ml-1 block">Kata Sandi <span class="text-rose-500 text-sm leading-none">*</span></label>
+                            <div class="relative">
+                                <input type="password" id="regPassword" name="password" placeholder="Min. 8 Karakter (Huruf & Angka)" required minlength="8" pattern="(?=.*[a-zA-Z])(?=.*[0-9]).{8,}" title="Kata sandi harus terdiri dari minimal 8 karakter, mengandung setidaknya 1 huruf dan 1 angka" class="w-full px-6 py-4 rounded-2xl bg-white border-2 border-slate-100 focus:border-indigo-500 outline-none transition-all font-semibold text-slate-700 shadow-sm">
+                                <button type="button" onclick="toggleRegPassword()" class="absolute right-6 top-1/2 -translate-y-1/2 text-slate-300 hover:text-indigo-500 transition-colors">
+                                    <i class="fas fa-eye" id="regEye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[11px] font-black text-slate-500 uppercase tracking-widest ml-1 block">
+                                Nomor WhatsApp <span class="text-slate-400 font-bold normal-case ml-1 tracking-normal"></span>
+                            </label>
+                            <input type="text" name="whatsapp" placeholder="Contoh: 628..." class="w-full px-6 py-4 rounded-2xl bg-white border-2 border-slate-100 focus:border-indigo-500 outline-none transition-all font-semibold text-slate-700 shadow-sm">
+                        </div>
+                    </div>
+                </section>
+
+                <section class="mt-12 pt-10 border-t border-slate-100">
+                    <div class="flex items-center gap-3 mb-8">
+                        <div class="w-8 h-8 rounded-xl bg-teal-500 text-white flex items-center justify-center text-xs font-black shadow-lg shadow-teal-100">
+                            2
+                        </div>
+                        <h3 class="text-sm font-black text-slate-400 uppercase tracking-widest">Verifikasi Izin Praktik</h3>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="md:col-span-2 space-y-2">
+                            <label class="text-[11px] font-black text-slate-500 uppercase tracking-widest ml-1 block">Bidang Spesialisasi <span class="text-rose-500 text-sm leading-none">*</span></label>
+                            <input type="text" name="specialty" placeholder="Contoh: Anak & Tumbuh Kembang" required class="w-full px-6 py-4 rounded-2xl bg-white border-2 border-slate-100 focus:border-indigo-500 outline-none transition-all font-semibold text-slate-700 shadow-sm">
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="text-[11px] font-black text-slate-500 uppercase tracking-widest ml-1 block">Unggah Dokumen STR<span class="text-rose-500 text-sm leading-none">*</span></label>
+                            <input type="file" name="str_file" accept=".pdf,.jpg,.jpeg,.png" required class="w-full px-6 py-4 rounded-2xl bg-slate-50 border-2 border-slate-100 focus:border-indigo-500 outline-none transition-all font-semibold text-slate-700 shadow-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-black file:bg-teal-100 file:text-teal-700 hover:file:bg-teal-200 cursor-pointer">
+                            <p class="text-[9px] font-bold text-slate-400 ml-2 mt-1">*Surat Tanda Registrasi (.PDF)</p>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="text-[11px] font-black text-slate-500 uppercase tracking-widest ml-1 block">Unggah Dokumen SIPPK<span class="text-rose-500 text-sm leading-none">*</span></label>
+                            <input type="file" name="sippk_file" accept=".pdf,.jpg,.jpeg,.png" required class="w-full px-6 py-4 rounded-2xl bg-slate-50 border-2 border-slate-100 focus:border-indigo-500 outline-none transition-all font-semibold text-slate-700 shadow-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-black file:bg-teal-100 file:text-teal-700 hover:file:bg-teal-200 cursor-pointer">
+                            <p class="text-[9px] font-bold text-slate-400 ml-2 mt-1">*Surat Izin Praktik Psikologi Klinis (.PDF)</p>
+                        </div>
+
+                        <div class="md:col-span-2 space-y-2 mt-2">
+                            <label class="text-[11px] font-black text-slate-500 uppercase tracking-widest ml-1 block">Alamat Lengkap Praktik / Instansi <span class="text-rose-500 text-sm leading-none">*</span></label>
+                            <textarea name="address" rows="3" placeholder="Masukkan alamat lengkap tempat Anda berpraktik..." required class="w-full px-6 py-4 rounded-2xl bg-white border-2 border-slate-100 focus:border-indigo-500 outline-none transition-all font-semibold text-slate-700 shadow-sm resize-none"></textarea>
+                        </div>
+                    </div>
+                </section>
+                {% endif %}
+
+                <div class="pt-4">
+                    <button type="submit" class="w-full py-5 bg-slate-900 text-white rounded-[24px] font-black text-xl hover:bg-teal-600 shadow-2xl shadow-slate-200 transition-all active:scale-[0.98]">
+                        {% if request.endpoint == 'main.register_psychologist' %}
+                            Daftar Jadi Mitra <i class="fas fa-arrow-right ml-2 text-sm"></i>
+                        {% else %}
+                            Daftar & Mulai Skrining <i class="fas fa-arrow-right ml-2 text-sm"></i>
+                        {% endif %}
+                    </button>
                 </div>
             </form>
+
+            <div class="mt-16">
+                {% if request.endpoint == 'main.register' %}
+                <div class="flex items-center gap-4 mb-10">
+                    <div class="h-[1px] flex-1 bg-slate-200"></div>
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">atau daftar lebih cepat</span>
+                    <div class="h-[1px] flex-1 bg-slate-200"></div>
+                </div>
+
+                <div class="flex justify-center mb-10">
+                    <a href="{{ url_for('main.login_google') }}" class="flex items-center justify-center gap-3 w-full md:w-3/4 py-4 border-2 border-slate-200 rounded-2xl hover:border-teal-500 hover:bg-slate-50 transition-all font-bold text-slate-700 shadow-sm">
+                        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5" alt="Google">
+                        Lanjutkan dengan Google
+                    </a>
+                </div>
+                {% endif %}
+
+                <div class="mt-6 text-center">
+                    <span class="text-slate-500 font-medium">Sudah memiliki akun?</span> 
+                    <a href="{{ url_for('main.login') }}" class="ml-1 text-teal-600 font-black hover:underline decoration-2 underline-offset-8">Masuk Sekarang</a>
+                </div>
+            </div>
         </div>
     </div>
 </section>
@@ -162,5 +250,4 @@ function toggleRegPassword() {
     }
 }
 </script>
-
 {% endblock %}

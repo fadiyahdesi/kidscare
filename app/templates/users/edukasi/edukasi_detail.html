@@ -3,61 +3,132 @@
 {% block title %}{{ video.title }} | KidsCare{% endblock %}
 
 {% block content %}
+<!-- CSS KHUSUS UNTUK MENCEGAH SIDEBAR MENUTUPI KONTEN -->
+<style>
+    .dashboard-main-content {
+        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        min-height: 100vh;
+    }
 
-<!-- TOMBOL KEMBALI -->
-<div class="mb-8">
-    <a href="{{ url_for('user.edukasi_user') }}"
-        class="inline-flex items-center text-teal-600 font-bold hover:gap-2 transition-all">
-        <i class="fas fa-arrow-left mr-2"></i> Kembali ke Daftar Edukasi
-    </a>
-</div>
+    @media (min-width: 1024px) {
+        .dashboard-main-content {
+            margin-left: 18rem;
+        }
+        body.sidebar-is-closed .dashboard-main-content {
+            margin-left: 0;
+        }
+    }
 
-<article class="bg-white rounded-[40px] shadow-sm border border-slate-100 overflow-hidden">
-    <!-- VIDEO PLAYER (YOUTUBE EMBED) -->
-    <div class="aspect-video bg-slate-900 w-full">
-        {% set video_id = video.video_url.split('v=')[-1].split('&')[0] if 'v=' in video.video_url else
-        video.video_url.split('/')[-1] %}
-        <iframe class="w-full h-full" src="https://www.youtube.com/embed/{{ video_id }}?rel=0&showinfo=0"
-            title="{{ video.title }}" frameborder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowfullscreen>
-        </iframe>
-    </div>
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
+</style>
 
-    <!-- KONTEN TEKS -->
-    <div class="p-10">
-        <div class="flex items-center gap-3 mb-6">
-            <span class="px-4 py-1.5 rounded-full bg-teal-100 text-teal-700 text-xs font-black uppercase">
-                {{ video.category }}
-            </span>
+<div class="dashboard-main-content bg-slate-50/30">
+    <div class="px-8 py-10 max-w-5xl mx-auto">
+
+        <!-- TOMBOL KEMBALI & BREADCRUMB -->
+        <div class="mb-8 animate-fade-in">
+            <a href="{{ url_for('user.edukasi_user') }}"
+                class="inline-flex items-center text-teal-600 font-black text-xs uppercase tracking-widest hover:gap-3 transition-all group">
+                <i class="fas fa-arrow-left mr-2 group-hover:-translate-x-1 transition-transform"></i> Kembali ke Daftar Edukasi
+            </a>
         </div>
 
-        <h1 class="text-4xl font-black text-slate-800 mb-6 leading-tight">{{ video.title }}</h1>
+        <!-- MAIN ARTICLE CARD -->
+        <article class="bg-white rounded-[48px] shadow-sm border border-slate-100 overflow-hidden shadow-xl shadow-slate-200/50 animate-fade-in" style="animation-delay: 0.1s;">
+            
+            <!-- VIDEO PLAYER (YOUTUBE EMBED) -->
+            <div class="aspect-video bg-slate-900 w-full relative group">
+                {% if video.video_url %}
+                    {% set video_id = video.video_url.split('v=')[-1].split('&')[0] if 'v=' in video.video_url else video.video_url.split('/')[-1] %}
+                    <iframe class="w-full h-full" src="https://www.youtube.com/embed/{{ video_id }}?rel=0&showinfo=0&autoplay=1"
+                        title="{{ video.title }}" frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen>
+                    </iframe>
+                {% else %}
+                    <div class="w-full h-full flex flex-col items-center justify-center text-white/50 bg-slate-800">
+                        <i class="fas fa-video-slash text-4xl mb-4"></i>
+                        <p class="font-bold">Video tidak tersedia</p>
+                    </div>
+                {% endif %}
+            </div>
 
-        <div class="prose prose-slate max-w-none text-slate-600 leading-relaxed text-lg">
-            <p>{{ video.description }}</p>
-            <!-- Anda bisa menambahkan konten artikel tambahan di sini jika ada di koleksi videos di MongoDB -->
-        </div>
+            <!-- KONTEN TEKS -->
+            <div class="p-10 md:p-14">
+                <div class="flex items-center gap-3 mb-8">
+                    <span class="px-4 py-1.5 rounded-full bg-teal-50 text-teal-600 text-[10px] font-black uppercase tracking-widest border border-teal-100">
+                        {{ video.category }}
+                    </span>
+                    <span class="h-1 w-1 rounded-full bg-slate-300"></span>
+                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Materi Terverifikasi</span>
+                </div>
 
-        <!-- FOOTER ARTIKEL -->
-        <div class="mt-12 pt-8 border-t border-slate-100 flex justify-between items-center">
-            <div class="flex items-center gap-4">
-                <img src="{{ url_for('static', filename='images/user.png') }}"
-                    class="w-12 h-12 rounded-full bg-slate-100" alt="Admin KidsCare">
-                <div>
-                    <p class="text-sm font-bold text-slate-800">Tim Ahli KidsCare</p>
-                    <p class="text-xs text-slate-400">Ditinjau oleh Psikolog Profesional</p>
+                <h1 class="text-3xl md:text-5xl font-black text-slate-800 mb-8 leading-[1.1] tracking-tight">{{ video.title }}</h1>
+
+                <!-- DESKRIPSI DENGAN STYLE ARTIKEL -->
+                <div class="text-slate-600 leading-relaxed text-lg font-medium border-l-4 border-teal-500 pl-8 bg-slate-50/50 py-8 rounded-r-3xl">
+                    <p class="whitespace-pre-line">{{ video.description }}</p>
+                </div>
+
+                <!-- INFO TAMBAHAN / DISCLAIMER KECIL -->
+                <div class="mt-10 p-6 bg-amber-50 rounded-2xl border border-amber-100 flex gap-4 items-start">
+                    <i class="fas fa-circle-info text-amber-500 mt-1"></i>
+                    <p class="text-xs text-amber-800 font-medium leading-relaxed">
+                        Informasi dalam video ini bersifat edukatif. Jika Anda menemukan gejala yang serupa pada buah hati, sangat disarankan untuk melakukan skrining mandiri di menu utama atau berkonsultasi dengan profesional.
+                    </p>
+                </div>
+
+                <!-- FOOTER ARTIKEL -->
+                <div class="mt-16 pt-10 border-t border-slate-100 flex flex-col md:row-reverse md:flex-row justify-between items-center gap-8">
+                    <div class="flex items-center gap-4">
+                        <div class="w-14 h-14 rounded-2xl bg-teal-500 flex items-center justify-center text-white text-xl shadow-lg shadow-teal-500/20">
+                            <i class="fas fa-user-shield"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm font-black text-slate-800 uppercase tracking-tighter">Tim Kurasi KidsCare</p>
+                            <p class="text-xs font-bold text-slate-400">Ditinjau oleh Psikolog Klinis</p>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3">
+                        <button onclick="copyCurrentUrl()" class="flex items-center gap-3 px-6 py-4 rounded-2xl bg-slate-900 text-white hover:bg-teal-600 transition-all font-black text-[10px] uppercase tracking-widest shadow-xl shadow-slate-200">
+                            <i class="fas fa-share-nodes"></i> Bagikan Materi
+                        </button>
+                    </div>
                 </div>
             </div>
+        </article>
 
-            <div class="flex gap-2">
-                <button
-                    class="w-10 h-10 rounded-full bg-slate-50 text-slate-400 hover:text-teal-500 hover:bg-teal-50 transition">
-                    <i class="fas fa-share-alt"></i>
-                </button>
-            </div>
-        </div>
+        <!-- FOOTER DASHBOARD INFO -->
+        <p class="text-center text-[10px] text-slate-400 mt-12 font-medium italic">
+            &copy; 2026 KidsCare System. Semua konten video bersumber dari YouTube API dan dikurasi untuk kepentingan edukasi orang tua.
+        </p>
     </div>
-</article>
+</div>
 
+<script>
+    function copyCurrentUrl() {
+        const el = document.createElement('textarea');
+        el.value = window.location.href;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);
+        
+        // Sederhana: Beritahu user link sudah disalin
+        const btn = event.currentTarget;
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-check"></i> Link Tersalin!';
+        btn.classList.replace('bg-slate-900', 'bg-emerald-500');
+        
+        setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.classList.replace('bg-emerald-500', 'bg-slate-900');
+        }, 2000);
+    }
+</script>
 {% endblock %}
