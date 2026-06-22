@@ -50,7 +50,7 @@
     <div class="px-8 py-10 w-full relative z-10">
         
         <!-- HEADER -->
-        <div class="flex items-center justify-between mb-12 animate-fade-in">
+        <div class="flex items-center justify-between mb-8 animate-fade-in">
             <div>
                 <span class="inline-block px-3 py-1 bg-teal-50 text-teal-600 rounded-full text-[9px] font-black uppercase tracking-[0.2em] mb-3 border border-teal-100">Pusat Bimbingan Ahli</span>
                 <h1 class="text-3xl font-black text-slate-800 tracking-tight">Rekomendasi Ahli</h1>
@@ -59,6 +59,16 @@
             <div class="w-16 h-16 rounded-[24px] bg-teal-500 text-white flex items-center justify-center text-2xl shadow-xl shadow-teal-100 rotate-3 hover:rotate-0 transition-transform duration-300">
                 <i class="fas fa-receipt"></i>
             </div>
+        </div>
+
+        <!-- PANDUAN INTERAKSI -->
+        <div class="mb-10 p-5 bg-slate-800 rounded-[28px] flex items-start md:items-center gap-4 animate-fade-in shadow-lg" style="animation-delay: 0.05s;">
+            <div class="w-12 h-12 rounded-2xl bg-slate-700 text-teal-400 flex items-center justify-center shrink-0 shadow-inner">
+                <i class="fas fa-lightbulb text-xl"></i>
+            </div>
+            <p class="text-xs md:text-sm font-medium text-slate-300 leading-relaxed">
+                Cukup klik tombol hitam bertuliskan <strong class="text-white">"Diskusikan Lanjutan"</strong> di bagian bawah kartu laporan tersebut. Sistem akan otomatis membuka ruang obrolan Anda dengan Psikolog yang bersangkutan.
+            </p>
         </div>
 
         <!-- LIST REKOMENDASI -->
@@ -125,12 +135,11 @@
                             <span class="text-[9px] font-black text-white/50 uppercase tracking-[0.2em]">Dokumen Terverifikasi</span>
                         </div>
                         
-                        {% if s.consultation_id %}
-                        <a href="{{ url_for('consult.room_chat', consult_id=s.consultation_id) }}" 
-                           class="px-5 py-2.5 bg-white/10 hover:bg-teal-500 text-white rounded-xl text-[9px] font-black uppercase tracking-widest transition-all shadow-lg flex items-center gap-2">
+                        <!-- TOMBOL HITAM DIPERBAIKI (Syarat 'if' dihilangkan agar selalu muncul) -->
+                        <a href="{% if s.consult_id %}{{ url_for('consult.room_chat', consult_id=s.consult_id) }}{% else %}#{% endif %}" 
+                           class="px-5 py-2.5 bg-black hover:bg-teal-500 text-white rounded-xl text-[9px] font-black uppercase tracking-widest transition-all shadow-lg flex items-center gap-2 border border-slate-700">
                             Diskusikan Lanjutan <i class="fas fa-arrow-right text-[8px]"></i>
                         </a>
-                        {% endif %}
                     </div>
                 </div>
                 {% endfor %}

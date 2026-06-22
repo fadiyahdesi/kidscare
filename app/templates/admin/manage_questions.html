@@ -87,7 +87,7 @@
                             <!-- VIEW MODE -->
                             <td colspan="4" class="p-0">
                                 <div id="view-{{ q._id }}" class="flex items-center border-y border-slate-50">
-                                    <div class="py-5 px-6 text-center w-16 font-black text-slate-400">{{ q.order }}</div>
+                                    <div class="py-5 px-6 text-center w-16 font-black text-slate-400">{{ q.q_id }}</div>
                                     <div class="py-5 px-6 flex-1">
                                         <p class="font-bold text-slate-700">{{ q.text }}</p>
                                     </div>
@@ -106,7 +106,7 @@
                                 <!-- EDIT MODE -->
                                 <div id="edit-{{ q._id }}" class="hidden bg-indigo-50/50 border-2 border-indigo-100 rounded-3xl p-5 my-2 shadow-inner">
                                     <form action="{{ url_for('admin.edit_question', question_id=q._id) }}" method="POST" class="flex flex-col md:flex-row items-center gap-4">
-                                        <div class="w-10 text-center font-black text-indigo-300">{{ q.order }}.</div>
+                                        <div class="w-10 text-center font-black text-indigo-300">{{ q.q_id }}.</div>
                                         <input type="text" name="question_text" value="{{ q.text }}" required class="flex-1 w-full bg-white px-5 py-3 rounded-2xl text-sm font-bold shadow-sm border-0 focus:ring-2 focus:ring-indigo-500">
                                         <label class="flex items-center gap-2 bg-white px-4 py-3 rounded-2xl border border-slate-100">
                                             <input type="checkbox" name="is_active" {% if q.is_active != False %}checked{% endif %} class="w-4 h-4 text-indigo-600">

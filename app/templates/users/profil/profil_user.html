@@ -2,7 +2,6 @@
 {% block title %}Profil Pengguna | KidsCare{% endblock %}
 
 {% block content %}
-<!-- CSS KHUSUS UNTUK MENCEGAH SIDEBAR MENUTUPI KONTEN -->
 <style>
     /* Transisi halus agar pergeseran konten terasa premium */
     .dashboard-main-content {
@@ -31,10 +30,8 @@
     }
 </style>
 
-<!-- WRAPPER UTAMA DASHBOARD -->
 <div class="dashboard-main-content bg-slate-50/30">
     <div class="px-8 py-8">
-        <!-- HEADER (Sinkron dengan Beranda & Skrining) -->
         <div class="flex items-center justify-between mb-10 animate-fade-in">
             <div>
                 <span class="inline-block px-3 py-1 bg-teal-50 text-teal-600 rounded-full text-[9px] font-black uppercase tracking-[0.2em] mb-2 border border-teal-100">Profil</span>
@@ -46,7 +43,6 @@
             </div>
         </div>
 
-        <!-- FLASH MESSAGES -->
         {% with messages = get_flashed_messages(with_categories=true) %}
           {% if messages %}
             {% for category, message in messages %}
@@ -60,7 +56,6 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-fade-in" style="animation-delay: 0.1s;">
 
-            <!-- KOLOM KIRI: INFO AKUN -->
             <div class="lg:col-span-1">
                 <div class="bg-white rounded-[32px] p-8 shadow-sm border border-slate-100 h-full">
                     <h3 class="text-lg font-bold text-slate-800 mb-8 flex items-center">
@@ -69,7 +64,6 @@
 
                     <form action="{{ url_for('user.update_account') }}" method="POST" class="space-y-6">
                         
-                        <!-- INPUT NAMA LENGKAP -->
                         <div>
                             <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] block mb-2 ml-1">Nama Lengkap</label>
                             <div class="relative group">
@@ -81,7 +75,6 @@
                             </div>
                         </div>
                         
-                        <!-- INPUT EMAIL -->
                         <div>
                             <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] block mb-2 ml-1">Email Aktif</label>
                             <div class="relative group">
@@ -93,7 +86,6 @@
                             </div>
                         </div>
 
-                        <!-- INPUT PASSWORD -->
                         <div>
                             <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] block mb-2 ml-1">Ubah Kata Sandi</label>
                             <div class="relative group">
@@ -115,7 +107,6 @@
                 </div>
             </div>
 
-            <!-- KOLOM KANAN: DAFTAR ANAK -->
             <div class="lg:col-span-2">
                 <div class="bg-white rounded-[42px] p-10 shadow-sm border border-slate-100 h-full">
                     <div class="flex items-center justify-between mb-10">
@@ -151,26 +142,22 @@
                             </div>
 
                             <div class="flex items-center gap-3">
-                                 <!-- TOMBOL SET DEFAULT -->
-                                {% if not loop.first %}
+                                 {% if not loop.first %}
                                 <a href="{{ url_for('user.set_default_child', id=child._id) }}"
                                     class="px-4 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-500 text-[10px] font-black uppercase tracking-widest hover:bg-amber-400 hover:text-white hover:border-amber-400 transition shadow-sm flex items-center gap-2 group-hover:shadow-md">
                                     <i class="fas fa-star"></i> Utama
                                 </a>
                                 {% endif %}
 
-                                <!-- TOMBOL EDIT -->
-                                <button onclick="openEditChildModal('{{ child._id }}', '{{ child.name }}', '{{ child.birth_date.strftime('%Y-%m-%d') }}', '{{ child.gender }}')" 
+                                <button type="button" onclick="openEditChildModal('{{ child._id }}', '{{ child.name }}', '{{ child.birth_date.strftime('%Y-%m-%d') }}', '{{ child.gender }}')" 
                                     class="w-10 h-10 rounded-xl bg-white text-teal-500 border border-slate-100 flex items-center justify-center hover:bg-teal-500 hover:text-white transition shadow-sm">
                                     <i class="fas fa-pencil-alt text-xs"></i>
                                 </button>
 
-                                <!-- TOMBOL HAPUS -->
-                                <a href="{{ url_for('user.delete_child', id=child._id) }}"
-                                    onclick="return confirm('Apakah Anda yakin ingin menghapus data anak ini?')"
+                                <button type="button" onclick="openDeleteModal('{{ url_for('user.delete_child', id=child._id) }}', '{{ child.name }}')"
                                     class="w-10 h-10 rounded-xl bg-white text-rose-400 border border-slate-100 flex items-center justify-center hover:bg-rose-500 hover:text-white transition shadow-sm">
                                     <i class="fas fa-trash-can text-xs"></i>
-                                </a>
+                                </button>
                             </div>
                         </div>
                         {% endfor %}
@@ -200,7 +187,6 @@
     </div>
 </div>
 
-<!-- MODAL TAMBAH ANAK -->
 <div id="addChildModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[2000] flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
     <div class="bg-white w-full max-w-md p-8 rounded-[40px] shadow-2xl mx-4 transform scale-95 transition-all" id="addChildModalBox">
         <h2 class="text-2xl font-black text-slate-800 mb-8 flex items-center gap-3">
@@ -236,7 +222,6 @@
     </div>
 </div>
 
-<!-- MODAL EDIT ANAK -->
 <div id="editChildModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[2000] flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
     <div class="bg-white w-full max-w-md p-8 rounded-[40px] shadow-2xl mx-4 transform scale-95 transition-all" id="editChildModalBox">
         <h2 class="text-2xl font-black text-slate-800 mb-8 flex items-center gap-3">
@@ -270,6 +255,23 @@
                 <button type="submit" class="flex-1 py-4 bg-teal-500 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl shadow-teal-100">Perbarui Data</button>
             </div>
         </form>
+    </div>
+</div>
+
+<div id="deleteChildModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[2000] flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+    <div class="bg-white w-full max-w-sm p-8 rounded-[40px] shadow-2xl mx-4 transform scale-95 transition-all text-center" id="deleteChildModalBox">
+        <div class="w-16 h-16 bg-rose-50 text-rose-500 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-6 shadow-sm">
+            <i class="fas fa-trash-can"></i>
+        </div>
+        <h2 class="text-2xl font-black text-slate-800 mb-2">Hapus Profil?</h2>
+        <p class="text-sm text-slate-500 mb-8 leading-relaxed">
+            Anda yakin ingin menghapus profil <strong id="deleteChildName" class="text-slate-800"></strong>? Semua data riwayat dan hasil skrining akan terhapus. Tindakan ini tidak dapat dibatalkan.
+        </p>
+        
+        <div class="flex gap-4">
+            <button type="button" onclick="toggleModal('deleteChildModal')" class="flex-1 py-4 bg-slate-100 text-slate-500 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-200 transition">Batal</button>
+            <a href="#" id="confirmDeleteBtn" class="flex-1 py-4 bg-rose-500 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl shadow-rose-100 active:scale-95 transition-all block text-center">Ya, Hapus</a>
+        </div>
     </div>
 </div>
 
@@ -307,6 +309,15 @@
     }
 
     /**
+     * Membuka modal hapus dan menyuntikkan data spesifik
+     */
+    function openDeleteModal(url, childName) {
+        document.getElementById('confirmDeleteBtn').href = url;
+        document.getElementById('deleteChildName').innerText = childName;
+        toggleModal('deleteChildModal');
+    }
+
+    /**
      * Toggle visibility kata sandi
      */
     function togglePassword(inputId, eyeId) {
@@ -325,6 +336,7 @@
     window.onclick = function(event) {
         if (event.target.id === 'editChildModal') toggleModal('editChildModal');
         if (event.target.id === 'addChildModal') toggleModal('addChildModal');
+        if (event.target.id === 'deleteChildModal') toggleModal('deleteChildModal');
     }
 </script>
 {% endblock %}

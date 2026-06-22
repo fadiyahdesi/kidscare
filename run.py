@@ -1066,62 +1066,87 @@ def skrining_form():
 
 @user_bp.route('/predict', methods=['POST'])
 def predict():
-    if 'user_id' not in session: return redirect(url_for('main.login'))
+    if 'user_id' not in session: 
+        return redirect(url_for('main.login'))
+        
     try:
-        # BAGIAN YANG DIUPDATE: Ambil child_id dari hidden input di form
+        # 1. Ambil ID Anak dari form yang disembunyikan (hidden input)
         child_id_str = request.form.get('child_id')
         if not child_id_str:
             return "ID Anak tidak ditemukan."
 
-        questions = list(db.questions.find().sort("order", 1))
-        in_score = hy_score = 0
-        additional_met = True
+        # 2. Ambil seluruh pertanyaan dari database dan urutkan
+        # Pastikan "q_id" adalah nama field nomor urut di collection questions Anda
+        questions = list(db.questions.find().sort("q_id", 1)) 
         
-        # VARIABEL BARU: Untuk menyimpan riwayat jawaban
+        in_score = 0
+        hy_score = 0
+        additional_met = True
         answers_data = [] 
         
-        for i, q in enumerate(questions):
+        # 3. KUNCI UTAMA: start=1 agar Python mencari request q1, q2, dst.
+        for i, q in enumerate(questions, start=1):
+            
             val = request.form.get(f'q{i}')
-            if val is None: continue
+            
+            # Lewati jika kebetulan tidak ada jawaban yang tertangkap
+            if val is None: 
+                continue 
+                
             score = int(val)
             
-            # Menerjemahkan angka skor menjadi teks jawaban untuk dicetak
+            # Terjemahkan angka skor form menjadi teks untuk disimpan di laporan/riwayat
             if q.get('type') == 'likert':
-                labels = {0: 'Tidak pernah', 1: 'Jarang', 2: 'Sering', 3: 'Sangat Sering'}
+                labels = {0: 'Tidak Pernah', 1: 'Jarang', 2: 'Sering', 3: 'Sangat Sering'}
             else:
                 labels = {1: 'Ya', 0: 'Tidak'}
             
             ans_label = labels.get(score, str(score))
             
-            # Memasukkan ke list jawaban
+            # Tambahkan riwayat jawaban per soal
             answers_data.append({
                 "question": q['text'],
                 "answer": ans_label
             })
 
-            if q['category'] == 'inattention' and score >= 2: in_score += 1
-            elif q['category'] == 'hyperactivity' and score >= 2: hy_score += 1
-            elif q['category'] == 'additional' and score == 0: additional_met = False
+            # 4. PENILAIAN SKOR (Gunakan .lower() agar aman dari perbedaan huruf kapital)
+            kat = q.get('category', '').lower()
+            
+            if kat == 'inattention' and score >= 2: 
+                in_score += 1
+            elif kat == 'hyperactivity' and score >= 2: 
+                hy_score += 1
+            elif kat == 'additional' and score == 0: 
+                # Jika ada satu saja kriteria tambahan yang bernilai 0 (Tidak), syarat gagal
+                additional_met = False
 
+        # 5. PENENTUAN DIAGNOSIS DSM-5
         category = "Normal / Risiko Rendah"
-        if additional_met:
-            if in_score >= 6 and hy_score >= 6: category = "ADHD Tipe Campuran"
-            elif in_score >= 6: category = "ADHD Tipe Inatensi"
-            elif hy_score >= 6: category = "ADHD Tipe Hiperaktif-Impulsivitas"
+        
+        # Diagnosis ADHD HANYA diberikan jika kriteria tambahan (usia & lingkungan) bernilai 'Ya' semua
+        if additional_met: 
+            if in_score >= 6 and hy_score >= 6: 
+                category = "ADHD Tipe Campuran"
+            elif in_score >= 6: 
+                category = "ADHD Tipe Inatensi"
+            elif hy_score >= 6: 
+                category = "ADHD Tipe Hiperaktif-Impulsivitas"
 
-        # BAGIAN YANG DIUPDATE: Simpan array answers ke database
+        # 6. SIMPAN KE DATABASE
         db.screening_tests.insert_one({
             "child_id": ObjectId(child_id_str),
             "inattentive_score": in_score,
             "hyperactive_score": hy_score,
             "category": category,
-            "answers": answers_data, # Menyimpan riwayat jawaban ke database
+            "answers": answers_data,
             "created_at": datetime.utcnow()
         })
         
+        # 7. TAMPILKAN KE HALAMAN HASIL
         return render_template('users/testskrining/result.html', result=category, in_score=in_score, hy_score=hy_score)
+        
     except Exception as e:
-        return f"Error: {str(e)}"
+        return f"Terjadi kesalahan sistem: {str(e)}"
 
 @user_bp.route('/skrining/riwayat')
 @user_bp.route('/skrining/riwayat/<child_id>')
